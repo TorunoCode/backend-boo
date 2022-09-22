@@ -1,0 +1,45 @@
+@import "../mixins.scss";
+
+.footer {
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  border-top: 2px solid orange;
+  .main {
+    width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 20px 0 10px;
+    .col {
+      .title {
+        border-left: 5px solid orange;
+      }
+      .info {
+        padding-top: 13px;
+        text-transform: none;
+        font-size: 14px;
+        line-height: 25px;
+        i {
+          font-size: 30px;
+          color: orange;
+          cursor: pointer;
+        }
+      }
+      ul {
+        list-style-type: none;
+        padding-left: 8px;
+        cursor: pointer;
+        li {
+          font-size: 12px;
+          padding-bottom: 10px;
+          i {
+            font-size: 10px;
+          }
+          &:hover {
+            color: orange;
+          }
+        }
+      }
+    }
+  }
+}

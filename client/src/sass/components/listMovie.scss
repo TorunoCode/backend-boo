@@ -1,0 +1,82 @@
+.listMovie {
+  width: 1200px;
+  margin: auto;
+  padding: 10px 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 15px;
+  .itemMovie {
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 5px 10px 10px 10px;
+    border: 2px solid orange;
+    color: white;
+    img {
+      padding-top: 8px;
+      width: 100%;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 5px;
+      max-height: 334px;
+      overflow: hidden;
+    }
+    .name {
+      padding-top: 5px;
+      font-size: 20px;
+      text-decoration: none;
+    }
+    .genre-rate {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 15px;
+      padding-bottom: 5px;
+      font-style: italic;
+    }
+    .btn_buy {
+      border: 2px solid orange;
+      margin: 0 auto;
+      width: 130px;
+      font-size: 17px;
+      text-transform: uppercase;
+      background: #ffa500e8;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    &:hover {
+      box-shadow: 0 0 10px 1px orange;
+      img {
+        transform: translateY(-3px);
+        transition: 0.5s;
+      }
+      .name {
+        color: orange;
+      }
+      .btn_buy {
+        background: whitesmoke;
+        border: 2px solid orange;
+        color: orange;
+      }
+    }
+  }
+}
+.button_xemthem button {
+  display: block;
+  text-transform: uppercase;
+  line-height: 35px;
+  font-size: 14px;
+  font-weight: bold;
+  color: orange;
+  background: none;
+  text-align: center;
+  border-radius: 4px;
+  margin: 5px auto 0px;
+  width: 300px;
+  border: 1px solid whitesmoke;
+  cursor: pointer;
+  &:hover {
+    box-shadow: 0 0 10px 1px orange;
+    color: sandybrown;
+  }
+}

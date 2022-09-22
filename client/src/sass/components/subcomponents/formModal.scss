@@ -1,0 +1,36 @@
+.modal {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+  display: flex;
+
+  &-form {
+    margin: auto;
+    width: 360px;
+    height: 510px;
+    background-color: white;
+    border-radius: 10px;
+    .btnX {
+      float: right;
+      font-size: 21px;
+      border: none;
+      background: #ffa50033;
+      color: orange;
+      height: 30px;
+      width: 30px;
+      margin: 5px;
+      border-radius: 2px;
+      cursor: pointer;
+      &:hover {
+        box-shadow: 0 0 5px #ffd000b0;
+      }
+      i {
+        margin: auto;
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+.home {
+  .main {
+    width: 1200px;
+    margin: 0 auto;
+    .tag_movie {
+      padding-top: 10px;
+      .title {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 25px;
+        text-transform: uppercase;
+      }
+    }
+  }
+}

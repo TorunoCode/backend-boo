@@ -1,0 +1,24 @@
+.movie {
+  .main {
+    width: 1200px;
+    margin: 0 auto;
+    color: orange;
+    .box_filter {
+      display: flex;
+      .filter {
+        margin: 20px 15px 15px;
+        .select {
+          outline: none;
+          padding: 3px;
+          border-color: orange;
+          border-radius: 5px;
+        }
+        .select option:checked,
+        .select option:hover {
+          box-shadow: inset;
+          color: orange;
+        }
+      }
+    }
+  }
+}

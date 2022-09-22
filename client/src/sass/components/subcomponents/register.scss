@@ -1,0 +1,108 @@
+.modal_register {
+  margin-top: 45px;
+  padding: 0 30px;
+  box-sizing: border-box;
+  .row_top {
+    height: 320px;
+    .title {
+      text-align: center;
+      font-size: 30px;
+      font-weight: bold;
+      color: orange;
+      padding-bottom: 10px;
+    }
+    .title_register {
+      text-align: center;
+      font-size: 30px;
+      font-weight: bold;
+      color: grey;
+      padding-bottom: 20px;
+    }
+    .input_data {
+      padding: 12px 2px 6px 4px;
+      margin-bottom: 15px;
+      font-size: 16px;
+      border: none;
+      border-bottom: 1px solid orange;
+      outline: none;
+      width: 294px;
+    }
+    .flex {
+      display: flex;
+      justify-content: space-between;
+      .label_checkbox {
+        color: gray;
+        cursor: pointer;
+      }
+      .forgot {
+        font-size: 15px;
+        font-style: italic;
+        color: orange;
+        text-decoration: none;
+
+        &:hover {
+          border-bottom: 0.1px solid orange;
+        }
+      }
+    }
+    .btnLogin {
+      margin: 0 auto;
+      margin-top: 5px;
+      width: 200px;
+      height: 38px;
+      font-size: 18px;
+      display: block;
+      background: orange;
+      color: whitesmoke;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      border: 2px solid orange;
+      cursor: pointer;
+      &:hover {
+        box-shadow: 0 0 8px orange;
+        border: 2px solid whitesmoke;
+      }
+    }
+  }
+  .row_bot {
+    .txt_signup {
+      padding: 10px 0 10px 27px;
+      text-align: center;
+      font-style: italic;
+      color: grey;
+      display: flex;
+      .link {
+        color: orange;
+        font-weight: bold;
+        cursor: pointer;
+        &:hover {
+          text-shadow: 0 0 15px orange;
+        }
+      }
+    }
+    .txt {
+      text-align: center;
+      color: gray;
+    }
+    .login_icon {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 16px;
+      color: orange;
+      i {
+        border: 2px solid orange;
+        width: 120px;
+        height: auto;
+        padding: 5px;
+        background-color: whitesmoke;
+        border-radius: 5px;
+        cursor: pointer;
+        &:hover {
+          background-color: white;
+          box-shadow: 0 0 8px orange;
+        }
+      }
+    }
+  }
+}
