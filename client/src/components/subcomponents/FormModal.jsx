@@ -14,7 +14,7 @@ const FormModal = ({ closeModal }) => {
     <div className="modal">
       <div className="modal-form">
         <button className="btnX" onClick={() => closeModal(false)}>
-          <i class="fa-solid fa-xmark"></i>
+          <i className="fa-solid fa-xmark"></i>
         </button>
         {/* customize code */}
         {login ? (

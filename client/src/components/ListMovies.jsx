@@ -3,13 +3,21 @@ import "../sass/components/listMovie.scss";
 import StarRating from "./subcomponents/StarRating";
 import { datafakeMovie } from "./datafakeMovie";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const ListMovie = () => {
   const [quantityShow, setQuantityShow] = useState(5);
   const [totalQuantity, setTotalQuantity] = useState(datafakeMovie.length - 5);
+  const [movies, setMovies] = useState([]);
+
   useEffect(() => {
     setQuantityShow(5);
     setTotalQuantity(datafakeMovie.length - 5);
+    const fetchMovies = async () => {
+      const {data} = await axios.get("/api/movies");
+      setMovies(data);
+    };
+    fetchMovies();
   }, []);
   const handleShowViewMore = (e) => {
     setQuantityShow((prev) => prev + 5);
@@ -18,8 +26,8 @@ const ListMovie = () => {
   return (
     <div>
       <div className="listMovie">
-        {datafakeMovie.slice(0, quantityShow).map((item) => (
-          <Link to="/MovieDetail" style={{ textDecoration: "none" }}>
+        {movies.slice(0, quantityShow).map((item) => (
+          <Link to={`/MovieDetail/${item.id}`} style={{ textDecoration: "none" }}>
             <div className="itemMovie" key={item.id}>
               <StarRating rating={item.rate} />
               <img src={item.image} alt="" />
@@ -39,7 +47,7 @@ const ListMovie = () => {
         ) : (
           <button onClick={handleShowViewMore}>
             View add {totalQuantity} movie &nbsp;
-            <i class="fa-solid fa-caret-down"></i>
+            <i className="fa-solid fa-caret-down"></i>
           </button>
         )}
       </div>

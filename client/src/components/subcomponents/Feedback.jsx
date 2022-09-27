@@ -46,7 +46,7 @@ const Feedback = () => {
           <div className="modalx-form">
             <div>
               <button className="btnX" onClick={() => setOpenModal(false)}>
-                <i class="fa-solid fa-xmark"></i>
+                <i className="fa-solid fa-xmark"></i>
               </button>
             </div>
             <div className="container">

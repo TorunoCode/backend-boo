@@ -14,7 +14,7 @@ const Header = () => {
   return (
     <div className="header">
       <div className="main">
-        <div className="logo">FixGo</div>
+      <Link to="/Home" style={{ textDecoration: "none" }}> <div className="logo">FixGo</div></Link>
         <div className="navbar">
           <ul>
             <Link to="/Home">
@@ -22,16 +22,16 @@ const Header = () => {
             </Link>
             <Link to="/Movie">
               <li>
-                <i class="fa-solid fa-film"></i> Movie
+                <i className="fa-solid fa-film"></i> Movie
               </li>
             </Link>
             <Link to="/Event">
               <li>
-                <i class="fa-brands fa-hotjar"></i> Event
+                <i className="fa-brands fa-hotjar"></i> Event
               </li>
             </Link>
             <li>
-              <i class="fa-solid fa-headset"></i> Suport
+              <i className="fa-solid fa-headset"></i> Suport
             </li>
           </ul>
         </div>
@@ -44,7 +44,7 @@ const Header = () => {
               name="search"
             />
             <div>
-              <i class="fa-solid fa-magnifying-glass"></i>
+              <i className="fa-solid fa-magnifying-glass"></i>
             </div>
           </form>
         </div>
@@ -64,7 +64,7 @@ const Header = () => {
               setOpenModal(true);
             }}
           >
-            <i class="fa-solid fa-user"></i> Login
+            <i className="fa-solid fa-user"></i> Login
           </button>
         )}
       </div>
