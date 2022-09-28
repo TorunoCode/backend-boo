@@ -1,24 +1,24 @@
 import mongoose from 'mongoose';
-const reviewSchema = mongoose.Schema({
-    name:{
-        type:String,
-        require:true
-    },
-    // reviews:[reviewSchema]
-    rate:{
-        type:Number,
-        require:true
-    },
-    comment:{
-        type:String,
-        require:true
-    },
-    user:{
-        type:mongoose.Schema.Types.ObjectId,
-        require:true,
-        ref:"User"
-    }
-});
+// const reviewSchema = mongoose.Schema({
+//     name:{
+//         type:String,
+//         require:true
+//     },
+//     // reviews:[reviewSchema]
+//     rate:{
+//         type:Number,
+//         require:true
+//     },
+//     comment:{
+//         type:String,
+//         require:true
+//     },
+//     user:{
+//         type:mongoose.Schema.Types.ObjectId,
+//         require:true,
+//         ref:"User"
+//     }
+// });
 const movieSchema =  new mongoose.Schema({
     name:{
         type: String,
@@ -49,7 +49,7 @@ const movieSchema =  new mongoose.Schema({
         require:true
     },
     rate:{
-        type: String,
+        type: Number,
         require:true
     },
     cast:{
@@ -64,21 +64,16 @@ const movieSchema =  new mongoose.Schema({
         type: Number,
         require:true
     },
-    isActive:{
-        type: Number,
-        require:true
-    },
     releaseTime:{
-        type:Date,
-        require:true
-    },
-    dateCreate:{
         type:Date
     },
-    dateUpdate:{
-        type:Date
+    isActive:{
+        type:Number,
+        require:1
     }
 
+},{
+    timestamps:true
 });
 const Movie =  mongoose.model('Movie',movieSchema);
 export default Movie;

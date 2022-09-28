@@ -9,7 +9,7 @@ export const movies = [
       cast: "SEO Young-hee, KIM Min-jae, KIM Bo-min, CHO So-hyang, KANG Gil-woo",
       describe:
         "Myeong-hye and Hyun-min move to the countryside with their three kids due to a financial problem. Their new house seems great on the outside but it feels somewhat ominous at the same. On the first day at the new house, Myeong-hye feels unsettling energy and struggles with a nightmare. Moreover, she keeps hearing the strange sound from the shed next to the house, which is locked up tightly. While Myeong-hye is concerned about all incidents that have happened at home, Hyun-min just brushes her off. In the midst of the parents' conflict, three kids grow anxious. Slowly driven crazy by the unknown strange sound, Myeong-hye meets a suspicious neighbor Eun-young, who tells her that the house is 'contorted'. With nightmares growing worse each day, the family finally faces a secret buried deep within their home.",
-      releaseTime: "23/08/2022",
+      releaseTime: "08/23/2022",
       runningTime: 120,
       language: "Korean with Vietnamese and English subtitle",
       linkReview: "https://www.youtube.com/embed/174AjBZHkkU",
@@ -26,7 +26,7 @@ export const movies = [
       cast: "SEO Young-hee, KIM Min-jae, KIM Bo-min, CHO So-hyang, KANG Gil-woo",
       describe:
         "Myeong-hye and Hyun-min move to the countryside with their three kids due to a financial problem. Their new house seems great on the outside but it feels somewhat ominous at the same. On the first day at the new house, Myeong-hye feels unsettling energy and struggles with a nightmare. Moreover, she keeps hearing the strange sound from the shed next to the house, which is locked up tightly. While Myeong-hye is concerned about all incidents that have happened at home, Hyun-min just brushes her off. In the midst of the parents' conflict, three kids grow anxious. Slowly driven crazy by the unknown strange sound, Myeong-hye meets a suspicious neighbor Eun-young, who tells her that the house is 'contorted'. With nightmares growing worse each day, the family finally faces a secret buried deep within their home.",
-      releaseTime: "23/08/2022",
+      releaseTime: "08/23/2022",
       runningTime: 120,
       language: "Korean with Vietnamese and English subtitle",
       linkReview: "https://www.youtube.com/embed/174AjBZHkkU",
@@ -43,7 +43,7 @@ export const movies = [
       cast: "SEO Young-hee, KIM Min-jae, KIM Bo-min, CHO So-hyang, KANG Gil-woo",
       describe:
         "Myeong-hye and Hyun-min move to the countryside with their three kids due to a financial problem. Their new house seems great on the outside but it feels somewhat ominous at the same. On the first day at the new house, Myeong-hye feels unsettling energy and struggles with a nightmare. Moreover, she keeps hearing the strange sound from the shed next to the house, which is locked up tightly. While Myeong-hye is concerned about all incidents that have happened at home, Hyun-min just brushes her off. In the midst of the parents' conflict, three kids grow anxious. Slowly driven crazy by the unknown strange sound, Myeong-hye meets a suspicious neighbor Eun-young, who tells her that the house is 'contorted'. With nightmares growing worse each day, the family finally faces a secret buried deep within their home.",
-      releaseTime: "23/08/2022",
+      releaseTime: "08/23/2022",
       runningTime: 120,
       language: "Korean with Vietnamese and English subtitle",
       linkReview: "https://www.youtube.com/embed/174AjBZHkkU",
@@ -62,7 +62,7 @@ export const movies = [
       cast: "SEO Young-hee, KIM Min-jae, KIM Bo-min, CHO So-hyang, KANG Gil-woo",
       describe:
         "Myeong-hye and Hyun-min move to the countryside with their three kids due to a financial problem. Their new house seems great on the outside but it feels somewhat ominous at the same. On the first day at the new house, Myeong-hye feels unsettling energy and struggles with a nightmare. Moreover, she keeps hearing the strange sound from the shed next to the house, which is locked up tightly. While Myeong-hye is concerned about all incidents that have happened at home, Hyun-min just brushes her off. In the midst of the parents' conflict, three kids grow anxious. Slowly driven crazy by the unknown strange sound, Myeong-hye meets a suspicious neighbor Eun-young, who tells her that the house is 'contorted'. With nightmares growing worse each day, the family finally faces a secret buried deep within their home.",
-      releaseTime: "23/08/2022",
+      releaseTime: "08/23/2022",
       runningTime: 120,
       language: "Korean with Vietnamese and English subtitle",
       linkReview: "https://www.youtube.com/embed/174AjBZHkkU",
@@ -80,7 +80,7 @@ export const movies = [
       cast: "SEO Young-hee, KIM Min-jae, KIM Bo-min, CHO So-hyang, KANG Gil-woo",
       describe:
         "Myeong-hye and Hyun-min move to the countryside with their three kids due to a financial problem. Their new house seems great on the outside but it feels somewhat ominous at the same. On the first day at the new house, Myeong-hye feels unsettling energy and struggles with a nightmare. Moreover, she keeps hearing the strange sound from the shed next to the house, which is locked up tightly. While Myeong-hye is concerned about all incidents that have happened at home, Hyun-min just brushes her off. In the midst of the parents' conflict, three kids grow anxious. Slowly driven crazy by the unknown strange sound, Myeong-hye meets a suspicious neighbor Eun-young, who tells her that the house is 'contorted'. With nightmares growing worse each day, the family finally faces a secret buried deep within their home.",
-      releaseTime: "23/08/2022",
+      releaseTime: "08/23/2022",
       runningTime: 120,
       language: "Korean with Vietnamese and English subtitle",
       linkReview: "https://www.youtube.com/embed/174AjBZHkkU",
@@ -97,7 +97,7 @@ export const movies = [
       cast: "SEO Young-hee, KIM Min-jae, KIM Bo-min, CHO So-hyang, KANG Gil-woo",
       describe:
         "Myeong-hye and Hyun-min move to the countryside with their three kids due to a financial problem. Their new house seems great on the outside but it feels somewhat ominous at the same. On the first day at the new house, Myeong-hye feels unsettling energy and struggles with a nightmare. Moreover, she keeps hearing the strange sound from the shed next to the house, which is locked up tightly. While Myeong-hye is concerned about all incidents that have happened at home, Hyun-min just brushes her off. In the midst of the parents' conflict, three kids grow anxious. Slowly driven crazy by the unknown strange sound, Myeong-hye meets a suspicious neighbor Eun-young, who tells her that the house is 'contorted'. With nightmares growing worse each day, the family finally faces a secret buried deep within their home.",
-      releaseTime: "23/08/2022",
+      releaseTime: "08/23/2022",
       runningTime: 120,
       language: "Korean with Vietnamese and English subtitle",
       linkReview: "https://www.youtube.com/embed/174AjBZHkkU",
@@ -114,7 +114,7 @@ export const movies = [
       cast: "SEO Young-hee, KIM Min-jae, KIM Bo-min, CHO So-hyang, KANG Gil-woo",
       describe:
         "Myeong-hye and Hyun-min move to the countryside with their three kids due to a financial problem. Their new house seems great on the outside but it feels somewhat ominous at the same. On the first day at the new house, Myeong-hye feels unsettling energy and struggles with a nightmare. Moreover, she keeps hearing the strange sound from the shed next to the house, which is locked up tightly. While Myeong-hye is concerned about all incidents that have happened at home, Hyun-min just brushes her off. In the midst of the parents' conflict, three kids grow anxious. Slowly driven crazy by the unknown strange sound, Myeong-hye meets a suspicious neighbor Eun-young, who tells her that the house is 'contorted'. With nightmares growing worse each day, the family finally faces a secret buried deep within their home.",
-      releaseTime: "23/08/2022",
+      releaseTime: "08/23/2022",
       runningTime: 120,
       language: "Korean with Vietnamese and English subtitle",
       linkReview: "https://www.youtube.com/embed/174AjBZHkkU",
@@ -131,7 +131,7 @@ export const movies = [
       cast: "SEO Young-hee, KIM Min-jae, KIM Bo-min, CHO So-hyang, KANG Gil-woo",
       describe:
         "Myeong-hye and Hyun-min move to the countryside with their three kids due to a financial problem. Their new house seems great on the outside but it feels somewhat ominous at the same. On the first day at the new house, Myeong-hye feels unsettling energy and struggles with a nightmare. Moreover, she keeps hearing the strange sound from the shed next to the house, which is locked up tightly. While Myeong-hye is concerned about all incidents that have happened at home, Hyun-min just brushes her off. In the midst of the parents' conflict, three kids grow anxious. Slowly driven crazy by the unknown strange sound, Myeong-hye meets a suspicious neighbor Eun-young, who tells her that the house is 'contorted'. With nightmares growing worse each day, the family finally faces a secret buried deep within their home.",
-      releaseTime: "23/08/2022",
+      releaseTime: "08/23/2022",
       runningTime: 120,
       language: "Korean with Vietnamese and English subtitle",
       linkReview: "https://www.youtube.com/embed/174AjBZHkkU",
@@ -140,3 +140,4 @@ export const movies = [
     },
   ];
   
+  export default movies;
