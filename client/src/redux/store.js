@@ -1,6 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./authSlice";
 import postReducer from "./postFeedbackSlice";
+import {createStore, combineReducers, applyMiddleware} from 'react';
+import thunk from 'redux-thunk';
+import {composeWithDevTools} from 'redux-devtools-extension';
+import { productListReducer } from "./reducers/productReducers";
 export default configureStore({
   reducer: {
     auth: authReducer,
@@ -8,6 +12,17 @@ export default configureStore({
   },
 });
 
+const reducer = combineReducers({
+  productList: productListReducer,
+});
+const initialState = {}
+const middleware = [thunk];
+const store = createStore(
+  reducer,
+  initialState,
+  composeWithDevTools(applyMiddleware(...middleware))
+);
+// export default store;
 // import { combineReducers, configureStore } from "@reduxjs/toolkit";
 // import authReducer from "./authSlice";
 // import {

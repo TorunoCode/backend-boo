@@ -3,7 +3,7 @@ const notFound = (req,res,next) =>{
     res.status(404);
     next(error);
 };
-const errorHandler = (req,res,next,err) => {
+const errorHandler = (err,req,res,next) => {
     const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
     res.status(statusCode);
     res.json({

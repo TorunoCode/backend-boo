@@ -1,7 +1,7 @@
 {
   "name": "web-fixgo",
   "version": "0.1.0",
-  "proxy":"http://localhost:5000",
+  "proxy": "http://localhost:5000",
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.5",
@@ -20,6 +20,7 @@
     "react-scripts": "^5.0.1",
     "react-toastify": "^9.0.8",
     "redux": "^4.2.0",
+    "redux-devtools-extension": "^2.13.9",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.4.1",
     "web-vitals": "^2.1.4"
