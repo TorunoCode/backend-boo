@@ -12,16 +12,16 @@ export default configureStore({
   },
 });
 
-const reducer = combineReducers({
-  productList: productListReducer,
-});
-const initialState = {}
-const middleware = [thunk];
-const store = createStore(
-  reducer,
-  initialState,
-  composeWithDevTools(applyMiddleware(...middleware))
-);
+// const reducer = combineReducers({
+//   productList: productListReducer,
+// });
+// const initialState = {}
+// const middleware = [thunk];
+// const store = createStore(
+//   reducer,
+//   initialState,
+//   composeWithDevTools(applyMiddleware(...middleware))
+// );
 // export default store;
 // import { combineReducers, configureStore } from "@reduxjs/toolkit";
 // import authReducer from "./authSlice";

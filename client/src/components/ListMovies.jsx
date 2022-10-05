@@ -4,18 +4,13 @@ import StarRating from "./subcomponents/StarRating";
 import { datafakeMovie } from "./datafakeMovie";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { useDispatch, useSelector } from "react-redux"; 
-import { productList } from "../redux/actions/productAction";
 
 const ListMovie = () => {
   const [quantityShow, setQuantityShow] = useState(5);
   const [totalQuantity, setTotalQuantity] = useState(datafakeMovie.length - 5);
   const [movies, setMovies] = useState([]);
-  const dispatch = useDispatch();
-  const movieList = useSelector((state) => state.productList);
-  const {loading, error, products} = productList;
+
   useEffect(() => {
-    dispatch(productList());
     setQuantityShow(5);
     setTotalQuantity(datafakeMovie.length - 5);
     const fetchMovies = async () => {
@@ -23,7 +18,7 @@ const ListMovie = () => {
       setMovies(data);
     };
     fetchMovies();
-  }, [dispatch]);
+  }, []);
   const handleShowViewMore = (e) => {
     setQuantityShow((prev) => prev + 5);
     setTotalQuantity((prev) => prev - 5);
@@ -32,8 +27,8 @@ const ListMovie = () => {
     <div>
       <div className="listMovie">
         {movies.slice(0, quantityShow).map((item) => (
-          <Link to={`/MovieDetail/${item.id}`} style={{ textDecoration: "none" }}>
-            <div className="itemMovie" key={item.id}>
+          <Link to={`/MovieDetail/${item._id}`} style={{ textDecoration: "none" }}>
+            <div className="itemMovie" key={item._id}>
               <StarRating rating={item.rate} />
               <img src={item.image} alt="" />
               <div className="name">{item.name}</div>

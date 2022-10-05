@@ -5,8 +5,6 @@ import "normalize.css";
 import "./assets/css/fontawesome-icons/css/all.min.css";
 import Layout from "./components/Layout";
 import reportWebVitals from "./reportWebVitals";
-import store from './redux/store';
-import {Provider} from 'react-redux';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

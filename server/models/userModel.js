@@ -18,8 +18,7 @@ const userSchema =  new mongoose.Schema({
         require:true
     },
     pin:{
-        type: String,
-        unique:true
+        type: String
     },
     isAdmin:{
         type:Boolean,

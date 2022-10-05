@@ -7,18 +7,21 @@ import dotenv from 'dotenv'
 import connectDatabase from './config/MongoDb.js';
 import ImportData from './DataImport.js';
 import movieRoute from './routes/MovieRoutes.js';
+import userRoute from './routes/UserRoutes.js';
 import { errorHandler, notFound } from './Middleware/errors.js';
 dotenv.config();
 connectDatabase();
 const app = express();
+app.use(cors());
+app.use(bodyParser.json({limit:"30mb",extended:true}));
+app.use(bodyParser.urlencoded({limit:"30mb",extended:true}));
+
 // API
 app.use("/api/import",ImportData);
 app.use("/api/movies",movieRoute);
+app.use("/api/user",userRoute);
 app.use(notFound);
 app.use(errorHandler);
-app.use(bodyParser.json({limit:"30mb",extended:true}));
-app.use(bodyParser.urlencoded({limit:"30mb",extended:true}));
-app.use(cors());
 
 const PORT = process.env.PORT || 5000;
 app.get("/api/movies",(req,res) => {

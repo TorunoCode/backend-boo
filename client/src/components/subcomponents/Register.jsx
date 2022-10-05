@@ -3,6 +3,7 @@ import { registerUser } from "../../redux/apiRequest";
 import "../../sass/components/subcomponents/register.scss";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
 // const Register = ({ ModalLogin, ModalRegister }) => {
 const Register = ({ ModalLogin }) => {
   // vì onclick chỉ xử lí 1 event --> tạo hàm ngoài chạy 2 event cùng lúc
@@ -21,11 +22,10 @@ const Register = ({ ModalLogin }) => {
       email: email,
       password: password,
       name: username,
-      phone: "012345871474",
-      address: "aaaaa",
-      gender: "male",
+      isActive: 0,
+      isAdmin: false,
     };
-    registerUser(newUser, dispatch, navigate);
+    registerUser(newUser, dispatch,toast, navigate);
   };
   return (
     <div className="modal_register">
@@ -38,18 +38,21 @@ const Register = ({ ModalLogin }) => {
             placeholder="Email address.."
             className="input_data"
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
           <input
             type="password"
             placeholder="Password.."
             className="input_data"
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
           <input
             type="text"
             placeholder="Username.."
             className="input_data"
             onChange={(e) => setUsername(e.target.value)}
+            required
           />
           <button className="btnLogin">Register</button>
         </form>
@@ -68,6 +71,7 @@ const Register = ({ ModalLogin }) => {
           <i className="fa-brands fa-google">oogle</i>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

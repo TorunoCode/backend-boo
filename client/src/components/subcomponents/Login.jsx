@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../sass/components/subcomponents/login.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../redux/apiRequest";
@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 const Login = ({ ModalLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { loading, error } = useSelector((state) => ({ ...state.auth }));
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleLogin = (e) => {
@@ -19,25 +20,9 @@ const Login = ({ ModalLogin }) => {
       email: email,
       password: password,
     };
-    loginUser(newUser, dispatch, navigate);
+    loginUser(newUser, dispatch,toast, navigate);
   };
-  const is = useSelector((Diff) => Diff.auth.login?.isFetching);
 
-  // Toast
-  const notify = () => {
-    if (is === false) {
-    } else {
-      toast.success("Login success!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    }
-  };
   return (
     <div className="modal_login">
       <div className="row_top">
@@ -48,13 +33,19 @@ const Login = ({ ModalLogin }) => {
             type="email"
             placeholder="Email.."
             className="input_data"
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}            
+            required
+            invalid
+            validation="Please provide your email"
           />
           <input
             type="password"
             placeholder="Password.."
             className="input_data"
             onChange={(e) => setPassword(e.target.value)}
+            required
+            invalid
+            validation="Please provide your password"
           />
           <div className="flex">
             <div className="label_checkbox">
@@ -65,8 +56,9 @@ const Login = ({ ModalLogin }) => {
               Forgot password?
             </Link>
           </div>
-          <button className="btnLogin" onClick={notify}>
-            Login
+          
+          <button className="btnLogin" onClick={handleLogin}>
+                      Login
           </button>
         </form>
       </div>
