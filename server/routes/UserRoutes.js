@@ -30,14 +30,14 @@ userRoute.post(
         try {
             const oldUser = await UserModal.findOne({ email });
             if (!oldUser)
-              return res.status(404).json({result:null, message: "User doesn't exist" });
+              return res.status(404).json({data:null, message: "User doesn't exist" });
         
             const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
         
             if (!isPasswordCorrect)
               return res.status(400).json({ message: "Invalid credentials" });
         
-            res.status(200).json({ result: oldUser });
+            res.status(200).json({ data: oldUser });
           } catch (error) {
             res.status(500).json({ message: "Something went wrong" });
             console.log(error);
@@ -50,15 +50,15 @@ userRoute.post(
         try {
             const oldUser = await UserModal.findOne({ email });        
             if (oldUser) {
-              return res.status(400).json({result:null, message: "User already exists" });            }
+              return res.status(400).json({data:null, message: "User already exists" });            }
         
             const hashedPassword = await bcrypt.hash(password, 12);        
-            const result = await UserModal.create({
+            const data = await UserModal.create({
               email,
               password: hashedPassword,
               name,pin,isActive,isAdmin
             });
-             res.status(201).json({ result });
+             res.status(201).json({ data });
           } catch (error) {
             res.status(500).json({ message: "Something went wrong" });
             console.log(error);

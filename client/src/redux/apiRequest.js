@@ -26,7 +26,7 @@ export const loginUser = async (user, dispatch,toast, navigate) => {
       draggable: true,
       progress: undefined,
     });
-    loginSuccess();
+    dispatch(loginSuccess(res.data));
      navigate("/");
      return res.data;
   }

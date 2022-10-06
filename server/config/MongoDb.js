@@ -7,6 +7,9 @@ const connectDatabase = async() =>{
     } catch(error) {
         console.log(`Error: ${error.message}`);
         process.exit(1);
+        if (err) console.error(err)
+
+
     }
 };
 export default connectDatabase;
