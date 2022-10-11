@@ -76,7 +76,6 @@ const Login = ({ ModalLogin }) => {
           <i className="fa-brands fa-google">oogle</i>
         </div>
       </div>
-      <ToastContainer />
     </div>
   );
 };

@@ -3,14 +3,15 @@ import "../sass/components/header.scss";
 import { Link } from "react-router-dom";
 import FormModal from "./subcomponents/FormModal.jsx";
 import { useSelector } from "react-redux";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Header = () => {
   const [openModal, setOpenModal] = useState(false);
   const [afterlogin, setAfterLogin] = useState(false);
 
   // const [user, setUser] = useState(null);
   const user = useSelector((state) => state.auth.login?.currentUser);
-
+  const name = useSelector((state) => state.auth.login?.currentUser?.data?.name)
   return (
     <div className="header">
       <div className="main">
@@ -69,7 +70,9 @@ const Header = () => {
         )}
       </div>
 
-      {user ? <></> : openModal && <FormModal closeModal={setOpenModal} />}
+      {name ? <></> : openModal && <FormModal closeModal={setOpenModal} />}
+      
+    <ToastContainer/>
     </div>
   );
 };

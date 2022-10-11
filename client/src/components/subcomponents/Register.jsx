@@ -70,8 +70,7 @@ const Register = ({ ModalLogin }) => {
           <i className="fa-brands fa-facebook-f">acebook</i>&emsp;
           <i className="fa-brands fa-google">oogle</i>
         </div>
-      </div>
-      <ToastContainer />
+      </div> 
     </div>
   );
 };
