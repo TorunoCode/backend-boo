@@ -35,7 +35,7 @@ userRoute.post(
             const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
         
             if (!isPasswordCorrect)
-              return res.status(400).json({ message: "Invalid credentials" });
+              return res.status(400).json({ message: "Wrong password!" });
         
             res.status(200).json({ data: oldUser });
           } catch (error) {

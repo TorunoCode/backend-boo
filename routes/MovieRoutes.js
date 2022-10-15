@@ -14,7 +14,7 @@ movieRoute.get(
 movieRoute.get(
     "/:id",
     asyncHandler(async (req,res) => {
-        const movie = await Movie.findById(req.params.id);
+        const movie = await Movie.findOne({name:req.params.id});
         if(movie){
             res.json(movie);
         } else {
