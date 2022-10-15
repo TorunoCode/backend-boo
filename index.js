@@ -9,6 +9,7 @@ import ImportData from './DataImport.js';
 import movieRoute from './routes/MovieRoutes.js';
 import userRoute from './routes/UserRoutes.js';
 import { errorHandler, notFound } from './Middleware/errors.js';
+import commentReviewRoute from './routes/commentsReviewsRoutes.js';
 dotenv.config();
 connectDatabase();
 const app = express();
@@ -20,6 +21,7 @@ app.use(bodyParser.urlencoded({limit:"30mb",extended:true}));
 app.use("/api/import",ImportData);
 app.use("/api/movies",movieRoute);
 app.use("/api/user",userRoute);
+app.use("/api/commentsReviews",commentReviewRoute)
 app.use(notFound);
 app.use(errorHandler);
 
