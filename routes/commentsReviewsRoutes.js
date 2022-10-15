@@ -13,7 +13,17 @@ app.post("/add_comments", async (request, response) => {
 
     try {
         await comments.save();
-        response.send(comments);
+        response.send({message:'done add comment'});
+    } catch (error) {
+        response.status(500).send(error);
+    }
+});
+app.post("/delete_comments", async (request, response) => {
+    const comments = new commentsModel(request.body);
+
+    try {
+        await commentsModel.deleteOne({_id:comments['_id']});
+        response.send({message: 'done delete comment'});
     } catch (error) {
         response.status(500).send(error);
     }
@@ -23,7 +33,27 @@ app.post("/add_reviews", async (request, response) => {
 
     try {
         await reviews.save();
-        response.send(reviews);
+        response.send({message:'done add reviews'});
+    } catch (error) {
+        response.status(500).send(error);
+    }
+});
+app.post("/delete_reviews", async (request, response) => {
+    const reviews = new reviewsModel(request.body);
+
+    try {
+        await reviewsModel.deleteOne({_id:reviews['_id']});
+        response.send({message: 'done delete review'});
+    } catch (error) {
+        response.status(500).send(error);
+    }
+});
+app.post("/delete_responseToCommentsModel", async (request, response) => {
+    const reviews = new responseToCommentsModel(request.body);
+
+    try {
+        await responseToCommentsModel.deleteOne({_id:reviews['_id']});
+        response.send({message: 'done delete response to comment'});
     } catch (error) {
         response.status(500).send(error);
     }
@@ -33,13 +63,13 @@ app.post("/add_responseToCommentsModel", async (request, response) => {
 
     try {
         await responseToComments.save();
-        response.send(responseToComments);
+        response.send({message:'done add response to comments'});
     } catch (error) {
         response.status(500).send(error);
     }
 });
 app.get("/comments", async (request, response) => {
-    const comments = await commentsModel.find().sort({ "updatedAt": 1 });
+    const comments = await commentsModel.find().sort({ "updatedAt": -1 });
     try {
         response.send(comments);
     } catch (error) {
@@ -49,7 +79,7 @@ app.get("/comments", async (request, response) => {
 app.get("/comments/:movieId/:page", async (request, response) => {
     const movieId = request.params.movieId;
     const page = request.params.page;
-    const comments = (await commentsModel.find({ movieId: movieId, replyToCommentId:"" }).sort({ "updatedAt": 1 }).skip(1 * page * 10).limit(10));
+    const comments = (await commentsModel.find({ movieId: movieId, replyToCommentId:"" }).sort({ "updatedAt": -1 }).skip(1 * page * 10).limit(10));
     const count = await commentsModel.count({ movieId: movieId, replyToCommentId:"" });
     const numpage = Math.ceil(count / 10);
     console.log("movie id " + movieId + " num comment: " + count)
@@ -64,7 +94,7 @@ app.get("/comments/:movieId/:page", async (request, response) => {
 app.get("/reviews/:movieId/:page", async (request, response) => {
     const movieId = request.params.movieId;
     const page = request.params.page;
-    const reviews = await reviewsModel.find({movieId: movieId }).sort({ "updatedAt": 1 }).skip(1 * page * 10).limit(10);
+    const reviews = await reviewsModel.find({movieId: movieId }).sort({ "updatedAt": -1 }).skip(1 * page * 10).limit(10);
     const count = await reviewsModel.count({ movieId: movieId });
     const numpage = Math.ceil(count / 10);
     console.log("movie id " + movieId + " num reviews: " + count)
@@ -98,7 +128,7 @@ app.get("/responseToCommentsModel/:movieId/:page/:commentId", async (request, re
     const movieId = request.params.movieId;
     const page = request.params.page;
     const commentId = request.params.commentId;
-    const responseToComments = await commentsModel.find({movieId: movieId,replyToCommentId: commentId }).sort({ "updatedAt": 1 }).skip(1 * page * 10).limit(10);
+    const responseToComments = await commentsModel.find({movieId: movieId,replyToCommentId: commentId }).sort({ "updatedAt": -1 }).skip(1 * page * 10).limit(10);
     const count = await commentsModel.count({ movieId: movieId, replyToCommentId: commentId  });
     const numpage = Math.ceil(count / 10);
     console.log("movie id " + movieId + " num reviews: " + count)
