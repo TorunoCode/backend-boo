@@ -1,12 +1,12 @@
 import express from 'express';
 import commentsModel from "../models/commentsModel.js";
 import responseToCommentsModel from "../models/responseToCommentsModel.js";
-import reviewsModel from "../models/reviewsModel.js";
+import feadbacksModel from "../models/feadbacksModel.js";
 import UserModal from '../models/userModel.js';
 
 const app = express.Router();
 app.get("/", function (req, res) {
-    res.send("comment Reviews post");
+    res.send("comment feedback post");
 });
 app.post("/add_comments", async (request, response) => {
     const comments = new commentsModel(request.body);
@@ -28,31 +28,31 @@ app.post("/delete_comments", async (request, response) => {
         response.status(500).send(error);
     }
 });
-app.post("/add_reviews", async (request, response) => {
-    const reviews = new reviewsModel(request.body);
+app.post("/add_feadback", async (request, response) => {
+    const feadback = new feadbacksModel(request.body);
 
     try {
-        await reviews.save();
-        response.send({message:'done add reviews'});
+        await feadback.save();
+        response.send({message:'done add feadback'});
     } catch (error) {
         response.status(500).send(error);
     }
 });
-app.post("/delete_reviews", async (request, response) => {
-    const reviews = new reviewsModel(request.body);
+app.post("/delete_feadback", async (request, response) => {
+    const feadback = new feadbacksModel(request.body);
 
     try {
-        await reviewsModel.deleteOne({_id:reviews['_id']});
-        response.send({message: 'done delete review'});
+        await feadbacksModel.deleteOne({_id:feadback['_id']});
+        response.send({message: 'done delete feadback'});
     } catch (error) {
         response.status(500).send(error);
     }
 });
 app.post("/delete_responseToCommentsModel", async (request, response) => {
-    const reviews = new responseToCommentsModel(request.body);
+    const feadbacks = new responseToCommentsModel(request.body);
 
     try {
-        await responseToCommentsModel.deleteOne({_id:reviews['_id']});
+        await responseToCommentsModel.deleteOne({_id:feadbacks['_id']});
         response.send({message: 'done delete response to comment'});
     } catch (error) {
         response.status(500).send(error);
@@ -91,33 +91,33 @@ app.get("/comments/:movieId/:page", async (request, response) => {
         response.status(500).send(error);
     }
 });
-app.get("/reviews/:movieId/:page", async (request, response) => {
+app.get("/feadbacks/:movieId/:page", async (request, response) => {
     const movieId = request.params.movieId;
     const page = request.params.page;
-    const reviews = await reviewsModel.find({movieId: movieId }).sort({ "updatedAt": -1 }).skip(1 * page * 10).limit(10);
-    const count = await reviewsModel.count({ movieId: movieId });
+    const feadbacks = await feadbacksModel.find({movieId: movieId }).sort({ "updatedAt": -1 }).skip(1 * page * 10).limit(10);
+    const count = await feadbacksModel.count({ movieId: movieId });
     const numpage = Math.ceil(count / 10);
-    console.log("movie id " + movieId + " num reviews: " + count)
-    const allCommentsOfMovie = { number_of_review: count, _number_of_page:  numpage };
-    reviews.push(allCommentsOfMovie);
+    console.log("movie id " + movieId + " num feadbacks: " + count)
+    const allCommentsOfMovie = { number_of_feadback: count, _number_of_page:  numpage };
+    feadbacks.push(allCommentsOfMovie);
     try {
-        response.send(reviews);
+        response.send(feadbacks);
     } catch (error) {
         response.status(500).send(error);
     }
 });
-app.get("/sum_reviews/:movieId", async (request, response) => {
+app.get("/sum_feadbacks/:movieId", async (request, response) => {
     const movieId = request.params.movieId;
-    const count = await reviewsModel.count({ movieId: movieId });
+    const count = await feadbacksModel.count({ movieId: movieId });
     const numpage = Math.ceil(count / 10);
-    console.log("movie id " + movieId + " num reviews: " + count)
-    const allCommentsOfMovie = { number_of_review: count, _number_of_page:  numpage };
+    console.log("movie id " + movieId + " num feadbacks: " + count)
+    const allCommentsOfMovie = { number_of_feadback: count, _number_of_page:  numpage };
     const result=[];
     result.push(allCommentsOfMovie);
-    const sum_reviews = await reviewsModel.aggregate([{$match:{movieId: movieId }},{$group:{_id: null,sum_review:{$sum: "$rate"} }}])
-    const avg_reviews = sum_reviews[0]['sum_review']/count;
-    const result_avg_reviews={avg_of_movie_review:avg_reviews};
-    result.push(result_avg_reviews);
+    const sum_feadbacks = await feadbacksModel.aggregate([{$match:{movieId: movieId }},{$group:{_id: null,sum_feadback:{$sum: "$rate"} }}])
+    const avg_feadbacks = sum_feadbacks[0]['sum_feadback']/count;
+    const result_avg_feadbacks={avg_of_movie_feadback:avg_feadbacks};
+    result.push(result_avg_feadbacks);
     try {
         response.send(result);
     } catch (error) {
@@ -131,7 +131,7 @@ app.get("/responseToCommentsModel/:movieId/:page/:commentId", async (request, re
     const responseToComments = await commentsModel.find({movieId: movieId,replyToCommentId: commentId }).sort({ "updatedAt": -1 }).skip(1 * page * 10).limit(10);
     const count = await commentsModel.count({ movieId: movieId, replyToCommentId: commentId  });
     const numpage = Math.ceil(count / 10);
-    console.log("movie id " + movieId + " num reviews: " + count)
+    console.log("movie id " + movieId + " num feadbacks: " + count)
     const allCommentsOfMovie = { number_of_comment_for_this_comment: count, _number_of_page:  numpage };
     responseToComments.push(allCommentsOfMovie);
     try {

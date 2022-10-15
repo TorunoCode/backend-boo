@@ -19,7 +19,7 @@ import mongoose from 'mongoose';
 //         ref:"User"
 //     }
 // });
-const reviewsSchema =  new mongoose.Schema({
+const feadbacksSchema =  new mongoose.Schema({
     userId:{
         type:String,
         require:true
@@ -42,5 +42,5 @@ const reviewsSchema =  new mongoose.Schema({
 },{
     timestamps:true
 });
-const reviews =  mongoose.model('reviews',reviewsSchema);
-export default reviews;
+const feadback =  mongoose.model('feadback',feadbacksSchema);
+export default feadback;
