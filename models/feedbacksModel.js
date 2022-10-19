@@ -19,7 +19,7 @@ import mongoose from 'mongoose';
 //         ref:"User"
 //     }
 // });
-const feadbacksSchema =  new mongoose.Schema({
+const feedbacksSchema =  new mongoose.Schema({
     userId:{
         type:String,
         require:true
@@ -42,5 +42,5 @@ const feadbacksSchema =  new mongoose.Schema({
 },{
     timestamps:true
 });
-const feadback =  mongoose.model('feadback',feadbacksSchema);
-export default feadback;
+const feedback =  mongoose.model('feedback',feedbacksSchema);
+export default feedback;
