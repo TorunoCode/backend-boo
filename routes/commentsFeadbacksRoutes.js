@@ -18,6 +18,15 @@ app.post("/add_comments", async (request, response) => {
         response.status(500).send(error);
     }
 });
+app.post("/delete_allFeadback", async (request, response) => {
+
+    try {
+        await feadbacksModel.deleteMany({});
+        response.send({ message: 'done delete all feadback' });
+    } catch (error) {
+        response.status(500).send(error);
+    }
+});
 app.post("/delete_comments", async (request, response) => {
     const comments = new commentsModel(request.body);
 
