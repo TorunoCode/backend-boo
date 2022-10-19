@@ -30,8 +30,11 @@ app.post("/delete_comments", async (request, response) => {
 });
 app.post("/add_feadback", async (request, response) => {
     const feadback = new feadbacksModel(request.body);
-
+    const { userId,title,detail,movieId,rate} = request.body;
     try {
+        const oldFeadback = await feadbacksModel.find({userId: userId });        
+        if (oldFeadback) {
+          return response.status(400).json({data:null, message: "User already feadback" });            }
         await feadback.save();
         response.send({ message: 'done add feadback' });
     } catch (error) {
@@ -97,19 +100,20 @@ app.get("/feadbacks/:movieId/:page", async (request, response) => {
     const feadbacks = await feadbacksModel.find({ movieId: movieId }).sort({ "updatedAt": -1 }).skip(1 * page * 10).limit(10);
     const count = await feadbacksModel.count({ movieId: movieId });
     const numpage = Math.ceil(count / 10);
-    console.log("movie id " + movieId + " num feadbacks: " + count)
     const allCommentsOfMovie = { number_of_feadback: count, _number_of_page: numpage };
     const result = [];
     for (const element of feadbacks) {
         const nameUser = await UserModal.findById(element['userId']).select('name -_id');
         const eachUser = {}
+        var updatedAt = ':'+element.updatedAt.getHours()+':'+element.updatedAt.getMinutes()+':'+element.updatedAt.getSeconds()+' '+element.updatedAt.getDate()+'/'+element.updatedAt.getMonth()+'/'+element.updatedAt.getFullYear()
+        var createdAt = ':'+element.createdAt.getHours()+':'+element.createdAt.getMinutes()+':'+element.createdAt.getSeconds()+' '+element.createdAt.getDate()+'/'+element.createdAt.getMonth()+'/'+element.createdAt.getFullYear()
+        console.log(updatedAt);
         Object.assign(eachUser, {
             '_id': element.id, 'userId': element.userId, 'title': element.title,
             'detail': element.detail, 'movieId': element.movieId, 'rate': element.rate,
-            'createdAt': element.createdAt, 'updatedAt': element.updatedAt, '__v': element.__v,
+            'createdAt': createdAt, 'updatedAt': updatedAt, '__v': element.__v,
             'userName': nameUser['name']
         })
-        console.log(eachUser);
         result.push(eachUser);
     }
     result.push(allCommentsOfMovie);
