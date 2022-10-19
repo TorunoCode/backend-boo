@@ -39,13 +39,15 @@ app.post("/delete_comments", async (request, response) => {
 });
 app.post("/add_feadback", async (request, response) => {
     const feadback = new feadbacksModel(request.body);
-    const { userId,title,detail,movieId,rate} = request.body;
+    const { userId, title, detail, movieId, rate } = request.body;
     try {
-        const count = await feadbacksModel.count({ userId: userId });      
-        if (count > 3) {
-          return response.status(400).json({data:null, message: "User already feadback "+count });            }
+        const count = await feadbacksModel.count({ userId: userId });
+        var numAdd = parseInt(count) + 1;
+        if (count >= 3) {
+            return response.status(400).json({ data: null, message: "User already feadback " + numAdd });
+        }
         await feadback.save();
-        response.send({ message: 'done add feadback, user have feadback '+count });
+        response.send({ message: 'done add feadback, user have feadback ' + numAdd });
     } catch (error) {
         response.status(500).send(error);
     }
@@ -114,8 +116,8 @@ app.get("/feadbacks/:movieId/:page", async (request, response) => {
     for (const element of feadbacks) {
         const nameUser = await UserModal.findById(element['userId']).select('name -_id');
         const eachUser = {}
-        var updatedAt = +element.updatedAt.getHours()+':'+element.updatedAt.getMinutes()+':'+element.updatedAt.getSeconds()+' - '+element.updatedAt.getDate()+'/'+element.updatedAt.getMonth()+'/'+element.updatedAt.getFullYear()
-        var createdAt = +element.createdAt.getHours()+':'+element.createdAt.getMinutes()+':'+element.createdAt.getSeconds()+' - '+element.createdAt.getDate()+'/'+element.createdAt.getMonth()+'/'+element.createdAt.getFullYear()
+        var updatedAt = +element.updatedAt.getHours() + ':' + element.updatedAt.getMinutes() + ':' + element.updatedAt.getSeconds() + ' - ' + element.updatedAt.getDate() + '/' + element.updatedAt.getMonth() + '/' + element.updatedAt.getFullYear()
+        var createdAt = +element.createdAt.getHours() + ':' + element.createdAt.getMinutes() + ':' + element.createdAt.getSeconds() + ' - ' + element.createdAt.getDate() + '/' + element.createdAt.getMonth() + '/' + element.createdAt.getFullYear()
         console.log(updatedAt);
         Object.assign(eachUser, {
             '_id': element.id, 'userId': element.userId, 'title': element.title,
