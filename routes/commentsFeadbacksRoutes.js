@@ -32,11 +32,11 @@ app.post("/add_feadback", async (request, response) => {
     const feadback = new feadbacksModel(request.body);
     const { userId,title,detail,movieId,rate} = request.body;
     try {
-        const oldFeadback = await feadbacksModel.find({userId: userId });        
-        if (oldFeadback) {
-          return response.status(400).json({data:null, message: "User already feadback" });            }
+        const count = await feadbacksModel.count({ userId: userId });      
+        if (count > 3) {
+          return response.status(400).json({data:null, message: "User already feadback "+count });            }
         await feadback.save();
-        response.send({ message: 'done add feadback' });
+        response.send({ message: 'done add feadback, user have feadback '+count });
     } catch (error) {
         response.status(500).send(error);
     }
