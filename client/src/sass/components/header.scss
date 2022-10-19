@@ -1,5 +1,6 @@
 @import "../mixins.scss";
-
+body{
+  background-color: #333 !important;
 .header {
   height: 70px;
   border-bottom: 2px solid orange;
@@ -47,7 +48,7 @@
         }
         &:hover {
           border: 2px solid white;
-          background-color: orange;
+          background-color: orange !important;
           i {
             color: white;
           }
@@ -105,4 +106,5 @@
       }
     }
   }
+}
 }

@@ -1,6 +1,4 @@
 import React from "react";
-import Header from "./Header";
-import Footer from "./Footer";
 import { BrowserRouter } from "react-router-dom";
 import Routes from "../routes/Routes";
 import { Provider } from "react-redux";
@@ -14,9 +12,7 @@ const Layout = () => {
     <Provider store={store}>
       {/* <PersistGate loading={null} persistor={persistor}> */}
       <BrowserRouter>
-        <Header />
         <Routes />
-        <Footer />
       </BrowserRouter>
       {/* </PersistGate> */}
     </Provider>

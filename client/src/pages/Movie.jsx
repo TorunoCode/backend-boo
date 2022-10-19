@@ -1,6 +1,8 @@
 import React from "react";
 import "../sass/pages/movie.scss";
 import ListMovie from "../components/ListMovies";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 // import { useState } from "react";
 // import { datafakeMovie } from "../components/datafakeMovie";
 // import { useEffect } from "react";
@@ -13,6 +15,8 @@ const Movie = () => {
   //   setTotalQt(datafakeMovie.length);
   // }, [showSub]);
   return (
+    <> 
+    <Header/>
     <div className="movie">
       <div className="main">
         <div className="box_filter">
@@ -44,6 +48,8 @@ const Movie = () => {
         <ListMovie />
       </div>
     </div>
+    <Footer/>
+    </>
   );
 };
 

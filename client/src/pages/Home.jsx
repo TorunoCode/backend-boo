@@ -1,9 +1,13 @@
 import React from "react";
 import "../sass/pages/home.scss";
 import ListMovie from "../components/ListMovies";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 const Home = () => {
   return (
+    <> 
+    <Header/>
     <div className="home">
       <div className="main">
         <div className="tag_movie">
@@ -22,6 +26,8 @@ const Home = () => {
         </div>
       </div>
     </div>
+    <Footer/>
+    </>
   );
 };
 

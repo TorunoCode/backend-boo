@@ -1,23 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 import "../sass/pages/movieDetail.scss";
 import StarRating from "../components/subcomponents/StarRating.jsx";
 import Feedback from "../components/subcomponents/Feedback";
 import axios from "axios";
-// import datafakeMovie from "../components/datafakeMovie";
 
-const MovieDetail = ({match}) => {
+const MovieDetail = () => {
   const [description, setDescription] = useState(true);
   const [payment, setPayment] = useState(false);
-  const [movie, setMovie] = useState([]);  
-  const {id} = useParams();
+  // call lấy data movie detail theo id
+  const [movie, setMovie] = useState([]);
+  const { id } = useParams();
   useEffect(() => {
     const fetchMovie = async () => {
-      const {data} = await axios.get(`/api/movies/${id}`);
+      const { data } = await axios.get(`/api/movies/${id}`);
       setMovie(data);
     };
     fetchMovie();
   }, [id]);
+
+  console.log(id);
+  const idMovie = movie._id;
+  const rate = movie.rate;
+
   return (
     // bấm thả xuống description
     <div className="detail">
@@ -25,12 +30,9 @@ const MovieDetail = ({match}) => {
         <div className="title">Movie Details</div>
         <div className="detailmovie">
           <div className="info">
-            <img
-              src={movie.image}
-              alt=""
-            />
+            <img src={movie.image} alt="" />
             <div className="info-text">
-              <div className="name">CONTORTED</div>
+              <div className="name">{movie.name}</div>
               <div className="rate">
                 <StarRating rating={movie.rate} />
                 <div className="rating">{movie.rate}/10</div>
@@ -65,26 +67,23 @@ const MovieDetail = ({match}) => {
               className="fa-solid fa-caret-down"
             ></i>
           </div>
-          {description && (
-            <p>
-              &emsp; &emsp; {movie.describe}
-            </p>
-          )}
+          {description && <p>&emsp; &emsp; {movie.describe}</p>}
         </div>
         <div className="title">Booking</div>
         <div className="selectMovie">
           <div className="col-1">
             <div className="col-1-text">
-              Movie: {movie.name}<br /> Date: {movie.releaseTime}<br />
+              <br /> Date:
+              <br />
               Time: {movie.runningTime}
             </div>
             <div>
-              <select name="" id="movie">
+              {/* <select name="" id="movie">
                 <option value="1">CONTORTED</option>
                 <option value="1">Conan</option>
                 <option value="1">Ran Mori</option>
                 <option value="1">Kid</option>
-              </select>
+              </select> */}
               <br />
               <select name="" id="date">
                 <option value="1">1/1/2022</option>
@@ -169,7 +168,7 @@ const MovieDetail = ({match}) => {
           </div>
         </div>
         <div className="title">Feedback</div>
-        <Feedback />
+        <Feedback idMovie={idMovie} rate={rate} />
       </div>
     </div>
   );

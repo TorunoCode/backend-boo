@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 body {
-  background-color: #333;
+  background-color: #333 !important;
   margin: 0;
   font-family: "Lexend", sans-serif;
   -webkit-font-smoothing: antialiased;

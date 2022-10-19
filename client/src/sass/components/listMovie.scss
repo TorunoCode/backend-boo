@@ -11,26 +11,34 @@
     padding: 5px 10px 10px 10px;
     border: 2px solid orange;
     color: white;
+
     img {
-      padding-top: 8px;
+      margin-top: 8px;
       width: 100%;
       display: block;
       margin-left: auto;
       margin-right: auto;
-      border-radius: 5px;
+      border-radius: 3px;
       max-height: 334px;
       overflow: hidden;
     }
     .name {
+      color: orange;
       padding-top: 5px;
       font-size: 20px;
-      text-decoration: none;
+      text-transform: none;
+      width: 204px;
+      text-transform: capitalize;
+      .overlay {
+        position: relative;
+      }
     }
     .genre-rate {
       color: rgba(255, 255, 255, 0.7);
       font-size: 15px;
       padding-bottom: 5px;
       font-style: italic;
+      text-transform: capitalize;
     }
     .btn_buy {
       border: 2px solid orange;
@@ -71,7 +79,7 @@
   background: none;
   text-align: center;
   border-radius: 4px;
-  margin: 5px auto 0px;
+  margin: 5px auto 10px;
   width: 300px;
   border: 1px solid whitesmoke;
   cursor: pointer;
