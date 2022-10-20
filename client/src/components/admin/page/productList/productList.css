@@ -24,7 +24,91 @@
       margin-right: 20px;
   }
   
-  .productListDelete{
-      color: red;
-      cursor: pointer;
+
+  .userListDelete{
+    color: red;
+    cursor: pointer;
+    margin:auto;
+    margin-top: 5px;
+
+}
+.test{
+  padding: 56px;
+}
+
+.iq-bg-primary{
+  font-size: 16px;
+  height: 30px;
+  width: 30px;
+  text-align: center;
+  line-height: 25px;
+  margin: 0 3px;
+  display: inline-block;
+  border-radius: 5px;
+  background:rgba(226, 14, 2, 0.2)!important;
+  transition: all .5s ease-out 0s;
+  text-align: center;
+}
+.icon{
+  align-items: center!important;
+
+}
+.align-items-center {
+    align-items: center!important;
+}.avatar-40 {
+    height: 40px;
+    width: 40px;
+    min-width: 40px;
+    line-height: 40px;
+}
+
+.img-fluid, .img-thumbnail {
+    max-width: 100%;
+    height: auto;
+}
+img, svg {
+    vertical-align: middle;
+}
+.media {
+    display: flex;
+    align-items: flex-start;
+}.mb-0, .my-0 {
+    margin-bottom: 0!important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+.media-body {
+    flex: 1;
+}
+
+.card-title{
+    margin: 24px 0 !important;
+    font-family: "Roboto",sans-serif;
+      font-weight: 800;
+  }
+  .d-flex {
+    display: flex!important;
+  }
+  .btn-primary {
+    background: #14e788;
+    border-color: #14e788;
+    color: white;
+    height: 24px;
+    width: 84px;
+    text-align: center;
+    margin: -12px 0 10px 0;
+    padding-top: 5px;
+    font-weight: 600;
+  
+  }
+  
+  .btn {
+    font-size: 14px;
+    border-radius: 4px;
+  }
+  .btn, a {
+    transition: all .5s ease-out 0s;
   }

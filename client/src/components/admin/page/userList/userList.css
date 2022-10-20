@@ -1,36 +1,88 @@
 .userList {
-    flex: 4;
-  }
-  .body{
-    background-color: white !important;
+  flex: 4;
 }
-  .userListUser {
-    display: flex;
-    align-items: center;
-  }
-  .container{
-    display: flex;
-    margin-top: 10px;
+.body{
+  background-color: white !important;
 }
-  .userListImg {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 10px;
-  }
-  
-  .userListEdit{
-      border: none;
-      border-radius: 10px;
-      padding: 5px 10px;
-      background-color: #3bb077;
-      color: white;
-      cursor: pointer;
-      margin-right: 20px;
-  }
-  
-  .userListDelete{
-      color: red;
-      cursor: pointer;
-  }
+.userListUser {
+  display: flex;
+  align-items: center;
+}
+.container{
+  display: flex;
+  margin-top: 10px;
+}
+.userListImg {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.userListEdit{
+    border: none;
+    border-radius: 10px;
+    padding: 5px 10px;
+    background-color: #3bb077;
+    color: white;
+    cursor: pointer;
+    margin-right: 20px;
+}
+
+.userListDelete{
+    color: red;
+    cursor: pointer;
+    margin:auto;
+    margin-top: 5px;
+
+}
+.test{
+  padding: 56px;
+}
+
+.iq-bg-primary{
+  font-size: 16px;
+  height: 30px;
+  width: 30px;
+  text-align: center;
+  line-height: 25px;
+  margin: 0 3px;
+  display: inline-block;
+  border-radius: 5px;
+  background:rgba(226, 14, 2, 0.2)!important;
+  transition: all .5s ease-out 0s;
+  text-align: center;
+}
+.icon{
+  align-items: center!important;
+
+}
+.card-title{
+  margin: 24px 0 !important;
+  font-family: "Roboto",sans-serif;
+    font-weight: 800;
+}
+.d-flex {
+  display: flex!important;
+}
+.btn-primary {
+  background: #14e788;
+  border-color: #14e788;
+  color: white;
+  height: 24px;
+  width: 84px;
+  text-align: center;
+  margin: -12px 0 10px 0;
+  padding-top: 5px;
+  font-weight: 600;
+
+}
+
+.btn {
+  font-size: 14px;
+  border-radius: 4px;
+}
+.btn, a {
+  transition: all .5s ease-out 0s;
+}
