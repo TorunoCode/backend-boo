@@ -1,40 +1,60 @@
-import './newProduct.css'
-import TopBar from '../../components/topbar/TopBar';
+import "./newProduct.css";
+import TopBar from "../../components/topbar/TopBar";
 import Sidebar from "../../components/sidebar/Sidebar";
 
 export default function NewProduct() {
   return (
     <div className="body">
-      <TopBar/>
-     <div className="container">
+      <TopBar />
+      <div className="container">
+        <Sidebar />
+        <div className="newProduct">
+          <h1 className="addProductTitle">New Product</h1>
+          <div>
+            <form action="" class="addProductForm">
+              <div className="table">
+                <div className="info">
+                <input placeholder="Title" className="title" />{" "}
+                <input placeholder="Upload Image" />
+                <div className="select">
+                  <select placeholder="Upload Image" className="select">
+                    <option value="volvo">Volvo</option>
+                    <option value="saab">Saab</option>
+                    <option value="vw">VW</option>
+                    <option value="audi">Audi</option>
+                  </select>
+                  <select placeholder="Upload Image">
+                    <option value="volvo">Volvo</option>
+                    <option value="saab">Saab</option>
+                    <option value="vw">VW</option>
+                    <option value="audi">Audi</option>
+                  </select>
+                </div>
+                <textarea placeholder="Description"></textarea>
+                </div>
+                <div className="info">
+                  <div className="video"></div>
+                </div>
+                </div>
+                <div className="infoo">
+                <input placeholder="Title" />
+                <input placeholder="Title" />
+                </div>
+                <input placeholder="Title" />
 
-      <Sidebar/>
-    <div className='newProduct'>
-        <h1 className="addProductTitle">New Product</h1>
-        <form action="" className="addProductForm">
-            <div className="addProductItem">
-                <label htmlFor="">Image</label>
-                <input type="file" id="file" />
+              
+              <div className="submit">
+                <button class="addProductButton">Create</button>
+                <button class="addProductButton">Cancel</button>
+              </div>
+              
+            </form>
+            <div>
+             
             </div>
-            <div className="addProductItem">
-                <label htmlFor="">Name</label>
-                <input type="text" placeholder='Apple AirPods'/>
-            </div>
-            <div className="addProductItem">
-                <label htmlFor="">Stock</label>
-                <input type="text" placeholder='123'/>
-            </div>
-            <div className="addProductItem">
-                <label htmlFor="">Active</label>
-                <select name="active" id="active">
-                    <option value="yes">yes</option>
-                    <option value="no">no</option>
-                </select>
-            </div>
-            <button className='addProductButton'>Create</button>
-        </form>
+          </div>
+        </div>
+      </div>
     </div>
-    </div>
-    </div>
-  )
+  );
 }

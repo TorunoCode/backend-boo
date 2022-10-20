@@ -2,7 +2,9 @@
     flex:4;
 }
 .addProductForm{
-    margin-top: 10px;
+    margin: 0 10px 0 10px;
+    ;
+
 }
 .addProductItem{
     width: 250px;
@@ -33,5 +35,47 @@
     background-color: darkblue;
     color: white;
     font-weight: 600;
-    cursor: pointer;
+    cursor: pointer; margin: 10px;
+}
+.table{
+    display: flex;
+    justify-content: space-between;
+
+}
+.title{
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+select{
+    width: 40%;
+    margin-bottom: 10px;
+}
+.submit{
+    margin: auto;
+}
+input{
+    margin-bottom: 10px;
+}
+.select{
+    display: flex;
+    justify-content: space-between;
+}
+.info{
+    width: 40%;
+}
+.video{
+    background-color: #76767622;
+    border-radius: 5%;
+    margin: 0 10px 20px 10px;
+    height: 240px;
+}
+.infoo{
+    display: flex;
+    justify-content: space-between;
+    width: 50%;
+}
+textarea{
+    width: 100%;
+    height: 120px;
 }
