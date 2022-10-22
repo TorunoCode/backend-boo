@@ -42,9 +42,9 @@ app.post("/add_feedback", async (request, response) => {
     const feedback = new feedbacksModel(request.body);
     const { userId, title, detail, movieId, rate } = request.body;
     try {
-        const count = await feedbacksModel.count({ userId: userId });
+        const count = await feedbacksModel.count({ userId: userId, movieId: movieId });
         var numAdd = parseInt(count) + 1;
-        if (count >= 3) {
+        if (false) {
             return response.status(400).json({ data: null, message: "User already feedback " + numAdd });
         }
         await feedback.save();
