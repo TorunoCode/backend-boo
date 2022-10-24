@@ -19,10 +19,6 @@ import mongoose from 'mongoose';
 //         ref:"User"
 //     }
 // });
-const opts = {
-    // Make Mongoose use Unix time (seconds since Jan 1, 1970)
-    timestamps: { currentTime: () => Math.floor( new Date((typeof Date.now() === "string" ? new Date(Date.now()) : Date.now()).toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }))) },
-  };
 const feedbacksSchema = new mongoose.Schema({
     userId: {
         type: String,
@@ -45,6 +41,6 @@ const feedbacksSchema = new mongoose.Schema({
     }
 },{
     timestamps: true
-},opts);
+});
 const feedback = mongoose.model('feedback', feedbacksSchema);
 export default feedback;
