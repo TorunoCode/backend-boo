@@ -19,28 +19,32 @@ import mongoose from 'mongoose';
 //         ref:"User"
 //     }
 // });
-const feedbacksSchema =  new mongoose.Schema({
-    userId:{
-        type:String,
-        require:true
-    },title:{
+const opts = {
+    // Make Mongoose use Unix time (seconds since Jan 1, 1970)
+    timestamps: { currentTime: () => Math.floor( new Date((typeof Date.now() === "string" ? new Date(Date.now()) : Date.now()).toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }))) },
+  };
+const feedbacksSchema = new mongoose.Schema({
+    userId: {
         type: String,
-        require:true
+        require: true
+    }, title: {
+        type: String,
+        require: true
     },
-    detail:{
-        type:String,
-        require:true
+    detail: {
+        type: String,
+        require: true
     },
-    movieId:{
-        type:String,
-        require:true
+    movieId: {
+        type: String,
+        require: true
     },
-    rate:{
+    rate: {
         type: Number,
-        require:true
+        require: true
     }
 },{
-    timestamps:true
-});
-const feedback =  mongoose.model('feedback',feedbacksSchema);
+    timestamps: true
+},opts);
+const feedback = mongoose.model('feedback', feedbacksSchema);
 export default feedback;
