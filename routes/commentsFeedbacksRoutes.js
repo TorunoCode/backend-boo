@@ -117,6 +117,8 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
     for (const element of feedbacks) {
         const nameUser = await UserModal.findById(element['userId']).select('name -_id');
         const eachUser = {}
+        element.updatedAt = new Date((typeof element.updatedAt === "string" ? new Date(element.updatedAt) : element.updatedAt).toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }));
+        element.createdAt = new Date((typeof element.createdAt === "string" ? new Date(element.createdAt) : element.createdAt).toLocaleString("en-US", { timeZone: "Asia/Ho_Chi_Minh" }));
         var updatedAt = +element.updatedAt.getHours() + ':' + element.updatedAt.getMinutes() + ':' + element.updatedAt.getSeconds() + ' - ' + element.updatedAt.getDate() + '/' + element.updatedAt.getMonth() + '/' + element.updatedAt.getFullYear()
         var createdAt = +element.createdAt.getHours() + ':' + element.createdAt.getMinutes() + ':' + element.createdAt.getSeconds() + ' - ' + element.createdAt.getDate() + '/' + element.createdAt.getMonth() + '/' + element.createdAt.getFullYear()
         console.log(updatedAt);
