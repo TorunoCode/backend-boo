@@ -11,6 +11,7 @@ import NewUser from "../components/admin/page/newUser/NewUser";
 import ProductsList from "../components/admin/page/productList/ProductsList";
 import Product from "../components/admin/page/product/Product";
 import NewProduct from "../components/admin/page/newProduct/NewProduct";
+import NewShowing from "../components/admin/page/newShowing/NewShowing";
 const Routes = () => {
   return (
     <Rou>
@@ -31,6 +32,8 @@ const Routes = () => {
       <Route path="/HomeAdmin/product/:productId" element={<Product/>}>
       </Route>          
       <Route path="/HomeAdmin/newProduct" element={<NewProduct/>}>
+      </Route> 
+      <Route path="/HomeAdmin/newShowing" element={<NewShowing/>}>
       </Route> 
     </Rou>
   );

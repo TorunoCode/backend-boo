@@ -37,7 +37,7 @@ export default function ProductsList() {
       </div>
       <div className='media-body text-left ml-3'>
         <p className='mb-0'>{params.row.name}</p>
-        <small>{params.row.runningTime}</small>
+        <small>{params.row.runningTime} minutes</small>
       </div>
       </div>
       </>

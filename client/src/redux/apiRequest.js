@@ -67,3 +67,28 @@ export const registerUser = async (user, dispatch,toast, navigate) => {
     dispatch(registerFailed());
   }
 };
+
+export const deleteUser = async (id, dispatch,toast, navigate) => {
+  try { 
+    const res = await axios.post(
+      "http://localhost:5000/api/user/delete/"+id+""      
+    ); 
+    if(res.data)
+    {
+    toast.success("Delete success!", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    }); 
+    registerSuccess(res.data);
+     navigate("/HomeAdmin/users");
+     return res.data;
+  } 
+  } catch (err) {
+   toast.error(err.response.data.message);
+  }
+};
