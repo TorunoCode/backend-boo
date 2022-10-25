@@ -65,4 +65,19 @@ userRoute.post(
           }
     }
 );
+userRoute.get('/delete/:id', async(req,res)=>{
+  try{
+    console.log(req.params.id);
+      const user = await UserModal.findByIdAndDelete(req.params.id);
+      console.log(user);
+      if(!user)  return res.status(400).json({data:null, message: "No item found" }); 
+      else
+     return res.status(201).json({ user });
+  }
+  catch(error)
+  {
+    res.status(500).json({ message: "Something went wrong" });
+    console.log(error);
+  }
+});
 export default userRoute;
