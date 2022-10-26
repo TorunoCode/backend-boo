@@ -1,6 +1,7 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler';
 import Movie from '../models/movieModel.js';
+import Genre from '../models/genreModel.js';
 
 const movieRoute = express.Router();
 movieRoute.get(
@@ -8,6 +9,15 @@ movieRoute.get(
     asyncHandler(async (req,res) => {
         const movies = await Movie.find({});
         res.json(movies);
+    })
+
+);
+movieRoute.get(
+    "/genres",
+    asyncHandler(async (req,res) => {
+        const data = await Genre.find({});
+        console.log(data);
+        res.json(data);
     })
 
 );
