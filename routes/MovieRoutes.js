@@ -48,7 +48,7 @@ movieRoute.post(
         console.log(req.body);
         const showing = new Showing(req.body);
         showing.save();
-        res.json(showing);
+        res.json(req.body);
     })
 
 );
