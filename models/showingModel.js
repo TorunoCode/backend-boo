@@ -12,9 +12,12 @@ const showingSchema =  new mongoose.Schema({
         type: Number,
         require:true
     },
-    startTime:{
+   startTime:{
         type: Date,
         require:true
+    },
+    time:{
+        type: String,
     },
     image:{
         type: String,
