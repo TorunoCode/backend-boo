@@ -13,8 +13,9 @@ export default function UserList() {
   const [data,setData] =useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const handleDelete = (id) => {
+  const handleDelete = async(id) => {
     deleteUser(id, dispatch,toast, navigate);
+    await fetchUsers();
   };
   function convert(str) {
     var date = new Date(str),
@@ -22,13 +23,13 @@ export default function UserList() {
       day = ("0" + date.getDate()).slice(-2);
     return [ mnth, day,date.getFullYear()].join("/");
   }
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const {data} = await axios.get("/api/user");
-      setData(data);
-    };
+  useEffect(() => {  
     fetchUsers();
-  }, []);
+  }, [data]);
+  const fetchUsers = async () => {
+    const {data} = await axios.get("/api/user");
+    setData(data);
+  };
     const columns = [
   { field: '_id', headerName: 'ID', width: 60 },
   { field: 'name', headerName: 'NAME', width: 120 },

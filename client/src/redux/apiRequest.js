@@ -70,9 +70,10 @@ export const registerUser = async (user, dispatch,toast, navigate) => {
 
 export const deleteUser = async (id, dispatch,toast, navigate) => {
   try { 
-    const res = await axios.post(
-      "http://localhost:5000/api/user/delete/"+id+""      
+    const res = await axios.get(
+      "/api/user/delete/"+id     
     ); 
+    console.log(id);
     if(res.data)
     {
     toast.success("Delete success!", {
@@ -88,6 +89,18 @@ export const deleteUser = async (id, dispatch,toast, navigate) => {
      navigate("/HomeAdmin/users");
      return res.data;
   } 
+  } catch (err) {
+   toast.error(err.response.data.message);
+  }
+};
+export const addMovie = async (data, dispatch,toast, navigate) => {
+  try { 
+    // const res = await axios.get(
+    //   "/api/movie/add/",data
+    // ); 
+    console.log(data);
+     return data;
+   
   } catch (err) {
    toast.error(err.response.data.message);
   }

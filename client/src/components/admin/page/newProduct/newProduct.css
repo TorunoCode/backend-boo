@@ -68,12 +68,20 @@ input{
     background-color: #76767622;
     border-radius: 5px;
     margin: 0 10px 20px 10px;
-    height: 240px;
+    height: 280px;
+    width: 100%;
 }
 .infoo{
     display: flex;
     justify-content: space-between;
     width: 50%;
+}
+.infooo{
+    display: flex;
+    justify-content: space-between;
+}
+.infooo input{
+    margin-right: 10px;
 }
 textarea{
     width: 100%;
@@ -86,4 +94,16 @@ textarea{
     font-size: 16px;
     width: 100%;
     border-radius: 6px;
+}
+.image{
+    width: 120px;
+    background-color: #76767622;
+    border-radius: 5px;
+    margin: 0 10px 20px 10px;
+    height: 180px;
+    margin: 10px;
+}
+img{
+    border-radius: 5px;
+
 }

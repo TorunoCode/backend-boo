@@ -51,8 +51,8 @@ export default function NewProduct() {
                 </div>
                 
                 <input placeholder="Movie Duration" className="form-control" type="date"/>
-                <input placeholder="Movie Duration" className="form-control" />
-                <input type="time" name="time" value="13:30"></input>
+                <input placeholder="Movie Price" className="form-control" />
+                <input type="time" name="time"></input>
                 </div>
                 <div className="info">
                   <div className="video"></div>
