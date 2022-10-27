@@ -3,6 +3,7 @@ import asyncHandler from 'express-async-handler';
 import Movie from '../models/movieModel.js';
 import Genre from '../models/genreModel.js';
 import Cinema from '../models/cinemaModel.js';
+import CinemaHall from '../models/cinemaHallModel.js';
 
 const movieRoute = express.Router();
 movieRoute.get(
@@ -26,6 +27,15 @@ movieRoute.get(
     "/cinemas",
     asyncHandler(async (req,res) => {
         const data = await Cinema.find({});
+        console.log(data);
+        res.json(data);
+    })
+
+);
+movieRoute.get(
+    "/cinemaHalls",
+    asyncHandler(async (req,res) => {
+        const data = await CinemaHall.find({});
         console.log(data);
         res.json(data);
     })
