@@ -45,7 +45,7 @@ movieRoute.get(
 movieRoute.post(
     "/showing/add",
     asyncHandler(async (req,res) => {
-        console.log(body);
+        console.log(req.body);
         const showing = new Showing(req.body);
         showing.save();
         res.json(showing);
