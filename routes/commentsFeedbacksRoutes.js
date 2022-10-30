@@ -120,14 +120,15 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
             continue;
         }
         const eachUser = {}
-        var updatedAt = +element.updatedAt.getHours() + ':' + element.updatedAt.getMinutes() + ':' + element.updatedAt.getSeconds() + ' - ' + element.updatedAt.getDate() + '/' + element.updatedAt.getMonth() + '/' + element.updatedAt.getFullYear()
-        var createdAt = +element.createdAt.getHours() + ':' + element.createdAt.getMinutes() + ':' + element.createdAt.getSeconds() + ' - ' + element.createdAt.getDate() + '/' + element.createdAt.getMonth() + '/' + element.createdAt.getFullYear()
+        var updatedAt = +element.updatedAt.getHours() + ':' + element.updatedAt.getMinutes() + ':' + element.updatedAt.getSeconds() + ' - ' + element.updatedAt.getDate() + '/' + (element.updatedAt.getMonth()+1) + '/' + element.updatedAt.getFullYear()
+        var createdAt = +element.createdAt.getHours() + ':' + element.createdAt.getMinutes() + ':' + element.createdAt.getSeconds() + ' - ' + element.createdAt.getDate() + '/' + (element.createdAt.getMonth()+1) + '/' + element.createdAt.getFullYear()
         let updatedAtTimeElapsed = (Date.now()- element.updatedAt);
         let createdAtTimeElapsed = Date.now()- element.createdAt;
         updatedAtTimeElapsed = updatedAtTimeElapsed/1000;
         createdAtTimeElapsed = createdAtTimeElapsed/1000;
-
-        console.log(updatedAt);
+        let updatedAtTimeElapsedModded = Math.floor(Number(updatedAtTimeElapsed) / 3600/24)+'day(s) '+Math.floor(Number(updatedAtTimeElapsed) / 3600 % 24)+'h '+Math.floor(Number(updatedAtTimeElapsed)  % 3600 / 60)+'m '+Math.floor(Number(updatedAtTimeElapsed)  % 3600 % 60)+'s';
+        let createdAtTimeElapsedModded = Math.floor(Number(createdAtTimeElapsed) / 3600/24)+'day(s) '+Math.floor(Number(createdAtTimeElapsed) / 3600 % 24)+'h '+Math.floor(Number(createdAtTimeElapsed)  % 3600 / 60)+'m '+Math.floor(Number(createdAtTimeElapsed)  % 3600 % 60)+'s';
+        console.log(updatedAt+'///'+element.updatedAt.getMonth()+'///'+element.updatedAt);
         Object.assign(eachUser, {
             '_id': element.id, 'userId': element.userId, 'title': element.title,
             'detail': element.detail, 'movieId': element.movieId, 'rate': element.rate,
@@ -135,7 +136,9 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
             'userName': nameUser['name'],
             'orgirnUpdatedAt':element.updatedAt,'orgirnCreatedAt':element.createdAt,
             'updatedAtTimeElapsed':updatedAtTimeElapsed,
-            'createdAtTimeElapsed':createdAtTimeElapsed
+            'createdAtTimeElapsed':createdAtTimeElapsed,
+            'updatedAtTimeElapsedModded':updatedAtTimeElapsedModded,
+            'createdAtTimeElapsedModded':createdAtTimeElapsedModded
         })
         result.push(eachUser);
     }
