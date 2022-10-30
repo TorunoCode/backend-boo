@@ -116,6 +116,9 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
     const result = [];
     for (const element of feedbacks) {
         const nameUser = await UserModal.findById(element['userId']).select('name -_id');
+        if(!nameUser){
+            continue;
+        }
         const eachUser = {}
         var updatedAt = +element.updatedAt.getHours() + ':' + element.updatedAt.getMinutes() + ':' + element.updatedAt.getSeconds() + ' - ' + element.updatedAt.getDate() + '/' + element.updatedAt.getMonth() + '/' + element.updatedAt.getFullYear()
         var createdAt = +element.createdAt.getHours() + ':' + element.createdAt.getMinutes() + ':' + element.createdAt.getSeconds() + ' - ' + element.createdAt.getDate() + '/' + element.createdAt.getMonth() + '/' + element.createdAt.getFullYear()
@@ -124,7 +127,8 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
             '_id': element.id, 'userId': element.userId, 'title': element.title,
             'detail': element.detail, 'movieId': element.movieId, 'rate': element.rate,
             'createdAt': createdAt, 'updatedAt': updatedAt, '__v': element.__v,
-            'userName': nameUser['name']
+            'userName': nameUser['name'],
+            'orgirnUpdatedAt':element.updatedAt,'orgirnCreatedAt':element.createdAt
         })
         result.push(eachUser);
     }

@@ -10,6 +10,14 @@ import movieRoute from './routes/MovieRoutes.js';
 import userRoute from './routes/UserRoutes.js';
 import { errorHandler, notFound } from './Middleware/errors.js';
 import commentsFeedback from './routes/commentsFeedbacksRoutes.js';
+import paypal from'paypal-rest-sdk';
+import paypalRoute from'./routes/paypalRoutes.js';
+paypal.configure({
+    'mode': 'sandbox', //sandbox or live
+    'client_id': 'AYQgAnSGvQmxgRu3DPGAqhi8bQar2z6B9B9QHDPAdVoUbxOQHi81qbffwJLnlkUuKuHz2eOP_mHyMZBK',
+    'client_secret': 'EO_1MPZ3huDwSDTa_eX5yYCdEYyTTFdO38LBiqLFGfE2H5TaoY7m4Q0Xpt9H0N7uy7iXzy0AqjkiZB11'
+  });
+console.log('done set up paypal');
 dotenv.config();
 connectDatabase();
 const app = express();
@@ -23,6 +31,7 @@ app.use("/api/import",ImportData);
 app.use("/api/movies",movieRoute);
 app.use("/api/user",userRoute);
 app.use("/api/commentsFeedback",commentsFeedback)
+app.use("/api/paypal",paypalRoute);
 app.use(notFound);
 app.use(errorHandler);
 
