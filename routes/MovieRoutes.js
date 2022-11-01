@@ -19,7 +19,6 @@ movieRoute.get(
     "/genres",
     asyncHandler(async (req,res) => {
         const data = await Genre.find({});
-        console.log(data);
         res.json(data);
     })
 
@@ -28,7 +27,6 @@ movieRoute.get(
     "/cinemas",
     asyncHandler(async (req,res) => {
         const data = await Cinema.find({});
-        console.log(data);
         res.json(data);
     })
 
@@ -37,8 +35,22 @@ movieRoute.get(
     "/cinemaHalls",
     asyncHandler(async (req,res) => {
         const data = await CinemaHall.find({});
-        console.log(data);
         res.json(data);
+    })
+
+);
+movieRoute.post(
+    "/add",
+    asyncHandler(async (req,res) => {
+        console.log(req.body);
+        const movie = new Movie(req.body);
+        movie.save();
+        if(movie){
+            res.json(movie);
+        } else {
+            res.status(404)
+            throw new Error("Add movie not successfull");
+        }
     })
 
 );
@@ -48,7 +60,12 @@ movieRoute.post(
         console.log(req.body);
         const showing = new Showing(req.body);
         showing.save();
-        res.json(req.body);
+        if(showing){
+            res.json(showing);
+        } else {
+            res.status(404)
+            throw new Error("Add showing not successfull");
+        }
     })
 
 );
@@ -56,8 +73,11 @@ movieRoute.get(
     "/showing",
     asyncHandler(async (req,res) => {
         const data = await Showing.find({});
-        console.log(data);
-        res.json(data);
+        if(data){
+            return    res.json(data);
+        } else {          
+           return res.status(400).json({message: "No item found"});
+        }
     })
 
 );
