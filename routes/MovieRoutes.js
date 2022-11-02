@@ -159,9 +159,8 @@ movieRoute.post(
 
 );
 movieRoute.get(
-    "/findMovieStep1/:id/:ida",      //Tim rap dua tren movie (*)
+    "/findMovieStep1/:id",      //Tim rap dua tren movie (*)
     asyncHandler(async (req,res) => {
-        console.log(req.params.ida);
         const data = await ShowingModel.distinct('idCinema',{idMovie:req.params.id});
     //    console.log(data);
         const cinema = await CinemaModel.find({});
