@@ -158,12 +158,20 @@ movieRoute.post(
     })
 
 );
-movieRoute.post(
-    "/findMovieStep1",      //Tim rap dua tren movie (*)
+movieRoute.get(
+    "/findMovieStep1/:id",      //Tim rap dua tren movie (*)
     asyncHandler(async (req,res) => {
-        const data = await ShowingModel.find({idMovie:req.body.idMovie});
+        const data = await ShowingModel.distinct('idCinema',{idMovie:req.params.id});
+    //    console.log(data);
+        const cinema = await CinemaModel.find({});
+       var listValue=[];
+        data.forEach(element => {
+            listValue.push(cinema.filter( x => x._id == element ))
+        });
+        console.log(listValue);
+        // const nameCinema = cinema.map( a => a._id)
         if(data){
-            return    res.json(data);
+            return    res.json(listValue);
         } else {          
            return res.status(400).json({message: "No item found"});
         }
