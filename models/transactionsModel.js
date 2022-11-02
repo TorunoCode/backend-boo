@@ -1,0 +1,84 @@
+import mongoose from 'mongoose';
+
+const transactionsSchema =  new mongoose.Schema({
+    buyer:{
+        type:String,
+        require:true
+    },
+    Fname:{
+        type:String,
+        require:true
+    },
+    Lname:{
+        type:String,
+        require:true
+    },
+    recipient_name:{
+        type:String,
+        require:false
+    },
+    Seller:{
+        type:String,
+        require:false
+    },
+    Line1:{
+        type:String,
+        require:false
+    },
+    City:{
+        type:String,
+        require:false
+    },
+    postal_code:{
+        type:String,
+        require:false
+    },
+    country_code:{
+        type:String,
+        require:false
+    },
+    Name_items:{
+        type:[],
+        require:false
+    },
+    Sku_items:{
+        type:[],
+        require:false
+    },
+    dateCreate:{
+        type:String,
+        require:false
+    },
+    dateUpdate:{
+        type:String,
+        require:false
+    },
+    status:{
+        type:String,
+        require:false
+    },
+    subTotal:{
+        type:String,
+        require:false
+    },
+    Fee_payment:{
+        type:String,
+        require:false
+    },
+    Quantity_items:{
+        type:[],
+        require:false
+    },
+    Currency_items:{
+        type:[],
+        require:false
+    },
+    Price_items:{
+        type:[],
+        require:false
+    }
+},{
+    timestamps:true
+});
+const transactions =  mongoose.model('transactions',transactionsSchema);
+export default transactions;
