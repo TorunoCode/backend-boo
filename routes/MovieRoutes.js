@@ -180,10 +180,10 @@ movieRoute.get(
     })
 
 );
-movieRoute.post(
-    "/findMovieStep2",      //Tim ngay chieu dua tren rap (*)
+movieRoute.get(
+    "/findMovieStep2/:id/:idCinema",      //Tim ngay chieu dua tren rap (*)
     asyncHandler(async (req,res) => {
-        const data = await ShowingModel.distinct('startTime',{idMovie:req.body.idMovie,idCinema: req.body.idCinema});
+        const data = await ShowingModel.distinct('startTime',{idMovie:req.params.idMovie,idCinema: req.params.idCinema});
         if(data){
             return    res.json(data);
         } else {          
