@@ -159,16 +159,15 @@ movieRoute.post(
 
 );
 movieRoute.get(
-    "/findMovieStep1/:id",      //Tim rap dua tren movie (*)
+    "/findMovieStep1/:id/:ida",      //Tim rap dua tren movie (*)
     asyncHandler(async (req,res) => {
+        console.log(req.params.ida);
         const data = await ShowingModel.distinct('idCinema',{idMovie:req.params.id});
     //    console.log(data);
         const cinema = await CinemaModel.find({});
        var listValue=[];
         data.forEach(element => {
-            console.log(element);
-            console.log(cinema.filter( x => x._id == element ))
-            listValue.push(cinema.filter( x => x._id == element )[0])
+            listValue.push(cinema.filter( x => x._id == element ))
         });
         console.log(listValue);
         // const nameCinema = cinema.map( a => a._id)
@@ -181,7 +180,7 @@ movieRoute.get(
 
 );
 movieRoute.get(
-    "/findMovieStep2/:id/:idCinema",      //Tim ngay chieu dua tren rap (*)
+    "/findMovieStep2/:idMovie/:idCinema",      //Tim ngay chieu dua tren rap (*)
     asyncHandler(async (req,res) => {
         const data = await ShowingModel.distinct('startTime',{idMovie:req.params.idMovie,idCinema: req.params.idCinema});
         if(data){
