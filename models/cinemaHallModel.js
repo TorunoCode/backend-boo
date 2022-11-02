@@ -5,7 +5,7 @@ const cinemaHallSchema =  new mongoose.Schema({
         require:true
     },
     totalSeats:{
-        type: String,
+        type: Number,
         require:true
     },
     idCinema:{

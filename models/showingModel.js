@@ -1,5 +1,9 @@
 import mongoose from 'mongoose';
 const showingSchema =  new mongoose.Schema({
+    idCinema:{
+        type: String,
+        require:true
+    },
     idHall:{
         type: String,
         require:true
