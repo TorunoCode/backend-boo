@@ -6,12 +6,44 @@ const app = express.Router();
 app.get("/", function (req, res) {
     res.send("paypal Routes");
 });
+//"payment_method": "pay_upon_invoice"
+//"payment_method": "carrier"
+//"payment_method": "alternate_payment"
+//"payment_method": "bank"
+//"payment_method": "paypal"
+/*"payment_method": "credit_card",
+        "funding_instruments": [
+            {
+                "payment_card": {
+                    "type": "visa",
+                    "number": "4669424246660779",
+                    "expire_month": "11",
+                    "expire_year": "2019",
+                    "cvv2": "012",
+                    "first_name": "Joe",
+                    "billing_country": "US",
+                    "last_name": "Shopper"
+                }
+            }*/
 app.get('/pay', (req, res) => {
     const create_payment_json = {
       "intent": "sale",
       "payer": {
-          "payment_method": "paypal"
-      },
+        "payment_method": "credit_card",
+        "funding_instruments": [
+            {
+                "payment_card": {
+                    "type": "visa",
+                    "number": "4032032393305120",
+                    "expire_month": "11",
+                    "expire_year": "2027",
+                    "cvv2": "012",
+                    "first_name": "John",
+                    "billing_country": "US",
+                    "last_name": "Shopper"
+                }
+            }]
+        },
       "redirect_urls": {
           "return_url": "http://localhost:5000/api/paypal/success/1"+'?total='+"25.00"+'&currency='+"USD",
           "cancel_url": "http://localhost:5000/api/paypal/cancel"

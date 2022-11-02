@@ -166,6 +166,8 @@ movieRoute.get(
         const cinema = await CinemaModel.find({});
        var listValue=[];
         data.forEach(element => {
+            console.log(element);
+            console.log(cinema.filter( x => x._id == element ))
             listValue.push(cinema.filter( x => x._id == element )[0])
         });
         console.log(listValue);
