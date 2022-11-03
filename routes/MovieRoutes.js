@@ -190,10 +190,10 @@ movieRoute.get(
     })
 
 );
-movieRoute.post(
-    "/findMovieStep3",      //Tim suat chieu phim dua tren ngay chieu(*) va rap (*)
+movieRoute.get(
+    "/findMovieStep3/:idMovie/:idCinema/:startTime",      //Tim suat chieu phim dua tren ngay chieu(*) va rap (*)
     asyncHandler(async (req,res) => {
-        const data = await ShowingModel.distinct('time',{idMovie:req.body.idMovie,idCinema: req.body.idCinema,startTime:req.body.startTime});
+        const data = await ShowingModel.distinct('time',{idMovie:req.params.idMovie,idCinema: req.params.idCinema,startTime:req.params.startTime});
         if(data){
             return    res.json(data);
         } else {          
@@ -202,10 +202,10 @@ movieRoute.post(
     })
 
 );
-movieRoute.post(
-    "/findMovieStep4",      //Tim suat chieu phim dua tren ngay chieu(*) va rap (*)
+movieRoute.get(
+    "/findMovieStep4/:idMovie/:idCinema/:startTime/:time",      //Tim suat chieu phim dua tren ngay chieu(*) va rap (*)
     asyncHandler(async (req,res) => {
-        const data = await ShowingModel.find({idMovie:req.body.idMovie,idCinema: req.body.idCinema,startTime:req.body.startTime,time: req.body.time});
+        const data = await ShowingModel.find({idMovie:req.params.idMovie,idCinema: req.params.idCinema,startTime:req.params.startTime,time: req.params.time});
         const cinemaSeat = await cinemaSeatModel.findById(data.idHall);
         if(cinemaSeat ){
             return    res.json(data);
