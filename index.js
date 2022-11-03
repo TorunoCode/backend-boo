@@ -12,6 +12,7 @@ import { errorHandler, notFound } from './Middleware/errors.js';
 import commentsFeedback from './routes/commentsFeedbacksRoutes.js';
 import paypal from'paypal-rest-sdk';
 import paypalRoute from'./routes/paypalRoutes.js';
+import billRoute from'./routes/billRoutes.js';
 paypal.configure({
     'mode': 'sandbox', //sandbox or live
     'client_id': 'AYQgAnSGvQmxgRu3DPGAqhi8bQar2z6B9B9QHDPAdVoUbxOQHi81qbffwJLnlkUuKuHz2eOP_mHyMZBK',
@@ -32,6 +33,7 @@ app.use("/api/movies",movieRoute);
 app.use("/api/user",userRoute);
 app.use("/api/commentsFeedback",commentsFeedback)
 app.use("/api/paypal",paypalRoute);
+app.use("/api/bill",billRoute);
 app.use(notFound);
 app.use(errorHandler);
 

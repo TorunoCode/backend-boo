@@ -16,6 +16,10 @@ const billsSchema =  new mongoose.Schema({
     status:{
         type:String,
         require:false
+    },
+    idCustomer:{
+        type:String,
+        require:false
     }
 },{
     timestamps:true
