@@ -10,12 +10,7 @@ import cinemaSeatModel from '../models/cinemaHallSeatModel.js';
 import showSeatModel from '../models/showSeatModel.js';
 import billModel from '../models/billsModel.js';
 import orderModel from '../models/orderModel.js';
-function convert(str) {
-    var date = new Date(str),
-      mnth = ("0" + (date.getMonth() + 1)).slice(-2),
-      day = ("0" + date.getDate()).slice(-2);
-    return [ mnth, day,date.getFullYear()].join("/");
-  }
+
 const movieRoute = express.Router();
 movieRoute.get(
     "/",
@@ -225,10 +220,8 @@ movieRoute.get(
     "/findMovieStep2/:idMovie/:idCinema",      //Tim ngay chieu dua tren rap (*)
     asyncHandler(async (req,res) => {
         const data = await ShowingModel.distinct('startTime',{idMovie:req.params.idMovie,idCinema: req.params.idCinema});
-        const date =[];
-         data.map( a => date.push(convert(a)));
         if(data){
-            return    res.json(date);
+            return    res.json(data);
         } else {          
            return res.status(400).json({message: "No item found"});
         }
