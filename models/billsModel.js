@@ -5,7 +5,7 @@ const billsSchema =  new mongoose.Schema({
         type:String,
         require:true
     },
-    fullName:{
+    idCustomer:{
         type:String,
         require:true
     },
@@ -14,10 +14,6 @@ const billsSchema =  new mongoose.Schema({
         require:true
     },
     status:{
-        type:String,
-        require:false
-    },
-    idCustomer:{
         type:String,
         require:false
     }

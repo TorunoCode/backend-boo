@@ -8,7 +8,14 @@ import RatingModel from '../models/feedbacksModel.js';
 import cinemaHallModel from '../models/cinemaHallModel.js';
 import cinemaSeatModel from '../models/cinemaHallSeatModel.js';
 import showSeatModel from '../models/showSeatModel.js';
-
+import billModel from '../models/billsModel.js';
+import orderModel from '../models/orderModel.js';
+function convert(str) {
+    var date = new Date(str),
+      mnth = ("0" + (date.getMonth() + 1)).slice(-2),
+      day = ("0" + date.getDate()).slice(-2);
+    return [ mnth, day,date.getFullYear()].join("/");
+  }
 const movieRoute = express.Router();
 movieRoute.get(
     "/",
@@ -82,6 +89,42 @@ movieRoute.post(
         else
         {
         console.log("Not add Showing")
+        res.status(404)
+            throw new Error("Add showing not successfull");
+        }
+    })
+
+);
+movieRoute.post(
+    "/booking/add",
+    asyncHandler(async (req,res) => {
+        console.log(req.body);
+        const check = await billModel.findOne({idCustomer:req.body.idCustomer,status:-1});        
+        if(check){
+            const bill = await billModel({totalMoney: req.body.price,idCustomer: req.body.idCustomer, status:-1 })
+            bill.save();
+            const bookingTicket = await orderModel({idBill:bill._id.toString(), idCinemaHallSeat: req.body.idCinemaHallSeat,idCustomer: req.body.idCustomer,idShowing: req.body.idShowing,image: req.body.image, status:-1})
+            bookingTicket.save();            
+            if(bookingTicket){
+            res.json(bookingTicket);
+        } else {
+            res.status(404)
+            throw new Error("Add showing not successfull");
+        }}
+        else
+        {
+            check.totalMoney += req.body.price;
+            const bill = await billModel.findByIdAndUpdate(check._id.toString(),{totalMoney: check.price});
+            const bookingTicket = await orderModel({idBill:bill._id.toString(), idCinemaHallSeat: req.body.idCinemaHallSeat,idCustomer: req.body.idCustomer,idShowing: req.body.idShowing,image: req.body.image, status:-1})
+            bookingTicket.save();            
+            if(bookingTicket){
+            res.json(bookingTicket);
+        } else {
+            res.status(404)
+            throw new Error("Add showing not successfull");
+        }
+
+        console.log("Not add booking")
         res.status(404)
             throw new Error("Add showing not successfull");
         }
@@ -182,8 +225,10 @@ movieRoute.get(
     "/findMovieStep2/:idMovie/:idCinema",      //Tim ngay chieu dua tren rap (*)
     asyncHandler(async (req,res) => {
         const data = await ShowingModel.distinct('startTime',{idMovie:req.params.idMovie,idCinema: req.params.idCinema});
+        const date =[];
+         data.map( a => date.push(convert(a)));
         if(data){
-            return    res.json(data);
+            return    res.json(date);
         } else {          
            return res.status(400).json({message: "No item found"});
         }
@@ -203,9 +248,11 @@ movieRoute.get(
 
 );
 movieRoute.get(
-    "/findMovieStep4/:idMovie/:idCinema/:startTime/:time",      //Tim suat chieu phim dua tren ngay chieu(*) va rap (*)
+    "/findMovieStep4/:idMovie/:idCinema/:startTime/:time",      //Tim suat chieu phim dua tren ngay chieu(*) va rap (*)   
     asyncHandler(async (req,res) => {
-        const data = await ShowingModel.find({idMovie:req.params.idMovie,idCinema: req.params.idCinema,startTime:req.params.startTime,time: req.params.time});
+        console.log(req.params.time);
+        const data = await ShowingModel.findOne({idMovie:req.params.idMovie,idCinema: req.params.idCinema,startTime:req.params.startTime,time: req.params.time});
+        console.log(data);
         const cinemaSeat = await cinemaSeatModel.findById(data.idHall);
         if(cinemaSeat ){
             return    res.json(data);
