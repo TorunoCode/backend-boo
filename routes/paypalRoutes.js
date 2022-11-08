@@ -42,6 +42,7 @@ app.get('/pay/:id', async (req, res) => {
     res.status(400).send({ message: "confirm old payment first" });
   }
   else {
+    //luc chua thanh toan moi nguoi chi co 1 bill
     let billsOfUser = await billsModel.find({ idCustomer: req.params.id, status:"-1" });
     for (let i = 0; i < billsOfUser.length; i++) {
       itemsToAdd.push({
