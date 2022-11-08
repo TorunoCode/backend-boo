@@ -25,6 +25,21 @@ userRoute.get(
     })
 );
 userRoute.post(
+  "/update",async (req,res) => {
+      try {
+        const data = await UserModal.findOneAndUpdate({_id:req.body._id},req.body,{new:true});
+        console.log(data);
+        if(data)         
+           res.status(201).json({ data });
+           else
+           return res.status(404).json({data:null, message: "User doesn't exist" });
+        } catch (error) {
+          res.status(500).json({ message: "Something went wrong" });
+          console.log(error);
+        }
+  }
+);
+userRoute.post(
     "/login",async (req,res) => {
         const { email, password } = req.body
         try {
