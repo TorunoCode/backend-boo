@@ -8,6 +8,9 @@ import RatingModel from '../models/feedbacksModel.js';
 import cinemaHallModel from '../models/cinemaHallModel.js';
 import cinemaSeatModel from '../models/cinemaHallSeatModel.js';
 import showSeatModel from '../models/showSeatModel.js';
+import billModel from '../models/billsModel.js';
+import orderModel from '../models/orderModel.js';
+import listModel from '../models/listModel.js';
 
 const movieRoute = express.Router();
 movieRoute.get(
@@ -70,7 +73,7 @@ movieRoute.post(
         const cinemaSeat = await cinemaSeatModel.find({name: req.body.idHall});
         showing.save();
         cinemaSeat.map(async(a) => {
-            const showSeat = await showSeatModel({price:req.body.price,idCinemaHallSeat: a._id,idShowing:showing._id,status:0});
+            const showSeat = await showSeatModel({price:req.body.price,id: a._id,number: a.seatRow+a.seatColumn,idShowing:showing._id});
             showSeat.save();
         })
         if(showing){
@@ -82,6 +85,42 @@ movieRoute.post(
         else
         {
         console.log("Not add Showing")
+        res.status(404)
+            throw new Error("Add showing not successfull");
+        }
+    })
+
+);
+movieRoute.post(
+    "/booking/add",
+    asyncHandler(async (req,res) => {
+        console.log(req.body);
+        const check = await billModel.findOne({idCustomer:req.body.idCustomer,status:-1});        
+        if(check){
+            const bill = await billModel({totalMoney: req.body.price,idCustomer: req.body.idCustomer, status:-1 })
+            bill.save();
+            const bookingTicket = await orderModel({idBill:bill._id.toString(), idCinemaHallSeat: req.body.idCinemaHallSeat,idCustomer: req.body.idCustomer,idShowing: req.body.idShowing,image: req.body.image, status:-1})
+            bookingTicket.save();            
+            if(bookingTicket){
+            res.json(bookingTicket);
+        } else {
+            res.status(404)
+            throw new Error("Add showing not successfull");
+        }}
+        else
+        {
+            check.totalMoney += req.body.price;
+            const bill = await billModel.findByIdAndUpdate(check._id.toString(),{totalMoney: check.price});
+            const bookingTicket = await orderModel({idBill:bill._id.toString(), idCinemaHallSeat: req.body.idCinemaHallSeat,idCustomer: req.body.idCustomer,idShowing: req.body.idShowing,image: req.body.image, status:-1})
+            bookingTicket.save();            
+            if(bookingTicket){
+            res.json(bookingTicket);
+        } else {
+            res.status(404)
+            throw new Error("Add showing not successfull");
+        }
+
+        console.log("Not add booking")
         res.status(404)
             throw new Error("Add showing not successfull");
         }
@@ -128,17 +167,17 @@ movieRoute.post(
         const data = new cinemaHallModel(req.body);
         data.save();
         if(data){
-            let row = "a";
+            let row = "A";
             let column=1;
             let x = 6;           
             if(req.body.totalSeats == 45)  x = 9;
             while(column<=6){
                 switch(column){
-                    case 2: row = "b"; break;
-                    case 3: row = "c"; break;
-                    case 4: row = "d"; break;
-                    case 5: row = "e"; break;
-                    case 6: row = "f"; break;
+                    case 2: row = "B"; break;
+                    case 3: row = "C"; break;
+                    case 4: row = "D"; break;
+                    case 5: row = "E"; break;
+                    case 6: row = "F"; break;
                 }
                 debugger;
                 let i = 1;
@@ -166,7 +205,7 @@ movieRoute.get(
         const cinema = await CinemaModel.find({});
        var listValue=[];
         data.forEach(element => {
-            listValue.push(cinema.filter( x => x._id == element ))
+            listValue.push(cinema.filter( x => x._id == element )[0])
         });
         console.log(listValue);
         // const nameCinema = cinema.map( a => a._id)
@@ -190,10 +229,10 @@ movieRoute.get(
     })
 
 );
-movieRoute.post(
-    "/findMovieStep3",      //Tim suat chieu phim dua tren ngay chieu(*) va rap (*)
+movieRoute.get(
+    "/findMovieStep3/:idMovie/:idCinema/:startTime",      //Tim suat chieu phim dua tren ngay chieu(*) va rap (*)
     asyncHandler(async (req,res) => {
-        const data = await ShowingModel.distinct('time',{idMovie:req.body.idMovie,idCinema: req.body.idCinema,startTime:req.body.startTime});
+        const data = await ShowingModel.distinct('time',{idMovie:req.params.idMovie,idCinema: req.params.idCinema,startTime:req.params.startTime});
         if(data){
             return    res.json(data);
         } else {          
@@ -202,13 +241,30 @@ movieRoute.post(
     })
 
 );
-movieRoute.post(
-    "/findMovieStep4",      //Tim suat chieu phim dua tren ngay chieu(*) va rap (*)
+movieRoute.get(
+    "/findMovieStep4/:idMovie/:idCinema/:startTime/:time",      //Tim suat chieu phim dua tren ngay chieu(*) va rap (*)   
     asyncHandler(async (req,res) => {
-        const data = await ShowingModel.find({idMovie:req.body.idMovie,idCinema: req.body.idCinema,startTime:req.body.startTime,time: req.body.time});
-        const cinemaSeat = await cinemaSeatModel.findById(data.idHall);
-        if(cinemaSeat ){
-            return    res.json(data);
+        const check = await ShowingModel.findOne({idMovie:req.params.idMovie,idCinema: req.params.idCinema,startTime:req.params.startTime,time:req.params.time});
+        console.log(check);
+        const data = await showSeatModel.find({idShowing:check._id},{id:1,number:1,_id:0}).sort({number:1});
+        let listItem = [];
+        let i=0,x=0;
+        while(i<5){
+            let list = [];  
+            let j=0;          
+            while(j<9)
+            {
+                list.push(data[x]);
+                x++;
+            j++;
+            }
+            console.log(list);
+            listItem.push(list);
+            i++;
+        }
+        // console.log(listItem);
+        if(data){
+            return    res.json(listItem);
         } else {          
            return res.status(400).json({message: "No item found"});
         }
@@ -221,6 +277,34 @@ movieRoute.get(
         const data = await showSeatModel.find({});
         if(data){
             return    res.json(data);
+        } else {          
+           return res.status(400).json({message: "No item found"});
+        }
+    })
+
+);
+movieRoute.get(
+    "/seatShow/:id",
+    asyncHandler(async (req,res) => {
+        const data = await showSeatModel.find({idShowing:req.params.id},{id:1,number:1,_id:0}).sort({number:1});
+        let listItem = [];
+        let i=0,x=0;
+        while(i<5){
+            let list = [];  
+            let j=0;          
+            while(j<9)
+            {
+                list.push(data[x]);
+                x++;
+            j++;
+            }
+            console.log(list);
+            listItem.push(list);
+            i++;
+        }
+        // console.log(listItem);
+        if(data){
+            return    res.json(listItem);
         } else {          
            return res.status(400).json({message: "No item found"});
         }
@@ -291,7 +375,22 @@ movieRoute.get(
     })
 
 );
-
+movieRoute.get('/rating/avg/:id', async(req,res)=>{
+    try{
+      console.log(req.params.id);
+        const data = await RatingModel.aggregate([{$group: {_id:"$movieId", avg_val:{$avg:"$rate"}}}]);
+        console.log(data);
+        const check = data.filter((a) => a._id==req.params.id ?{ return: a.avg_val}:null);
+        if(!check)  return res.status(400).json({data:null, message: "No item found" }); 
+        else
+       return res.status(201).json(check);
+    }
+    catch(error)
+    {
+      res.status(500).json({ message: "Something went wrong" });
+      console.log(error);
+    }
+  });
 movieRoute.get('/rating/delete/:id', async(req,res)=>{
     try{
       console.log(req.params.id);

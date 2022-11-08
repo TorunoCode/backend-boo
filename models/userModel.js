@@ -13,6 +13,19 @@ const userSchema =  new mongoose.Schema({
         type:String,
         require:true
     },
+    profile:{
+        type:String,
+        require:true
+    },
+    phone:{
+        type:String
+    },
+    gender:{
+        type:String
+    },
+    avatar:{
+        type:String
+    },
     isActive:{
         type: Number,
         require:true

@@ -4,18 +4,22 @@ const showSeatSchema =  new mongoose.Schema({
         type: Number,
         require:true
     },
-    idCinemaHallSeat:{
+    id:{
         type: String,
         require:true
+    },
+    number:{
+        type: String,
+        require:true
+    },
+    isReserved:{
+        type: Boolean
     },
     idShowing:{
         type: String,
         require:true
-    },
-    status:{
-        type: Number,
-        require:true
-    },
+    }
+   
 
 });
 const showSeat =  mongoose.model('showSeat',showSeatSchema);
