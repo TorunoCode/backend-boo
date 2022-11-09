@@ -11,6 +11,7 @@ import showSeatModel from '../models/showSeatModel.js';
 import billModel from '../models/billsModel.js';
 import orderModel from '../models/orderModel.js';
 import listModel from '../models/listModel.js';
+import UserModal from '../models/userModel.js';
 
 const movieRoute = express.Router();
 movieRoute.get(
@@ -169,15 +170,16 @@ movieRoute.post(
         if(data){
             let row = "A";
             let column=1;
-            let x = 6;           
-            if(req.body.totalSeats == 45)  x = 9;
-            while(column<=6){
+            let x = 9;           
+            if(req.body.totalSeats == 45)  x = 13;
+            while(column<=7){
                 switch(column){
                     case 2: row = "B"; break;
                     case 3: row = "C"; break;
                     case 4: row = "D"; break;
                     case 5: row = "E"; break;
                     case 6: row = "F"; break;
+                    case 7: row = "G"; break;
                 }
                 debugger;
                 let i = 1;
@@ -289,10 +291,10 @@ movieRoute.get(
         const data = await showSeatModel.find({idShowing:req.params.id},{id:1,number:1,_id:0}).sort({number:1});
         let listItem = [];
         let i=0,x=0;
-        while(i<5){
+        while(i<7){
             let list = [];  
             let j=0;          
-            while(j<9)
+            while(j<13)
             {
                 list.push(data[x]);
                 x++;
@@ -303,6 +305,7 @@ movieRoute.get(
             i++;
         }
         // console.log(listItem);
+        await cinemaSeatModel.find({seatRow:"f"}).updateMany({},{$set:{seatRow:"F"}});
         if(data){
             return    res.json(listItem);
         } else {          
@@ -375,15 +378,19 @@ movieRoute.get(
     })
 
 );
-movieRoute.get('/rating/avg/:id', async(req,res)=>{
+movieRoute.get('/rating/avg', async(req,res)=>{
     try{
       console.log(req.params.id);
-        const data = await RatingModel.aggregate([{$group: {_id:"$movieId", avg_val:{$avg:"$rate"}}}]);
+        var data = await RatingModel.aggregate([{$group: {_id:"$movieId", avg_val:{$avg:"$rate"}}}]);
+        data.map(async(a) => {
+            await MovieModel.findByIdAndUpdate(a._id,{$set:{rate:Math.round(a.avg_val*10)/10}});
+            a.avg_val=Math.round(a.avg_val*10)/10;
+         } );
         console.log(data);
-        const check = data.filter((a) => a._id==req.params.id ?{ return: a.avg_val}:null);
-        if(!check)  return res.status(400).json({data:null, message: "No item found" }); 
+
+        if(!data)  return res.status(400).json({data:null, message: "No item found" }); 
         else
-       return res.status(201).json(check);
+       return res.status(201).json(data);
     }
     catch(error)
     {
