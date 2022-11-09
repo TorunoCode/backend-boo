@@ -143,11 +143,7 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
         result.push(eachUser);
     }
     result.push(allCommentsOfMovie);
-    var data = await RatingModel.aggregate([{$group: {_id:"$movieId", avg_val:{$avg:"$rate"}}}]);
-    data.map(async(a) => {
-        await MovieModel.findByIdAndUpdate(a._id,{$set:{rate:Math.round(a.avg_val*10)/10}});
-        a.avg_val=Math.round(a.avg_val*10)/10;
-     } );
+    
     try {
         response.send(result);
     } catch (error) {
