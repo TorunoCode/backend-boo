@@ -140,8 +140,8 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
             'createdAtTimeElapsed':createdAtTimeElapsed,
             'updatedAtTimeElapsedModded':updatedAtTimeElapsedModded,
             'createdAtTimeElapsedModded':createdAtTimeElapsedModded,
-            "fullName":element.fullName,
-            "avatar":element.avatar
+            'fullName':element.fullName,
+            'avatar':element.avatar
         })
         result.push(eachUser);
     }
