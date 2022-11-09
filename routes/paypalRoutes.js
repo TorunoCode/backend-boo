@@ -4,6 +4,9 @@ import transactionsModel from "../models/transactionsModel.js"
 import billsModel from "../models/billsModel.js"
 import emailProvider from '../config/nodeMailer.js';
 import userModel from "../models/userModel.js"
+import orderModel from "../models/orderModel.js";
+import showSeatModel from '../models/showSeatModel.js';
+import CinemaHallSeatModel from '../models/cinemaHallSeatModel.js';
 const app = express.Router();
 app.get("/test/:id", function (req, res) {
   res.send("paypal Routes");
@@ -39,19 +42,23 @@ app.get('/pay/:id', async (req, res) => {
   let itemsToAdd = []
   let countStatusChecking = await billsModel.count({ idCustomer: req.params.id, status: "0" });
   if (countStatusChecking > 0) {
-    res.status(400).send({ message: "confirm old payment first" });
+    res.status(400).send("confirm old payment first");
   }
   else {
-    let billsOfUser = await billsModel.find({ idCustomer: req.params.id, status:"-1" });
+    let bill= await billsModel.find({idCustomer:req.params.id});
+    //luc chua thanh toan moi nguoi chi co 1 bill
+    let billsOfUser = await orderModel.find({ idBill:bill[0]._id, status:"-1" });
     for (let i = 0; i < billsOfUser.length; i++) {
+      let showSeat = await showSeatModel.find({_id: billsOfUser[i].idShowSeat});
+      let CinemaHallSeat = await CinemaHallSeatModel.find({_id:showSeat[0].id});
       itemsToAdd.push({
-        "name": billsOfUser[i].fullName,
+        "name": CinemaHallSeat[0].name,
         "sku": billsOfUser[i]._id,
-        "price": billsOfUser[i].totalMoney,
+        "price": showSeat[0].price,
         "currency": "USD",
         "quantity": 1
       })
-      total += parseFloat(billsOfUser[i].totalMoney);
+      total += parseFloat(showSeat[0].price);
     }
     const create_payment_json = {
       "intent": "sale",
@@ -79,8 +86,7 @@ app.get('/pay/:id', async (req, res) => {
     };
     paypal.payment.create(create_payment_json, function (error, payment) {
       if (error) {
-        console.log('i am here')
-        throw error;
+        req.status(400).send(error);
       } else {
         for (let i = 0; i < payment.links.length; i++) {
           if (payment.links[i].rel === 'approval_url') {
@@ -103,11 +109,11 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
     from: 'backendmaildt@yahoo.com',
     to: emailToSend[0].email,
     subject: 'Sending Email using Node.js',
-    html: "<a href= '" + link + "' target='_blank'>" + link + '</a>'
+    html: "<a href= '" + link + "' target='_blank'>Click here to confirm payment</a>"
   };
   emailProvider.sendMail(mailOptions, function (error, info) {
     if (error) {
-      res.status(400).send({ message: error });;
+      res.status(400).send( error );;
     } else {
       console.log(link)
     }
@@ -119,7 +125,7 @@ app.get('/success/:buyer_id/:rand', async (req, res) => {
   const paymentId = req.query.paymentId;
   paypal.payment.get(paymentId, function (error, payment) {
     if (error) {
-      res.status(400).send({ message: error })
+      res.status(400).send(error )
     } else {
       console.log("Get Payment Response");
       console.log(payment.transactions[0].description)
@@ -181,11 +187,11 @@ app.get('/success/:buyer_id/:rand', async (req, res) => {
               Currency_items: Currency_items,
               Price_items: Price_items
             });
-            res.status(200).send("done");
+            res.status(200).send("done paying");
           }
         });
       }
-      else { res.status(500).send("false"); }
+      else { res.status(500).send("can't confirm"); }
     }
 
   });
