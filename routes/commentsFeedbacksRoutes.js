@@ -3,7 +3,8 @@ import commentsModel from "../models/commentsModel.js";
 import responseToCommentsModel from "../models/responseToCommentsModel.js";
 import feedbacksModel from "../models/feedbacksModel.js";
 import UserModal from '../models/userModel.js';
-
+import MovieModel from '../models/movieModel.js';
+import RatingModel from '../models/feedbacksModel.js';
 const app = express.Router();
 app.get("/", function (req, res) {
     res.send("comment feedback post");
@@ -143,7 +144,11 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
         result.push(eachUser);
     }
     result.push(allCommentsOfMovie);
-    
+     var data = await RatingModel.aggregate([{$group: {_id:"$movieId", avg_val:{$avg:"$rate"}}}]);
+        data.map(async(a) => {
+            await MovieModel.findByIdAndUpdate(a._id,{$set:{rate:Math.round(a.avg_val*10)/10}});
+            a.avg_val=Math.round(a.avg_val*10)/10;
+         } );
     try {
         response.send(result);
     } catch (error) {
