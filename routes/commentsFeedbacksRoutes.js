@@ -116,7 +116,8 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
     const allCommentsOfMovie = { number_of_feedback: count, _number_of_page: numpage };
     const result = [];
     for (const element of feedbacks) {
-        const nameUser = await UserModal.findById(element['userId']);
+        let nameUser = await UserModal.findById(element['userId']);
+        console.log(nameUser)
         if(!nameUser){
             const eachUser = {}
         var updatedAt = +element.updatedAt.getHours() + ':' + element.updatedAt.getMinutes() + ':' + element.updatedAt.getSeconds() + ' - ' + element.updatedAt.getDate() + '/' + (element.updatedAt.getMonth()+1) + '/' + element.updatedAt.getFullYear()
@@ -155,6 +156,7 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
         let updatedAtTimeElapsedModded = Math.floor(Number(updatedAtTimeElapsed) / 3600/24)+'day(s) '+Math.floor(Number(updatedAtTimeElapsed) / 3600 % 24)+'h '+Math.floor(Number(updatedAtTimeElapsed)  % 3600 / 60)+'m '+Math.floor(Number(updatedAtTimeElapsed)  % 3600 % 60)+'s';
         let createdAtTimeElapsedModded = Math.floor(Number(createdAtTimeElapsed) / 3600/24)+'day(s) '+Math.floor(Number(createdAtTimeElapsed) / 3600 % 24)+'h '+Math.floor(Number(createdAtTimeElapsed)  % 3600 / 60)+'m '+Math.floor(Number(createdAtTimeElapsed)  % 3600 % 60)+'s';
         console.log(updatedAt+'///'+element.updatedAt.getMonth()+'///'+element.updatedAt);
+        if(nameUser['fullName']==null)nameUser['fullName']="";
         Object.assign(eachUser, {
             '_id': element.id, 'userId': element.userId, 'title': element.title,
             'detail': element.detail, 'movieId': element.movieId, 'rate': element.rate,
