@@ -13,6 +13,9 @@ import commentsFeedback from './routes/commentsFeedbacksRoutes.js';
 import paypal from'paypal-rest-sdk';
 import paypalRoute from'./routes/paypalRoutes.js';
 import billRoute from'./routes/billRoutes.js';
+import session from 'express-session';
+import MongoDBSession from'connect-mongodb-session';
+const MongoStore = MongoDBSession(session);
 paypal.configure({
     'mode': 'sandbox', //sandbox or live
     'client_id': 'AYQgAnSGvQmxgRu3DPGAqhi8bQar2z6B9B9QHDPAdVoUbxOQHi81qbffwJLnlkUuKuHz2eOP_mHyMZBK',
@@ -22,6 +25,22 @@ console.log('done set up paypal');
 dotenv.config();
 connectDatabase();
 const app = express();
+const store = new MongoStore({
+    uri: process.env.CONNECTION_URL,
+    collection:"mySessions",
+  });
+app.use(
+    session({
+      secret:"key that will sign cookie",
+       cookie: {
+      maxAge: 1000 * 60 * 12*24 // 1 week
+       },
+      resave:true,
+      saveUninitialized:true,
+      store: store,
+    })
+  )
+  
 process.env.TZ = "Asia/Ho_Chi_Minh";
 app.use(cors());
 app.use(bodyParser.json({limit:"30mb",extended:true}));

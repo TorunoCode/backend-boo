@@ -13,10 +13,10 @@ const orderSchema =  new mongoose.Schema({
         type: String, require: true
    },
     image:{
-        type:Date
+        type:String
     },
     status:{
-         type: String, require: true
+         type: Number, require: true
     }
 
 });

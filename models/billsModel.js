@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const billsSchema =  new mongoose.Schema({
     totalMoney:{
-        type:String,
+        type:Number,
         require:true
     },
     idCustomer:{

@@ -95,36 +95,39 @@ movieRoute.post(
 movieRoute.post(
     "/booking/add",
     asyncHandler(async (req,res) => {
-        console.log(req.body);
-        const check = await billModel.findOne({idCustomer:req.body.idCustomer,status:-1});        
-        if(check){
-            const bill = await billModel({totalMoney: req.body.price,idCustomer: req.body.idCustomer, status:-1 })
+        req.session.idCustomer = "636b67fa4f1670cf789a8a80";
+        const body = req.body;
+        try{            
+        const check = await billModel.findOne({idCustomer:req.session.idCustomer,status:-1});        
+        if(!check){
+            const bill = await billModel({totalMoney:0,idCustomer:req.session.idCustomer,status:-1});
             bill.save();
-            const bookingTicket = await orderModel({idBill:bill._id.toString(), idCinemaHallSeat: req.body.idCinemaHallSeat,idCustomer: req.body.idCustomer,idShowing: req.body.idShowing,image: req.body.image, status:-1})
-            bookingTicket.save();            
-            if(bookingTicket){
-            res.json(bookingTicket);
-        } else {
-            res.status(404)
-            throw new Error("Add showing not successfull");
-        }}
+            body.map(async(a) => {
+                const bookingTicket = await orderModel({idBill:bill._id.toString(), idShowSeat: a.idShowSeat,idCustomer: req.session.idCustomer,idshowing: a.idshowing, status:-1})
+                bookingTicket.save();  
+            const data = await showSeatModel.findById(a.idShowSeat);
+            const total = await billModel.findById(bill._id.toString());
+             await billModel.findByIdAndUpdate(bill._id.toString(),{$set:{totalMoney:total.totalMoney+ data.price}});           
+            await  showSeatModel.findById(a.idShowSeat).updateOne({},{$set:{isReserved:true}});
+             })
+            return res.status(400).json({data:null, message: "add successfully" }); 
+           }
         else
         {
-            check.totalMoney += req.body.price;
-            const bill = await billModel.findByIdAndUpdate(check._id.toString(),{totalMoney: check.price});
-            const bookingTicket = await orderModel({idBill:bill._id.toString(), idCinemaHallSeat: req.body.idCinemaHallSeat,idCustomer: req.body.idCustomer,idShowing: req.body.idShowing,image: req.body.image, status:-1})
-            bookingTicket.save();            
-            if(bookingTicket){
-            res.json(bookingTicket);
-        } else {
-            res.status(404)
-            throw new Error("Add showing not successfull");
+            body.map(async(a) => {
+                const bookingTicket = await orderModel({idBill:check._id.toString(), idShowSeat: a.idShowSeat,idCustomer: req.session.idCustomer,idshowing: a.idshowing, status:-1})
+                bookingTicket.save();  
+            const data = await showSeatModel.findById(a.idShowSeat);
+            const total = await billModel.findById(check._id.toString());
+            await billModel.findByIdAndUpdate(check._id.toString(),{$set:{totalMoney:total.totalMoney+ data.price}});           
+            await  showSeatModel.findById(a.idShowSeat).updateOne({},{$set:{isReserved:true}});
+             })           
+             return res.status(400).json({data:null, message: "add successfully" });        
         }
-
-        console.log("Not add booking")
+    }
+    catch(E){
         res.status(404)
-            throw new Error("Add showing not successfull");
-        }
+        throw new Error("Add showing not successfull");}
     })
 
 );
