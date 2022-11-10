@@ -98,17 +98,17 @@ movieRoute.post(
         req.session.idCustomer = "636b67fa4f1670cf789a8a80";
         const body = req.body;
         try{            
-        const check = await billModel.findOne({idCustomer:req.session.idCustomer,status:-1});        
+        const check = await billModel.findOne({idCustomer:req.session.idCustomer,status:-1});   //kiem tra da co bill chua     
         if(!check){
-            const bill = await billModel({totalMoney:0,idCustomer:req.session.idCustomer,status:-1});
+            const bill = await billModel({totalMoney:0,idCustomer:req.session.idCustomer,status:-1}); //tao ma bill moi
             bill.save();
             body.map(async(a) => {
                 const bookingTicket = await orderModel({idBill:bill._id.toString(), idShowSeat: a.idShowSeat,idCustomer: req.session.idCustomer,idshowing: a.idshowing, status:-1})
-                bookingTicket.save();  
-            const data = await showSeatModel.findById(a.idShowSeat);
-            const total = await billModel.findById(bill._id.toString());
-             await billModel.findByIdAndUpdate(bill._id.toString(),{$set:{totalMoney:total.totalMoney+ data.price}});           
-            await  showSeatModel.findById(a.idShowSeat).updateOne({},{$set:{isReserved:true}});
+                bookingTicket.save();  //gan nhan ticket voi ma bill ma kh mua
+            const data = await showSeatModel.findById(a.idShowSeat); // lay price moi ve
+            const total = await billModel.findById(bill._id.toString()); //lay total bill de cap nhat
+             await billModel.findByIdAndUpdate(bill._id.toString(),{$set:{totalMoney:total.totalMoney+ data.price}});    //cap nhat totalbill       
+            await  showSeatModel.findById(a.idShowSeat).updateOne({},{$set:{isReserved:true}}); //cap nhat trang thai ve da co nguoi chon mua
              })
             return res.status(400).json({data:null, message: "add successfully" }); 
            }
