@@ -116,7 +116,7 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
     const allCommentsOfMovie = { number_of_feedback: count, _number_of_page: numpage };
     const result = [];
     for (const element of feedbacks) {
-        const nameUser = await UserModal.findById(element['userId']).select('name -_id');
+        const nameUser = await UserModal.findById(element['userId']);
         if(!nameUser){
             const eachUser = {}
         var updatedAt = +element.updatedAt.getHours() + ':' + element.updatedAt.getMinutes() + ':' + element.updatedAt.getSeconds() + ' - ' + element.updatedAt.getDate() + '/' + (element.updatedAt.getMonth()+1) + '/' + element.updatedAt.getFullYear()
@@ -168,7 +168,7 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
             'fullName':nameUser['fullName'],
             'avatar':nameUser['avatar']
         })
-        console.log(eachUser);
+        console.log(nameUser['avatar']+'/'+nameUser['fullName'])
         result.push(eachUser);
     }
     result.push(allCommentsOfMovie);
