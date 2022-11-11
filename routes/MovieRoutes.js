@@ -12,6 +12,7 @@ import billModel from '../models/billsModel.js';
 import orderModel from '../models/orderModel.js';
 import listModel from '../models/listModel.js';
 import UserModal from '../models/userModel.js';
+import feedbackModel from '../models/feedbacksModel.js';
 import mongoose from 'mongoose'; 
 const movieRoute = express.Router();
 movieRoute.get(
@@ -265,13 +266,19 @@ movieRoute.get(
     asyncHandler(async (req,res) => {
         const check = await ShowingModel.findOne({idMovie:req.params.idMovie,idCinema: req.params.idCinema,startTime:req.params.startTime,time:req.params.time});
         console.log(check);
+        const hall = await cinemaHallModel.findById(check.idCinema);
         const data = await showSeatModel.find({idShowing:check._id},{id:1,number:1,_id:0}).sort({number:1});
         let listItem = [];
         let i=0,x=0;
-        while(i<5){
+        let a=5, b=9;
+        if(hall.totalSeats==45)
+        {
+            a=7;b=13;
+        }
+        while(i<a){
             let list = [];  
             let j=0;          
-            while(j<9)
+            while(j<b)
             {
                 list.push(data[x]);
                 x++;
@@ -284,6 +291,26 @@ movieRoute.get(
         // console.log(listItem);
         if(data){
             return    res.json(listItem);
+        } else {          
+           return res.status(400).json({message: "No item found"});
+        }
+    })
+
+);
+movieRoute.get(
+    "/setRating",
+    asyncHandler(async (req,res) => {
+        const movie = await MovieModel.find({});
+        const rating = await feedbackModel.distinct('movieId',{});
+
+        for (let item of movie)
+        {
+            const data = await feedbackModel.findOne({movieId:item._id.toString()});
+           if(data==null)
+          { await MovieModel.findById(item._id.toString()).updateOne({$set:{rate:0}});}
+        }        
+        if(rating){
+            return    res.json(rating);
         } else {          
            return res.status(400).json({message: "No item found"});
         }

@@ -5,6 +5,8 @@ import feedbacksModel from "../models/feedbacksModel.js";
 import UserModal from '../models/userModel.js';
 import MovieModel from '../models/movieModel.js';
 import RatingModel from '../models/feedbacksModel.js';
+import feedbackModel from '../models/feedbacksModel.js';
+
 const app = express.Router();
 app.get("/", function (req, res) {
     res.send("comment feedback post");
@@ -179,6 +181,20 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
             await MovieModel.findByIdAndUpdate(a._id,{$set:{rate:Math.round(a.avg_val*10)/10}});
             a.avg_val=Math.round(a.avg_val*10)/10;
          } );
+         const movie = await MovieModel.find({});
+         const rating = await feedbackModel.distinct('movieId',{});
+ 
+         for (let item of movie)
+         {
+             const data = await feedbackModel.findOne({movieId:item._id.toString()});
+            if(data==null)
+           { await MovieModel.findById(item._id.toString()).updateOne({$set:{rate:0}});}
+         }        
+         if(rating){
+             return    res.json(rating);
+         } else {          
+            return res.status(400).json({message: "No item found"});
+         }
     try {
         response.send(result);
     } catch (error) {
