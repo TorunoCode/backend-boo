@@ -188,9 +188,11 @@ movieRoute.post(
         if(data){
             let row = "A";
             let column=1;
-            let x = 9;           
+            let x = 9;         
+            let y = 5;  
             if(req.body.totalSeats == 45)  x = 13;
-            while(column<=7){
+            if(req.body.totalSeats == 91)  x = 13; y=7;
+            while(column<=y){
                 switch(column){
                     case 2: row = "B"; break;
                     case 3: row = "C"; break;
@@ -266,12 +268,14 @@ movieRoute.get(
     asyncHandler(async (req,res) => {
         const check = await ShowingModel.findOne({idMovie:req.params.idMovie,idCinema: req.params.idCinema,startTime:req.params.startTime,time:req.params.time});
         console.log(check);
-        const hall = await cinemaHallModel.findById(check.idCinema);
+        const hall = await cinemaHallModel.findById(check.idHall);
+        console.log(hall);
         const data = await showSeatModel.find({idShowing:check._id},{id:1,number:1,_id:0}).sort({number:1});
         let listItem = [];
         let i=0,x=0;
-        let a=5, b=9;
-        if(hall.totalSeats==45)
+        let a=5;
+        let b=9;
+        if(hall.totalSeats==91)
         {
             a=7;b=13;
         }
