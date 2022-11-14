@@ -25,7 +25,22 @@ console.log('done set up paypal');
 dotenv.config();
 connectDatabase();
 const app = express();
-
+const store = new MongoStore({
+    uri: process.env.CONNECTION_URL,
+    collection:"mySessions",
+  });
+app.use(
+    session({
+      secret:"key that will sign cookie",
+       cookie: {
+      maxAge: 1000 * 60 * 12*24 // 1 week
+       },
+      resave:true,
+      saveUninitialized:true,
+      store: store,
+    })
+  )
+  
   
 process.env.TZ = "Asia/Ho_Chi_Minh";
 app.use(cors());
