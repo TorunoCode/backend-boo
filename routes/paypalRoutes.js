@@ -7,6 +7,8 @@ import userModel from "../models/userModel.js"
 import orderModel from "../models/orderModel.js";
 import showSeatModel from '../models/showSeatModel.js';
 import CinemaHallSeatModel from '../models/cinemaHallSeatModel.js';
+import ShowingModel from '../models/showingModel.js';
+import MovieModel from '../models/movieModel.js';
 const app = express.Router();
 app.get("/test/:id", function (req, res) {
   res.send("paypal Routes");
@@ -45,20 +47,24 @@ app.get('/pay/:id', async (req, res) => {
     res.status(400).send("confirm old payment first");
   }
   else {
-    let bill= await billsModel.find({idCustomer:req.params.id, status: "-1" });
     let countStatusChecking2 = await billsModel.count({ idCustomer: req.params.id, status: "-1" });
     if(countStatusChecking2==0){
       return res.status(400).send("no bills to pay");
     }
+    let bill= await billsModel.find({idCustomer:req.params.id, status: "-1" });
     //luc chua thanh toan moi nguoi chi co 1 bill
     let billsOfUser = await orderModel.find({ idBill:bill[0]._id });
     for (let i = 0; i < billsOfUser.length; i++) {
-      let showSeat = await showSeatModel.find({_id: billsOfUser[i].idShowSeat});
-      let CinemaHallSeat = await CinemaHallSeatModel.find({_id:showSeat[0].idCinemaHallSeat});
+      let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
+      let CinemaHallSeat = await CinemaHallSeatModel.find({_id:showSeat.idCinemaHallSeat});
+      let showing = await ShowingModel.findById(showSeat.idShowing);
+      let movie = await MovieModel.findById(showing.idMovie);
+      let name ="seat " +CinemaHallSeat[0].seatRow+"/" +CinemaHallSeat[0].seatColumn+" of movie: " + movie.name
+      console.log(name)
       itemsToAdd.push({
-        "name": CinemaHallSeat[0].name,
+        "name": name,
         "sku": billsOfUser[i]._id,
-        "price": showSeat[0].price,
+        "price": showSeat.price,
         "currency": "USD",
         "quantity": 1
       })
@@ -104,6 +110,7 @@ app.get('/pay/:id', async (req, res) => {
 });
 app.get('/send_verify/:userId/:rand', async (req, res) => {
   await billsModel.updateMany({ idCustomer: req.params.userId }, { "$set": { status: "0" } })
+  await showSeatModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "0" } })
   let oriUrl = req.originalUrl + '';
   oriUrl = oriUrl.replace('send_verify', 'success')
   var emailToSend =await userModel.find({ _id: req.params.userId }).select('email -_id')
@@ -126,6 +133,7 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
 });
 app.get('/success/:buyer_id/:rand', async (req, res) => {
   await billsModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
+  await showSeatModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
   const paymentId = req.query.paymentId;
   paypal.payment.get(paymentId, function (error, payment) {
     if (error) {
