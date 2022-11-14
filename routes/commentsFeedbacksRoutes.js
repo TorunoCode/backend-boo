@@ -190,11 +190,6 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
             if(data==null)
            { await MovieModel.findById(item._id.toString()).updateOne({$set:{rate:0}});}
          }        
-         if(rating){
-             return    res.json(rating);
-         } else {          
-            return res.status(400).json({message: "No item found"});
-         }
     try {
         response.send(result);
     } catch (error) {
