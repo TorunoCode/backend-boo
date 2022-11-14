@@ -46,6 +46,10 @@ app.get('/pay/:id', async (req, res) => {
   }
   else {
     let bill= await billsModel.find({idCustomer:req.params.id, status: "-1" });
+    let countStatusChecking2 = await billsModel.count({ idCustomer: req.params.id, status: "-1" });
+    if(countStatusChecking2==0){
+      return res.status(400).send("no bills to pay");
+    }
     //luc chua thanh toan moi nguoi chi co 1 bill
     let billsOfUser = await orderModel.find({ idBill:bill[0]._id });
     for (let i = 0; i < billsOfUser.length; i++) {
