@@ -75,7 +75,7 @@ movieRoute.post(
         const cinemaSeat = await cinemaSeatModel.find({name: req.body.idHall});
         showing.save();
         cinemaSeat.map(async(a) => {
-            const showSeat = await showSeatModel({price:req.body.price,id: a._id,number: a.seatRow+a.seatColumn,idShowing:showing._id});
+            const showSeat = await showSeatModel({price:req.body.price,idCinemaHallSeat: a._id,number: a.seatRow+a.seatColumn,idShowing:showing._id});
             showSeat.save();
         })
         if(showing){

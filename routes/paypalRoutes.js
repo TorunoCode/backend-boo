@@ -45,12 +45,12 @@ app.get('/pay/:id', async (req, res) => {
     res.status(400).send("confirm old payment first");
   }
   else {
-    let bill= await billsModel.find({idCustomer:req.params.id});
+    let bill= await billsModel.find({idCustomer:req.params.id, status: "-1" });
     //luc chua thanh toan moi nguoi chi co 1 bill
-    let billsOfUser = await orderModel.find({ idBill:bill[0]._id, status:"-1" });
+    let billsOfUser = await orderModel.find({ idBill:bill[0]._id });
     for (let i = 0; i < billsOfUser.length; i++) {
       let showSeat = await showSeatModel.find({_id: billsOfUser[i].idShowSeat});
-      let CinemaHallSeat = await CinemaHallSeatModel.find({_id:showSeat[0].id});
+      let CinemaHallSeat = await CinemaHallSeatModel.find({_id:showSeat[0].idCinemaHallSeat});
       itemsToAdd.push({
         "name": CinemaHallSeat[0].name,
         "sku": billsOfUser[i]._id,
@@ -58,8 +58,8 @@ app.get('/pay/:id', async (req, res) => {
         "currency": "USD",
         "quantity": 1
       })
-      total += parseFloat(showSeat[0].price);
     }
+    total = bill[0].totalMoney;
     const create_payment_json = {
       "intent": "sale",
       "payer": {

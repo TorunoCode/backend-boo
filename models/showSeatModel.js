@@ -4,7 +4,7 @@ const showSeatSchema =  new mongoose.Schema({
         type: Number,
         require:true
     },
-    id:{
+    idCinemaHallSeat:{
         type: String,
         require:true
     },
