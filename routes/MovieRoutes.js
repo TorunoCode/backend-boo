@@ -52,8 +52,8 @@ movieRoute.post(
     asyncHandler(async (req,res) => {
         console.log(req.body);
         const movie = new MovieModel(req.body);
-        movie.save();
-        if(movie){
+        if(movie.name!= null){
+            movie.save();
             res.json(movie);
         } else {
             res.status(404)

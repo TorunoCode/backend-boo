@@ -22,22 +22,22 @@ import mongoose from 'mongoose';
 const feedbacksSchema = new mongoose.Schema({
     userId: {
         type: String,
-        require: true
+        required: true
     }, title: {
         type: String,
-        require: true
+        required: true
     },
     detail: {
         type: String,
-        require: true
+        required: true
     },
     movieId: {
         type: String,
-        require: true
+        required: true
     },
     rate: {
         type: Number,
-        require: true
+        required: true
     }
 },{
     timestamps: true
