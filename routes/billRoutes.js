@@ -4,6 +4,10 @@ const app = express.Router();
 app.get("/", function (req, res) {
     res.send("bill Routes");
 });
+app.get("/all", async (req, res) =>{
+    const bills = (await billsModel.find({}).sort({ "updatedAt": -1 }));
+    res.send(bills);
+});
 app.post("/add_bills", async (request, response) => {
     const bill = new billsModel(request.body);
 

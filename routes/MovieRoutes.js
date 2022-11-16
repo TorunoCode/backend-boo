@@ -68,8 +68,8 @@ movieRoute.post(
     asyncHandler(async (req,res) => {
         console.log(req.body);
         const movie = new MovieModel(req.body);
-        movie.save();
-        if(movie){
+        if(movie.name!= null){
+            movie.save();
             res.json(movie);
         } else {
             res.status(404)
@@ -91,7 +91,7 @@ movieRoute.post(
         const cinemaSeat = await cinemaSeatModel.find({name: req.body.idHall});
         showing.save();
         cinemaSeat.map(async(a) => {
-            const showSeat = await showSeatModel({price:req.body.price,id: a._id,number: a.seatRow+a.seatColumn,idShowing:showing._id});
+            const showSeat = await showSeatModel({price:req.body.price,idCinemaHallSeat: a._id,number: a.seatRow+a.seatColumn,idShowing:showing._id});
             showSeat.save();
         })
         if(showing){
