@@ -15,6 +15,8 @@ import paypalRoute from'./routes/paypalRoutes.js';
 import billRoute from'./routes/billRoutes.js';
 import session from 'express-session';
 import MongoDBSession from'connect-mongodb-session';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 const MongoStore = MongoDBSession(session);
 paypal.configure({
     'mode': 'sandbox', //sandbox or live
@@ -29,6 +31,7 @@ const store = new MongoStore({
     uri: process.env.CONNECTION_URL,
     collection:"mySessions",
   });
+  app.use(express.json());
 app.use(
     session({
       secret:"key that will sign cookie",

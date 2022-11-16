@@ -14,10 +14,26 @@ import listModel from '../models/listModel.js';
 import UserModal from '../models/userModel.js';
 import feedbackModel from '../models/feedbacksModel.js';
 import mongoose from 'mongoose'; 
+const isAuth = (req,res, next)=>{
+    console.log(req.session.isAuth);
+    if(req.session.isAuth){
+        next();
+    }else{
+      return res.status(404).json({data:null, message: "Action doesn't exist" });
+    }
+  }
+  const isAdmin = (req,res, next)=>{
+    if(req.session.isAdmin){
+        next();
+    }else{
+      return res.status(404).json({data:null, message: "Action doesn't exist" });
+    }
+  }
 const movieRoute = express.Router();
 movieRoute.get(
     "/",
     asyncHandler(async (req,res) => {
+        console.log(req.session.isAuth);
         const movies = await MovieModel.find({});
         res.json(movies);
     })
@@ -220,7 +236,7 @@ movieRoute.post(
 
 );
 movieRoute.get(
-    "/findMovieStep1/:id",      //Tim rap dua tren movie (*)
+    "/findMovieStep1/:id",isAuth,      //Tim rap dua tren movie (*)
     asyncHandler(async (req,res) => {
         const data = await ShowingModel.distinct('idCinema',{idMovie:req.params.id});
     //    console.log(data);
@@ -268,6 +284,7 @@ movieRoute.get(
     asyncHandler(async (req,res) => {
         const check = await ShowingModel.findOne({idMovie:req.params.idMovie,idCinema: req.params.idCinema,startTime:req.params.startTime,time:req.params.time});
         console.log(check);
+        const id = check._id.toString();
         const hall = await cinemaHallModel.findById(check.idHall);
         console.log(hall);
         const data = await showSeatModel.find({idShowing:check._id},{id:1,number:1,_id:0}).sort({number:1});
@@ -294,7 +311,7 @@ movieRoute.get(
         }
         // console.log(listItem);
         if(data){
-            return    res.json(listItem);
+            return    res.json({data:listItem, idShowing:id});
         } else {          
            return res.status(400).json({message: "No item found"});
         }
