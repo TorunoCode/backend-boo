@@ -110,11 +110,11 @@ movieRoute.post(
 
 );
 movieRoute.post(
-    "/booking/add",
+    "/booking/add/:id",
     asyncHandler(async (req,res) => {
-        req.session.idCustomer = "636b67fa4f1670cf789a8a80";
+        req.session.idCustomer = req.params.id; //"636b67fa4f1670cf789a8a80";
         const body = req.body;
-                 
+                //  console.log(req.params.id);
         const check = await billModel.findOne({idCustomer:req.session.idCustomer,status:-1});   //kiem tra da co bill chua     
         console.log("check"+check)
         if(!check){
