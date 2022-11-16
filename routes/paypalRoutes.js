@@ -57,9 +57,16 @@ app.get('/pay/:id', async (req, res) => {
     for (let i = 0; i < billsOfUser.length; i++) {
       let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
       let CinemaHallSeat = await CinemaHallSeatModel.find({_id:showSeat.idCinemaHallSeat});
-      let showing = await ShowingModel.findById(showSeat.idShowing);
-      let movie = await MovieModel.findById(showing.idMovie);
-      let name ="seat " +CinemaHallSeat[0].seatRow+"/" +CinemaHallSeat[0].seatColumn+" of movie: " + movie.name
+      let showing;
+      let movie; 
+      try{
+      showing = await ShowingModel.findById(showSeat.idShowing);
+      movie = await MovieModel.findById(showing.idMovie);}
+    catch(error){return res.status(500).send({message:"Your movie booked not exist"})}
+      let name=""
+      console.log()
+      try{name ="seat id: "+showSeat._id +" of movie: " + movie.name}
+      catch(error){return res.status(500).send({message:"Your seat booked not exist"})}
       console.log(name)
       itemsToAdd.push({
         "name": name,
