@@ -113,7 +113,7 @@ movieRoute.post(
     "/booking/add/:id",
     asyncHandler(async (req,res) => {
         req.session.idCustomer = req.params.id; //"636b67fa4f1670cf789a8a80";
-        const body = req.body;
+        const body = req.body.data;
                 //  console.log(req.params.id);
         const check = await billModel.findOne({idCustomer:req.session.idCustomer,status:-1});   //kiem tra da co bill chua     
         console.log("check"+check)
@@ -123,15 +123,15 @@ movieRoute.post(
             for(let a of body){
                 console.log("bill: "+bill._id);
                 console.log(a)
-            const bookingTicket = await orderModel({idBill:bill._id.toString(), idShowSeat: a.idShowSeat,idCustomer: req.session.idCustomer,idshowing: a.idshowing, status:-1})
+            const bookingTicket = await orderModel({idBill:bill._id.toString(), idShowSeat: a.idShowSeat,idCustomer: req.session.idCustomer,idshowing: req.body.idshowing, status:-1})
             bookingTicket.save();  //gan nhan ticket voi ma bill ma kh mua
             const data = await showSeatModel.findById(a.idShowSeat); // lay price moi ve
             const total = await billModel.findById(bill._id.toString()); //lay total bill de cap nhat
             console.log("total: "+total.totalMoney)
             console.log(data);
             console.log("price: "+data.price)
-            await billModel.findByIdAndUpdate(bill._id.toString(),{$set:{totalMoney:total.totalMoney+ data.price}});    //cap nhat totalbill       
             await  showSeatModel.findById(a.idShowSeat).updateOne({},{$set:{isReserved:true}}); //cap nhat trang thai ve da co nguoi chon mua
+            await billModel.findByIdAndUpdate(bill._id.toString(),{$set:{totalMoney:total.totalMoney+ data.price}});    //cap nhat totalbill       
             console.log("sum: "+(total.totalMoney+ data.price))}
             return res.status(400).json({data:null, message: "add successfully" }); 
            }
@@ -141,7 +141,7 @@ movieRoute.post(
             for(let a of body){
                 console.log("now")
                 console.log(a)
-                const bookingTicket = await orderModel({idBill:check._id.toString(), idShowSeat: a.idShowSeat,idCustomer: req.session.idCustomer,idshowing: a.idshowing, status:-1})
+                const bookingTicket = await orderModel({idBill:check._id.toString(), idShowSeat: a.idShowSeat,idCustomer: req.session.idCustomer,idshowing: req.body.idshowing, status:-1})
                 await bookingTicket.save();  
                 console.log("wher")
             //const data = await showSeatModel.findById(mongoose.Types.ObjectId(a.idShowSeat));
