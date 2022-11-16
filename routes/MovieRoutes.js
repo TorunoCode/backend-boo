@@ -236,7 +236,7 @@ movieRoute.post(
 
 );
 movieRoute.get(
-    "/findMovieStep1/:id",isAuth,      //Tim rap dua tren movie (*)
+    "/findMovieStep1/:id",      //Tim rap dua tren movie (*)
     asyncHandler(async (req,res) => {
         const data = await ShowingModel.distinct('idCinema',{idMovie:req.params.id});
     //    console.log(data);
