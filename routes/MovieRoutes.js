@@ -284,7 +284,8 @@ movieRoute.get(
         const id = check._id.toString();
         const hall = await cinemaHallModel.findById(check.idHall);
         console.log(hall);
-        const data = await showSeatModel.find({idShowing:check._id},{_id:1,number:1}).sort({number:1});
+        const data = await showSeatModel.find({idShowing:check._id},{id:'$_id',_id:0,number:1,isReserved:1}).sort({number:1});
+        
         let listItem = [];
         let i=0,x=0;
         let a=5;
