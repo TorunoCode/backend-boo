@@ -114,7 +114,7 @@ movieRoute.post(
     asyncHandler(async (req,res) => {
         req.session.idCustomer = "636b67fa4f1670cf789a8a80";
         const body = req.body;
-        try{            
+                 
         const check = await billModel.findOne({idCustomer:req.session.idCustomer,status:-1});   //kiem tra da co bill chua     
         console.log("check"+check)
         if(!check){
@@ -128,6 +128,7 @@ movieRoute.post(
             const data = await showSeatModel.findById(a.idShowSeat); // lay price moi ve
             const total = await billModel.findById(bill._id.toString()); //lay total bill de cap nhat
             console.log("total: "+total.totalMoney)
+            console.log(data);
             console.log("price: "+data.price)
             await billModel.findByIdAndUpdate(bill._id.toString(),{$set:{totalMoney:total.totalMoney+ data.price}});    //cap nhat totalbill       
             await  showSeatModel.findById(a.idShowSeat).updateOne({},{$set:{isReserved:true}}); //cap nhat trang thai ve da co nguoi chon mua
@@ -155,10 +156,6 @@ movieRoute.post(
              }        
              return res.status(400).json({data:null, message: "add successfully" });        
         }
-    }
-    catch(E){
-        res.status(404)
-        throw new Error("Add showing not successfull");}
     })
 
 );
@@ -287,7 +284,7 @@ movieRoute.get(
         const id = check._id.toString();
         const hall = await cinemaHallModel.findById(check.idHall);
         console.log(hall);
-        const data = await showSeatModel.find({idShowing:check._id},{id:1,number:1,_id:0}).sort({number:1});
+        const data = await showSeatModel.find({idShowing:check._id},{_id:1,number:1}).sort({number:1});
         let listItem = [];
         let i=0,x=0;
         let a=5;
