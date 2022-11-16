@@ -64,7 +64,8 @@ app.get('/pay/:id', async (req, res) => {
       movie = await MovieModel.findById(showing.idMovie);}
     catch(error){return res.status(500).send({message:"Your movie booked not exist"})}
       let name=""
-      try{name ="seat " +CinemaHallSeat[0].seatRow+"/" +CinemaHallSeat[0].seatColumn+" of movie: " + movie.name}
+      console.log()
+      try{name ="seat id: "+showSeat._id +" of movie: " + movie.name}
       catch(error){return res.status(500).send({message:"Your seat booked not exist"})}
       console.log(name)
       itemsToAdd.push({
