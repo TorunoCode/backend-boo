@@ -14,10 +14,26 @@ import listModel from '../models/listModel.js';
 import UserModal from '../models/userModel.js';
 import feedbackModel from '../models/feedbacksModel.js';
 import mongoose from 'mongoose'; 
+const isAuth = (req,res, next)=>{
+    console.log(req.session.isAuth);
+    if(req.session.isAuth){
+        next();
+    }else{
+      return res.status(404).json({data:null, message: "Action doesn't exist" });
+    }
+  }
+  const isAdmin = (req,res, next)=>{
+    if(req.session.isAdmin){
+        next();
+    }else{
+      return res.status(404).json({data:null, message: "Action doesn't exist" });
+    }
+  }
 const movieRoute = express.Router();
 movieRoute.get(
     "/",
     asyncHandler(async (req,res) => {
+        console.log(req.session.isAuth);
         const movies = await MovieModel.find({});
         res.json(movies);
     })
@@ -94,11 +110,11 @@ movieRoute.post(
 
 );
 movieRoute.post(
-    "/booking/add",
+    "/booking/add/:id",
     asyncHandler(async (req,res) => {
-        req.session.idCustomer = "636b67fa4f1670cf789a8a80";
+        req.session.idCustomer = req.params.id; //"636b67fa4f1670cf789a8a80";
         const body = req.body;
-        try{            
+                //  console.log(req.params.id);
         const check = await billModel.findOne({idCustomer:req.session.idCustomer,status:-1});   //kiem tra da co bill chua     
         console.log("check"+check)
         if(!check){
@@ -112,6 +128,7 @@ movieRoute.post(
             const data = await showSeatModel.findById(a.idShowSeat); // lay price moi ve
             const total = await billModel.findById(bill._id.toString()); //lay total bill de cap nhat
             console.log("total: "+total.totalMoney)
+            console.log(data);
             console.log("price: "+data.price)
             await billModel.findByIdAndUpdate(bill._id.toString(),{$set:{totalMoney:total.totalMoney+ data.price}});    //cap nhat totalbill       
             await  showSeatModel.findById(a.idShowSeat).updateOne({},{$set:{isReserved:true}}); //cap nhat trang thai ve da co nguoi chon mua
@@ -139,10 +156,6 @@ movieRoute.post(
              }        
              return res.status(400).json({data:null, message: "add successfully" });        
         }
-    }
-    catch(E){
-        res.status(404)
-        throw new Error("Add showing not successfull");}
     })
 
 );
@@ -268,9 +281,11 @@ movieRoute.get(
     asyncHandler(async (req,res) => {
         const check = await ShowingModel.findOne({idMovie:req.params.idMovie,idCinema: req.params.idCinema,startTime:req.params.startTime,time:req.params.time});
         console.log(check);
+        const id = check._id.toString();
         const hall = await cinemaHallModel.findById(check.idHall);
         console.log(hall);
-        const data = await showSeatModel.find({idShowing:check._id},{id:1,number:1,_id:0}).sort({number:1});
+        const data = await showSeatModel.find({idShowing:check._id},{id:'$_id',_id:0,number:1,isReserved:1}).sort({number:1});
+        
         let listItem = [];
         let i=0,x=0;
         let a=5;
@@ -294,7 +309,7 @@ movieRoute.get(
         }
         // console.log(listItem);
         if(data){
-            return    res.json(listItem);
+            return    res.json({data:listItem, idShowing:id});
         } else {          
            return res.status(400).json({message: "No item found"});
         }
