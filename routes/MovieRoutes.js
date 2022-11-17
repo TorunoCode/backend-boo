@@ -123,14 +123,14 @@ movieRoute.post(
             for(let a of body){
                 console.log("bill: "+bill._id);
                 console.log(a)
-            const bookingTicket = await orderModel({idBill:bill._id.toString(), idShowSeat: a.idShowSeat,idCustomer: req.session.idCustomer,idshowing: req.body.idshowing, status:-1})
+            const bookingTicket = await orderModel({idBill:bill._id.toString(), idShowSeat: a,idCustomer: req.session.idCustomer,idshowing: req.body.idshowing, status:-1})
             bookingTicket.save();  //gan nhan ticket voi ma bill ma kh mua
-            const data = await showSeatModel.findById(a.idShowSeat); // lay price moi ve
+            const data = await showSeatModel.findById(a); // lay price moi ve
             const total = await billModel.findById(bill._id.toString()); //lay total bill de cap nhat
             console.log("total: "+total.totalMoney)
             console.log(data);
             console.log("price: "+data.price)
-            await  showSeatModel.findById(a.idShowSeat).updateOne({},{$set:{isReserved:true}}); //cap nhat trang thai ve da co nguoi chon mua
+            await  showSeatModel.findById(a).updateOne({},{$set:{isReserved:true}}); //cap nhat trang thai ve da co nguoi chon mua
             await billModel.findByIdAndUpdate(bill._id.toString(),{$set:{totalMoney:total.totalMoney+ data.price}});    //cap nhat totalbill       
             console.log("sum: "+(total.totalMoney+ data.price))}
             return res.status(400).json({data:null, message: "add successfully" }); 
@@ -141,17 +141,17 @@ movieRoute.post(
             for(let a of body){
                 console.log("now")
                 console.log(a)
-                const bookingTicket = await orderModel({idBill:check._id.toString(), idShowSeat: a.idShowSeat,idCustomer: req.session.idCustomer,idshowing: req.body.idshowing, status:-1})
+                const bookingTicket = await orderModel({idBill:check._id.toString(), idShowSeat: a,idCustomer: req.session.idCustomer,idshowing: req.body.idshowing, status:-1})
                 await bookingTicket.save();  
                 console.log("wher")
             //const data = await showSeatModel.findById(mongoose.Types.ObjectId(a.idShowSeat));
-            const data = await showSeatModel.findById(a.idShowSeat);
+            const data = await showSeatModel.findById(a);
             console.log(data)
             const total = await billModel.findById(check._id.toString());
             console.log("total: "+total.totalMoney)
             console.log("price: "+data.price)
             await billModel.findByIdAndUpdate(check._id.toString(),{$set:{totalMoney:total.totalMoney+ data.price}});           
-            await  showSeatModel.findById(a.idShowSeat).updateOne({},{$set:{isReserved:true}});
+            await  showSeatModel.findById(a).updateOne({},{$set:{isReserved:true}});
             console.log("sum: "+(total.totalMoney+ data.price))
              }        
              return res.status(400).json({data:null, message: "add successfully" });        
