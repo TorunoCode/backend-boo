@@ -163,6 +163,9 @@ app.get('/success/:buyer_id/:rand', async (req, res) => {
             }
           }]
         };
+        if(payment.state=="approved"){
+          return res.status(400).send("You have paid")
+        }
         let paymentInfo;
         // Obtains the transaction details from paypal
         paypal.payment.execute(paymentId, execute_payment_json, async function (error, payment) {
@@ -178,6 +181,7 @@ app.get('/success/:buyer_id/:rand', async (req, res) => {
             let Currency_items = [];
             let Price_items = [];
             let Quantity_items = [];
+            try{
             for (let i = 0; i < paymentInfo.transactions[0].item_list.items.length; i++) {
               Name_items[i] = paymentInfo.transactions[0].item_list.items[i].name;
               Sku_items[i] = paymentInfo.transactions[0].item_list.items[i].sku;
@@ -205,7 +209,7 @@ app.get('/success/:buyer_id/:rand', async (req, res) => {
               Quantity_items: Quantity_items,
               Currency_items: Currency_items,
               Price_items: Price_items
-            });
+            });}catch(error){return res.status(500).send("Your items in payment is null got error")}
             res.status(200).send("done paying");
           }
         });
