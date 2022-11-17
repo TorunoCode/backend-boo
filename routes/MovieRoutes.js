@@ -115,7 +115,9 @@ movieRoute.post(
         req.session.idCustomer = req.params.id; //"636b67fa4f1670cf789a8a80";
         const body = req.body.data;
                 //  console.log(req.params.id);
-        const check = await billModel.findOne({idCustomer:req.session.idCustomer,status:-1});   //kiem tra da co bill chua     
+        const check = await billModel.findOne({idCustomer:req.session.idCustomer,status:-1});   //kiem tra da co bill chua   
+        const checkShowing = await ShowingModel.findById(req.body.idShowing);  
+        if(checkShowing ==null)       res.status(500).json({ message: "Something went wrong" });
         console.log("check"+check)
         if(!check){
             const bill = await billModel({totalMoney:0,idCustomer:req.session.idCustomer,status:-1}); //tao ma bill moi
@@ -156,6 +158,7 @@ movieRoute.post(
              }        
              return res.status(400).json({data:null, message: "add successfully" });        
         }
+        return       res.status(500).json({ message: "Something went wrong" });
     })
 
 );
