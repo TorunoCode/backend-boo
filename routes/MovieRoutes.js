@@ -334,10 +334,9 @@ movieRoute.get(
 movieRoute.get(
     "/historyBooking/:id",
     asyncHandler(async (req,res) => {
-        const bill = await billModel.findOne({idCustomer:req.params.id});
-        const ticket = await orderModel.find({idBill:bill._id.toString()});
-        if(bill && ticket){
-            return    res.json({data:bill, booking: ticket});
+        const bill = await billModel.find({idCustomer:req.params.id});
+        if(bill){
+            return    res.json(bill);
         } else {          
            return res.status(400).json({message: "No item found"});
         }
