@@ -320,6 +320,43 @@ movieRoute.get(
 
 );
 movieRoute.get(
+    "/historyBooking",
+    asyncHandler(async (req,res) => {
+        const bill = await billModel.find({});
+        if(bill){
+            return    res.json(bill);
+        } else {          
+           return res.status(400).json({message: "No item found"});
+        }
+    })
+
+);
+movieRoute.get(
+    "/historyBooking/:id",
+    asyncHandler(async (req,res) => {
+        const bill = await billModel.findOne({idCustomer:req.params.id});
+        const ticket = await orderModel.find({idBill:bill._id.toString()});
+        if(bill && ticket){
+            return    res.json({data:bill, booking: ticket});
+        } else {          
+           return res.status(400).json({message: "No item found"});
+        }
+    })
+
+);
+movieRoute.get(
+    "/detailBooking/:id",
+    asyncHandler(async (req,res) => {
+        const ticket = await orderModel.find({idBill:req.params.id});
+        if(ticket){
+            return    res.json(ticket);
+        } else {          
+           return res.status(400).json({message: "No item found"});
+        }
+    })
+
+);
+movieRoute.get(
     "/setRating",
     asyncHandler(async (req,res) => {
         const movie = await MovieModel.find({});
