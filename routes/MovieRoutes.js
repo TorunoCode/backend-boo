@@ -331,9 +331,35 @@ movieRoute.get(
 movieRoute.get(
     "/historyBooking/:id",
     asyncHandler(async (req, res) => {
-        const bill = await billModel.find({ idCustomer: req.params.id });
+        const bill = await billModel.find({ idCustomer: req.params.id });  
+        var  listItem =[];     
+              for (let a of bill) 
+            {
+                const ticket = await orderModel.find({ idBill: a._id.toString() });
+                console.log(ticket);
+                const showing = await ShowingModel.findById(ticket[0].idshowing);
+                const cinema = await CinemaModel.findById(showing.idCinema);
+                const movie = await MovieModel.findById(showing.idMovie);
+                let list = [];
+                for (let a of ticket) {
+                    const seat = await showSeatModel.findById(a.idShowSeat);     
+                    console.log(seat);
+                    list.push(seat.number);
+                }
+                var item = {
+                    nameMovie:movie.name,
+                    location: cinema.location,
+                    dateStart: convert(showing.startTime),
+                    time: showing.time,
+                    listSeat: list,
+                    createDate:convert(a.createdAt),
+                    totalMoney: a.totalMoney
+                }
+                listItem.push(item);
+                
+            }
         if (bill) {
-            return res.json(bill);
+            return res.json(listItem);
         } else {
             return res.status(400).json({ message: "No item found" });
         }
