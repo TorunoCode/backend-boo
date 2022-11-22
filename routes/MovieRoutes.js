@@ -340,20 +340,37 @@ movieRoute.get(
     })
 
 );
+function convert(str) {
+    var date = new Date(str),
+      mnth = ("0" + (date.getMonth() + 1)).slice(-2),
+      day = ("0" + date.getDate()).slice(-2);
+    return [date.getFullYear(), mnth, day].join("-");
+  }
 movieRoute.get(
     "/detailBooking/:id",
     asyncHandler(async (req, res) => {
+        const bill = await billModel.findOne({ idBill: req.params.id });
         const ticket = await orderModel.find({ idBill: req.params.id });
+        const showing = await ShowingModel.findById(ticket[0].idshowing);
+        const cinema = await CinemaModel.findById(showing.idCinema);
+        const movie = await MovieModel.findById(showing.idMovie);
+        console.log(showing);
         let listItem = [];
         for (let a of ticket) {
-            console.log(a);
-            let list = [];
             const seat = await showSeatModel.findById(a.idShowSeat);     
-            list.push({a,name:seat.number});
-            listItem.push(list);
+            console.log(seat);
+            listItem.push(seat.number);
         }
         if (ticket) {
-            return res.json(listItem);
+            return res.json({
+                nameMovie:movie.name,
+                location: cinema.location,
+                dateStart: convert(showing.startTime),
+                time: showing.time,
+                listSeat: listItem,
+                createDate:convert(bill.createdAt),
+                totalMoney: bill.totalMoney
+            });
         } else {
             return res.status(400).json({ message: "No item found" });
         }
