@@ -114,13 +114,13 @@ movieRoute.post(
     asyncHandler(async (req, res) => {
         req.session.idCustomer = req.params.id; //"636b67fa4f1670cf789a8a80";
         const body = req.body.data;
-        //  console.log(req.params.id);
-        const check = await billModel.findOne({ idCustomer: req.session.idCustomer, status: -1 });   //kiem tra da co bill chua   
+         console.log(req.body);
+        const check = await billModel.findOne({ idCustomer: req.params.id, status: -1 });   //kiem tra da co bill chua   
         const checkShowing = await ShowingModel.findById(req.body.idShowing);
         if (checkShowing == null) res.status(500).json({ message: "Something went wrong" });
         console.log("check" + check)
         if (!check) {
-            const bill = await billModel({ totalMoney: 0, idCustomer: req.session.idCustomer, status: -1 }); //tao ma bill moi
+            const bill = await billModel({ totalMoney: 0, idCustomer: req.params.id, status: -1 }); //tao ma bill moi
             await bill.save();
             for (let a of body) {
                 console.log("bill: " + bill._id);
@@ -143,7 +143,7 @@ movieRoute.post(
             for (let a of body) {
                 console.log("now")
                 console.log(a)
-                const bookingTicket = await orderModel({ idBill: check._id.toString(), idShowSeat: a, idCustomer: req.session.idCustomer, idshowing: req.body.idshowing, status: -1 })
+                const bookingTicket = await orderModel({ idBill: check._id.toString(), idShowSeat: a, idCustomer: req.params.id, idshowing: req.body.idshowing, status: -1 })
                 await bookingTicket.save();
                 console.log("wher")
                 //const data = await showSeatModel.findById(mongoose.Types.ObjectId(a.idShowSeat));
@@ -158,7 +158,6 @@ movieRoute.post(
             }
             return res.status(400).json({ data: null, message: "add successfully" });
         }
-        return res.status(500).json({ message: "Something went wrong" });
     })
 
 );
@@ -332,17 +331,26 @@ movieRoute.get(
     "/historyBooking/:id",
     asyncHandler(async (req, res) => {
         const bill = await billModel.find({ idCustomer: req.params.id });  
+
         var  listItem =[];     
               for (let a of bill) 
             {
-                const ticket = await orderModel.find({ idBill: a._id.toString() });
-                console.log(ticket);
-                const showing = await ShowingModel.findById(ticket[0].idshowing);
+                const ticket = await orderModel.distinct('idshowing',{ idBill: a._id.toString() });
+                for( let b of ticket)
+                {
+                    console.log(b);
+                const showing = await ShowingModel.findById(b);   
+                console.log(showing);
                 const cinema = await CinemaModel.findById(showing.idCinema);
+                console.log(cinema);
+
                 const movie = await MovieModel.findById(showing.idMovie);
+                console.log(movie);
+
                 let list = [];
-                for (let a of ticket) {
-                    const seat = await showSeatModel.findById(a.idShowSeat);     
+                const ticketOfMovie = await orderModel.find({ idBill: a._id.toString(),idshowing:b });
+                for (let c of ticketOfMovie) {
+                    const seat = await showSeatModel.findById(c.idShowSeat);     
                     console.log(seat);
                     list.push(seat.number);
                 }
@@ -351,12 +359,11 @@ movieRoute.get(
                     location: cinema.location,
                     dateStart: convert(showing.startTime),
                     time: showing.time,
-                    listSeat: list,
+                    listItem: list,
                     createDate:convert(a.createdAt),
-                    totalMoney: a.totalMoney
                 }
                 listItem.push(item);
-                
+            }
             }
         if (bill) {
             return res.json(listItem);
@@ -380,7 +387,7 @@ movieRoute.get(
         const showing = await ShowingModel.findById(ticket[0].idshowing);
         const cinema = await CinemaModel.findById(showing.idCinema);
         const movie = await MovieModel.findById(showing.idMovie);
-        console.log(showing);
+        console.log(ticket);
         let listItem = [];
         for (let a of ticket) {
             const seat = await showSeatModel.findById(a.idShowSeat);     
