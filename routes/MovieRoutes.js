@@ -338,7 +338,6 @@ movieRoute.get(
                 const ticket = await orderModel.distinct('idshowing',{ idBill: a._id.toString() });
                 for( let b of ticket)
                 {
-                    console.log(b);
                 const showing = await ShowingModel.findById(b);   
                 console.log(showing);
                 const cinema = await CinemaModel.findById(showing.idCinema);
@@ -355,6 +354,7 @@ movieRoute.get(
                     list.push(seat.number);
                 }
                 var item = {
+                    idBill: a._id.toString(),
                     nameMovie:movie.name,
                     location: cinema.location,
                     dateStart: convert(showing.startTime),
