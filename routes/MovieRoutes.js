@@ -355,10 +355,10 @@ movieRoute.get(
                 }
                 var item = {
                     idBill: a._id.toString(),
-                    nameMovie:movie.name,
-                    location: cinema.location,
-                    dateStart: convert(showing.startTime),
-                    time: showing.time,
+                    movie:movie.name,
+                    cinema: cinema.name,
+                    date: convert(showing.startTime),
+                    session: showing.time,
                     listItem: list,
                     createDate:convert(a.createdAt),
                 }
