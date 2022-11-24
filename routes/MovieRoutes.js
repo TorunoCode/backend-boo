@@ -136,7 +136,7 @@ movieRoute.post(
                 await billModel.findByIdAndUpdate(bill._id.toString(), { $set: { totalMoney: total.totalMoney + data.price } });    //cap nhat totalbill       
                 console.log("sum: " + (total.totalMoney + data.price))
             }
-            return res.status(400).json({ data: null, message: "add successfully" });
+            return res.status(400).json({ message: "add successfully" });
         }
         else {
             console.log("here")
@@ -156,7 +156,7 @@ movieRoute.post(
                 await showSeatModel.findById(a).updateOne({}, { $set: { isReserved: true } });
                 console.log("sum: " + (total.totalMoney + data.price))
             }
-            return res.status(400).json({ data: null, message: "add successfully" });
+            return res.status(400).json({message: "add successfully" });
         }
     })
 
@@ -331,13 +331,14 @@ movieRoute.get(
     "/historyBooking/:id",
     asyncHandler(async (req, res) => {
         const bill = await billModel.find({ idCustomer: req.params.id });  
-
         var  listItem =[];     
               for (let a of bill) 
-            {
+              {
                 const ticket = await orderModel.distinct('idshowing',{ idBill: a._id.toString() });
                 for( let b of ticket)
                 {
+                    console.log(b);
+
                 const showing = await ShowingModel.findById(b);   
                 console.log(showing);
                 const cinema = await CinemaModel.findById(showing.idCinema);
@@ -363,8 +364,11 @@ movieRoute.get(
                     createDate:convert(a.createdAt),
                 }
                 listItem.push(item);
+                console.log(listItem);
+
             }
             }
+            console.log(listItem);
         if (bill) {
             return res.json(listItem);
         } else {
@@ -383,27 +387,44 @@ movieRoute.get(
     "/detailBooking/:id",
     asyncHandler(async (req, res) => {
         const bill = await billModel.findOne({ idBill: req.params.id });
-        const ticket = await orderModel.find({ idBill: req.params.id });
-        const showing = await ShowingModel.findById(ticket[0].idshowing);
-        const cinema = await CinemaModel.findById(showing.idCinema);
-        const movie = await MovieModel.findById(showing.idMovie);
-        console.log(ticket);
-        let listItem = [];
-        for (let a of ticket) {
-            const seat = await showSeatModel.findById(a.idShowSeat);     
-            console.log(seat);
-            listItem.push(seat.number);
-        }
+        const ticket = await orderModel.distinct('idshowing',{ idBill: bill._id.toString() });
+        var  listItem =[];     
+                for( let b of ticket)
+                {
+                    console.log(b);
+
+                const showing = await ShowingModel.findById(b);   
+                console.log(showing);
+                const cinema = await CinemaModel.findById(showing.idCinema);
+                console.log(cinema);
+
+                const movie = await MovieModel.findById(showing.idMovie);
+                console.log(movie);
+
+                let list = [];
+                const ticketOfMovie = await orderModel.find({ idBill: bill._id.toString(),idshowing:b });
+                let total =0;
+                for (let c of ticketOfMovie) {
+                    const seat = await showSeatModel.findById(c.idShowSeat);     
+                    total += seat.price;
+                    console.log(seat);
+                    list.push(seat.number);
+                }
+                var item = {
+                    movie:movie.name,
+                    cinema: cinema.name,
+                    date: convert(showing.startTime),
+                    session: showing.time,
+                    listItem: list,
+                    createDate:convert(bill.createdAt),
+                    totalMoney: total
+                }
+                listItem.push(item);
+                console.log(listItem);
+
+            }
         if (ticket) {
-            return res.json({
-                nameMovie:movie.name,
-                location: cinema.location,
-                dateStart: convert(showing.startTime),
-                time: showing.time,
-                listSeat: listItem,
-                createDate:convert(bill.createdAt),
-                totalMoney: bill.totalMoney
-            });
+            return res.json(listItem);
         } else {
             return res.status(400).json({ message: "No item found" });
         }
