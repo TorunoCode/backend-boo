@@ -336,7 +336,7 @@ movieRoute.get(
               {
                 console.log(a);
 
-                const ticket = await orderModel.distinct('idshowing',{ idBill: a._id.toString() });
+                const ticket = await orderModel.distinct('idShowing',{ idBill: a._id.toString() });
                 console.log(ticket);
                 for( let b of ticket)
                 {
@@ -351,7 +351,7 @@ movieRoute.get(
                 console.log(movie);
 
                 let list = [];
-                const ticketOfMovie = await orderModel.find({ idBill: a._id.toString(),idshowing:b });
+                const ticketOfMovie = await orderModel.find({ idBill: a._id.toString(),idShowing:b });
                 console.log(ticketOfMovie);
                 for (let c of ticketOfMovie) {
                     const seat = await showSeatModel.findById(c.idShowSeat);     
@@ -391,7 +391,7 @@ movieRoute.get(
     "/detailBooking/:id",
     asyncHandler(async (req, res) => {
         const bill = await billModel.findOne({ idBill: req.params.id });
-        const ticket = await orderModel.distinct('idshowing',{ idBill: bill._id.toString() });
+        const ticket = await orderModel.distinct('idShowing',{ idBill: bill._id.toString() });
         var  listItem =[];     
                 for( let b of ticket)
                 {
@@ -406,7 +406,7 @@ movieRoute.get(
                 console.log(movie);
 
                 let list = [];
-                const ticketOfMovie = await orderModel.find({ idBill: bill._id.toString(),idshowing:b });
+                const ticketOfMovie = await orderModel.find({ idBill: bill._id.toString(),idShowing:b });
                 let total =0;
                 for (let c of ticketOfMovie) {
                     const seat = await showSeatModel.findById(c.idShowSeat);     
