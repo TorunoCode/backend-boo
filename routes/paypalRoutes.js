@@ -73,7 +73,13 @@ app.get('/pay/:id', async (req, res) => {
       let name = ""
       let descriptionItems = ""
       console.log()
-      try { name = showSeat.number+ " movie: " + movie.name+" at "+ showing.startTime + ", "+CinemaHall.name +", "+Cinema.name;
+      try {
+        var date = new Date(showing.startTime),
+      mnth = ("0" + (date.getMonth() + 1)).slice(-2),
+      day = ("0" + date.getDate()).slice(-2);
+      let hourMin= "";
+      hourMin= " "+date.getHours()+":"+date.getMinutes();
+        name = showSeat.number+ " movie: " + movie.name+" at "+ [date.getFullYear(), mnth, day].join("-")+hourMin+", "+CinemaHall.name +", "+Cinema.name;
     descriptionItems = "start at: "+ showing.startTime + ", Cinemal Hall name: "+CinemaHall.name +", Cinema name: "+Cinema.name+", Location: "+Cinema.location}
       catch (error) { return res.status(500).send({ message: "Your seat booked not exist" }) }
       console.log(name)
@@ -128,6 +134,7 @@ app.get('/pay/:id', async (req, res) => {
 app.get('/send_verify/:userId/:rand', async (req, res) => {
   await billsModel.updateMany({ idCustomer: req.params.userId }, { "$set": { status: "0" } })
   await showSeatModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "0" } })
+  await orderModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "0" } })
   let oriUrl = req.originalUrl + '';
   oriUrl = oriUrl.replace('send_verify', 'success')
   var emailToSend = await userModel.find({ _id: req.params.userId }).select('email -_id')
@@ -154,6 +161,7 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
 app.get('/success/:buyer_id/:rand', async (req, res) => {
   await billsModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
   await showSeatModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
+  await orderModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
   const paymentId = req.query.paymentId;
   paypal.payment.get(paymentId, function (error, payment) {
     if (error) {
