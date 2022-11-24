@@ -3,7 +3,7 @@ const orderSchema =  new mongoose.Schema({
     idShowSeat:{
          type: String, require: true
     },
-    idshowing:{
+    idShowing:{
          type: String, require: true
     },
     idBill:{

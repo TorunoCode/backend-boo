@@ -125,7 +125,7 @@ movieRoute.post(
             for (let a of body) {
                 console.log("bill: " + bill._id);
                 console.log(a)
-                const bookingTicket = await orderModel({ idBill: bill._id.toString(), idShowSeat: a, idCustomer: req.session.idCustomer, idshowing: req.body.idshowing, status: -1 })
+                const bookingTicket = await orderModel({ idBill: bill._id.toString(), idShowSeat: a, idCustomer: req.session.idCustomer, idShowing: req.body.idShowing, status: -1 })
                 bookingTicket.save();  //gan nhan ticket voi ma bill ma kh mua
                 const data = await showSeatModel.findById(a); // lay price moi ve
                 const total = await billModel.findById(bill._id.toString()); //lay total bill de cap nhat
@@ -143,7 +143,7 @@ movieRoute.post(
             for (let a of body) {
                 console.log("now")
                 console.log(a)
-                const bookingTicket = await orderModel({ idBill: check._id.toString(), idShowSeat: a, idCustomer: req.params.id, idshowing: req.body.idshowing, status: -1 })
+                const bookingTicket = await orderModel({ idBill: check._id.toString(), idShowSeat: a, idCustomer: req.params.id, idShowing: req.body.idShowing, status: -1 })
                 await bookingTicket.save();
                 console.log("wher")
                 //const data = await showSeatModel.findById(mongoose.Types.ObjectId(a.idShowSeat));
@@ -334,10 +334,13 @@ movieRoute.get(
         var  listItem =[];     
               for (let a of bill) 
               {
+                console.log(a);
+
                 const ticket = await orderModel.distinct('idshowing',{ idBill: a._id.toString() });
+                console.log(ticket);
                 for( let b of ticket)
                 {
-                    console.log(b);
+                    console.log("b"+b);
 
                 const showing = await ShowingModel.findById(b);   
                 console.log(showing);
@@ -349,6 +352,7 @@ movieRoute.get(
 
                 let list = [];
                 const ticketOfMovie = await orderModel.find({ idBill: a._id.toString(),idshowing:b });
+                console.log(ticketOfMovie);
                 for (let c of ticketOfMovie) {
                     const seat = await showSeatModel.findById(c.idShowSeat);     
                     console.log(seat);
