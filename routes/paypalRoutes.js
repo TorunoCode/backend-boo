@@ -73,17 +73,17 @@ app.get('/pay/:id', async (req, res) => {
       let name = ""
       let descriptionItems = ""
       console.log()
-      try { name = "seat " + CinemaHallSeat.seatRow + "/ " + CinemaHallSeat.seatColumn + " of movie: " + movie.name+" start at: "+ showing.startTime + ", Cinemal Hall name: "+CinemaHall.name +", Cinema name: "+Cinema.name+", Location: "+Cinema.location;
+      try { name = CinemaHallSeat.seatRow + "/" + CinemaHallSeat.seatColumn + " movie: " + movie.name+" at "+ showing.startTime + ", "+CinemaHall.name +", "+Cinema.name;
     descriptionItems = "start at: "+ showing.startTime + ", Cinemal Hall name: "+CinemaHall.name +", Cinema name: "+Cinema.name+", Location: "+Cinema.location}
       catch (error) { return res.status(500).send({ message: "Your seat booked not exist" }) }
       console.log(name)
       itemsToAdd.push({
         "name": name,
-        "description": descriptionItems,
         "sku": billsOfUser[i]._id,
         "price": showSeat.price,
         "currency": "USD",
-        "quantity": 1
+        "quantity": 1,
+        "description": descriptionItems
       })
     }
     total = bill[0].totalMoney;
