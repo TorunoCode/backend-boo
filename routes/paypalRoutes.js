@@ -73,7 +73,7 @@ app.get('/pay/:id', async (req, res) => {
       let name = ""
       let descriptionItems = ""
       console.log()
-      try { name = CinemaHallSeat.seatRow + "/" + CinemaHallSeat.seatColumn + " movie: " + movie.name+" at "+ showing.startTime + ", "+CinemaHall.name +", "+Cinema.name;
+      try { name = showSeat.number+ " movie: " + movie.name+" at "+ showing.startTime + ", "+CinemaHall.name +", "+Cinema.name;
     descriptionItems = "start at: "+ showing.startTime + ", Cinemal Hall name: "+CinemaHall.name +", Cinema name: "+Cinema.name+", Location: "+Cinema.location}
       catch (error) { return res.status(500).send({ message: "Your seat booked not exist" }) }
       console.log(name)
