@@ -9,6 +9,8 @@ import showSeatModel from '../models/showSeatModel.js';
 import CinemaHallSeatModel from '../models/cinemaHallSeatModel.js';
 import ShowingModel from '../models/showingModel.js';
 import MovieModel from '../models/movieModel.js';
+import CinemaHallModel from '../models/cinemaHallModel.js';
+import cinemaModel from'../models/cinemaModel.js';
 const app = express.Router();
 app.get("/test/:id", function (req, res) {
   res.send("paypal Routes");
@@ -48,28 +50,36 @@ app.get('/pay/:id', async (req, res) => {
   }
   else {
     let countStatusChecking2 = await billsModel.count({ idCustomer: req.params.id, status: "-1" });
-    if(countStatusChecking2==0){
+    if (countStatusChecking2 == 0) {
       return res.status(400).send("no bills to pay");
     }
-    let bill= await billsModel.find({idCustomer:req.params.id, status: "-1" });
+    let bill = await billsModel.find({ idCustomer: req.params.id, status: "-1" });
     //luc chua thanh toan moi nguoi chi co 1 bill
-    let billsOfUser = await orderModel.find({ idBill:bill[0]._id });
+    let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
     for (let i = 0; i < billsOfUser.length; i++) {
       let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
-      let CinemaHallSeat = await CinemaHallSeatModel.find({_id:showSeat.idCinemaHallSeat});
+      let CinemaHallSeat = await CinemaHallSeatModel.find({ _id: showSeat.idCinemaHallSeat });
       let showing;
-      let movie; 
-      try{
-      showing = await ShowingModel.findById(showSeat.idShowing);
-      movie = await MovieModel.findById(showing.idMovie);}
-    catch(error){return res.status(500).send({message:"Your movie booked not exist"})}
-      let name=""
+      let movie;
+      let CinemaHall;
+      let Cinema;
+      try {
+        showing = await ShowingModel.findById(showSeat.idShowing);
+        movie = await MovieModel.findById(showing.idMovie);
+        CinemaHall = await CinemaHallModel.findById(showing.idHall);
+        Cinema = await cinemaModel.findById(CinemaHall.idCinema);
+      }
+      catch (error) { return res.status(500).send({ message: "Your movie booked not exist" }) }
+      let name = ""
+      let descriptionItems = ""
       console.log()
-      try{name ="seat id: "+showSeat._id +" of movie: " + movie.name}
-      catch(error){return res.status(500).send({message:"Your seat booked not exist"})}
+      try { name = "seat " + CinemaHallSeat.seatRow + "/ " + CinemaHallSeat.seatColumn + " of movie: " + movie.name+" start at: "+ showing.startTime + ", Cinemal Hall name: "+CinemaHall.name +", Cinema name: "+Cinema.name+", Location: "+Cinema.location;
+    descriptionItems = "start at: "+ showing.startTime + ", Cinemal Hall name: "+CinemaHall.name +", Cinema name: "+Cinema.name+", Location: "+Cinema.location}
+      catch (error) { return res.status(500).send({ message: "Your seat booked not exist" }) }
       console.log(name)
       itemsToAdd.push({
         "name": name,
+        "description": descriptionItems,
         "sku": billsOfUser[i]._id,
         "price": showSeat.price,
         "currency": "USD",
@@ -120,9 +130,12 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
   await showSeatModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "0" } })
   let oriUrl = req.originalUrl + '';
   oriUrl = oriUrl.replace('send_verify', 'success')
-  var emailToSend =await userModel.find({ _id: req.params.userId }).select('email -_id')
+  var emailToSend = await userModel.find({ _id: req.params.userId }).select('email -_id')
   let link = req.protocol + "://" + req.get('host') + oriUrl
-  console.log(emailToSend[0].email)
+  console.log(emailToSend)
+  try{
+  console.log(emailToSend[0].email)}
+  catch(error){return res.status(400).send("Khong tim thay email cua user")}
   var mailOptions = {
     from: 'backendmaildt@yahoo.com',
     to: emailToSend[0].email,
@@ -131,7 +144,7 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
   };
   emailProvider.sendMail(mailOptions, function (error, info) {
     if (error) {
-      res.status(400).send( error );;
+      res.status(400).send(error);;
     } else {
       console.log(link)
     }
@@ -144,7 +157,7 @@ app.get('/success/:buyer_id/:rand', async (req, res) => {
   const paymentId = req.query.paymentId;
   paypal.payment.get(paymentId, function (error, payment) {
     if (error) {
-      res.status(400).send(error )
+      res.status(400).send(error)
     } else {
       console.log("Get Payment Response");
       console.log(payment.transactions[0].description)
@@ -163,7 +176,7 @@ app.get('/success/:buyer_id/:rand', async (req, res) => {
             }
           }]
         };
-        if(payment.state=="approved"){
+        if (payment.state == "approved") {
           return res.status(400).send("You have paid")
         }
         let paymentInfo;
@@ -181,35 +194,36 @@ app.get('/success/:buyer_id/:rand', async (req, res) => {
             let Currency_items = [];
             let Price_items = [];
             let Quantity_items = [];
-            try{
-            for (let i = 0; i < paymentInfo.transactions[0].item_list.items.length; i++) {
-              Name_items[i] = paymentInfo.transactions[0].item_list.items[i].name;
-              Sku_items[i] = paymentInfo.transactions[0].item_list.items[i].sku;
-              Quantity_items[i] = paymentInfo.transactions[0].item_list.items[i].quantity;
-              Currency_items[i] = paymentInfo.transactions[0].item_list.items[i].currency;
-              Price_items[i] = paymentInfo.transactions[0].item_list.items[i].price;
-            }
-            const data = await transactionsModel.create({
-              buyer: buyer_id,
-              Fname: paymentInfo.payer.payer_info.first_name,
-              Lname: paymentInfo.payer.payer_info.last_name,
-              recipient_name: paymentInfo.payer.payer_info.shipping_address.recipient_name,
-              Seller: paymentInfo.transactions[0].payee.email,
-              Line1: paymentInfo.payer.payer_info.shipping_address.line1,
-              City: paymentInfo.payer.payer_info.shipping_address.city,
-              postal_code: paymentInfo.payer.payer_info.shipping_address.postal_code,
-              country_code: paymentInfo.payer.payer_info.shipping_address.country_code,
-              Name_items: Name_items,
-              Sku_items: Sku_items,
-              dateCreate: paymentInfo.transactions[0].related_resources[0].sale.create_time,
-              dateUpdate: paymentInfo.transactions[0].related_resources[0].sale.update_time,
-              status: paymentInfo.payer.status,
-              subTotal: paymentInfo.transactions[0].amount.details.subTotal,
-              Fee_payment: paymentInfo.transactions[0].amount.details.handling_fee,
-              Quantity_items: Quantity_items,
-              Currency_items: Currency_items,
-              Price_items: Price_items
-            });}catch(error){return res.status(500).send("Your items in payment is null got error")}
+            try {
+              for (let i = 0; i < paymentInfo.transactions[0].item_list.items.length; i++) {
+                Name_items[i] = paymentInfo.transactions[0].item_list.items[i].name;
+                Sku_items[i] = paymentInfo.transactions[0].item_list.items[i].sku;
+                Quantity_items[i] = paymentInfo.transactions[0].item_list.items[i].quantity;
+                Currency_items[i] = paymentInfo.transactions[0].item_list.items[i].currency;
+                Price_items[i] = paymentInfo.transactions[0].item_list.items[i].price;
+              }
+              const data = await transactionsModel.create({
+                buyer: buyer_id,
+                Fname: paymentInfo.payer.payer_info.first_name,
+                Lname: paymentInfo.payer.payer_info.last_name,
+                recipient_name: paymentInfo.payer.payer_info.shipping_address.recipient_name,
+                Seller: paymentInfo.transactions[0].payee.email,
+                Line1: paymentInfo.payer.payer_info.shipping_address.line1,
+                City: paymentInfo.payer.payer_info.shipping_address.city,
+                postal_code: paymentInfo.payer.payer_info.shipping_address.postal_code,
+                country_code: paymentInfo.payer.payer_info.shipping_address.country_code,
+                Name_items: Name_items,
+                Sku_items: Sku_items,
+                dateCreate: paymentInfo.transactions[0].related_resources[0].sale.create_time,
+                dateUpdate: paymentInfo.transactions[0].related_resources[0].sale.update_time,
+                status: paymentInfo.payer.status,
+                subTotal: paymentInfo.transactions[0].amount.details.subTotal,
+                Fee_payment: paymentInfo.transactions[0].amount.details.handling_fee,
+                Quantity_items: Quantity_items,
+                Currency_items: Currency_items,
+                Price_items: Price_items
+              });
+            } catch (error) { return res.status(500).send("Your items in payment is null got error") }
             res.status(200).send("done paying");
           }
         });
