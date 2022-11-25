@@ -15,6 +15,7 @@ import paypalRoute from'./routes/paypalRoutes.js';
 import billRoute from'./routes/billRoutes.js';
 import session from 'express-session';
 import MongoDBSession from'connect-mongodb-session';
+import summingRoute from'./routes/sumingRoutes.js';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 const MongoStore = MongoDBSession(session);
@@ -57,6 +58,7 @@ app.use("/api/user",userRoute);
 app.use("/api/commentsFeedback",commentsFeedback)
 app.use("/api/paypal",paypalRoute);
 app.use("/api/bill",billRoute);
+app.use("/api/summing",summingRoute);
 app.use(notFound);
 app.use(errorHandler);
 
