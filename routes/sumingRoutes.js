@@ -208,12 +208,19 @@ app.get("/moneyInYear/:year", async (req, res) => {
         try {
             let sum_result = sum_money[0]['sum_money'];
             let resultName = 'Sum money of month ' + month;
-            var key=[resultName];
+            var key = [resultName];
             var obj = {};
-            obj[key[0]]=sum_result;
+            obj[key[0]] = sum_result;
             result.push(obj);
         }
-        catch (error) { }
+        catch (error) {
+            let sum_result = 0;
+            let resultName = 'Sum money of month ' + month;
+            var key = [resultName];
+            var obj = {};
+            obj[key[0]] = sum_result;
+            result.push(obj);
+        }
     }
     res.status(200).send(result);
 })
