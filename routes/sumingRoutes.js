@@ -316,8 +316,8 @@ app.get("/summary/:date", async (req, res) => {
         sum_money[0]["sumUser"] = sum_money2[0].count
         console.log(sum_money)
         smallResult.push({ "icon": "bx bx-dollar-circle", "count": sum_money[0].Revenue + "$", "title": "Revenue" });
-        smallResult.push({ "icon": "bx bx-receipt", "count": sum_money[0].sumOrders+"", "title": "orders" });
-        smallResult.push({ "icon": "bx bx-user", "count": sum_money[0].sumUser+"", "title": "users" });
+        smallResult.push({ "icon": "bx bx-receipt", "count": sum_money[0].sumOrders + "", "title": "orders" });
+        smallResult.push({ "icon": "bx bx-user", "count": sum_money[0].sumUser + "", "title": "users" });
         smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
         result["day"] = smallResult;
     } catch (error) {
@@ -362,9 +362,10 @@ app.get("/summary/:date", async (req, res) => {
         sum_money[0]["sumUser"] = sum_money2[0].count
 
         console.log(sum_money)
+        smallResult=[]
         smallResult.push({ "icon": "bx bx-dollar-circle", "count": sum_money[0].Revenue + "$", "title": "Revenue" });
-        smallResult.push({ "icon": "bx bx-receipt", "count": sum_money[0].sumOrders+"", "title": "orders" });
-        smallResult.push({ "icon": "bx bx-user", "count": sum_money[0].sumUser+"", "title": "users" });
+        smallResult.push({ "icon": "bx bx-receipt", "count": sum_money[0].sumOrders + "", "title": "orders" });
+        smallResult.push({ "icon": "bx bx-user", "count": sum_money[0].sumUser + "", "title": "users" });
         smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
 
         result["mounth"] = smallResult;
@@ -381,9 +382,10 @@ app.get("/summary/:date", async (req, res) => {
         sum_money[0]["sumOrders"] = sum_money3[0].count
         sum_money[0]["sumUser"] = sum_money2[0].count
         console.log(sum_money)
+        smallResult=[]
         smallResult.push({ "icon": "bx bx-dollar-circle", "count": sum_money[0].Revenue + "$", "title": "Revenue" });
-        smallResult.push({ "icon": "bx bx-receipt", "count": sum_money[0].sumOrders+"", "title": "orders" });
-        smallResult.push({ "icon": "bx bx-user", "count": sum_money[0].sumUser+"", "title": "users" });
+        smallResult.push({ "icon": "bx bx-receipt", "count": sum_money[0].sumOrders + "", "title": "orders" });
+        smallResult.push({ "icon": "bx bx-user", "count": sum_money[0].sumUser + "", "title": "users" });
         smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
         result["total"] = smallResult
     } catch (error) {
