@@ -30,8 +30,7 @@ const userSchema =  new mongoose.Schema({
         type:String
     },
     isActive:{
-        type: Number,
-        require:true
+        type: Boolean
     },
     pin:{
         type: String

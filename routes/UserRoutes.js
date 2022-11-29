@@ -1,6 +1,7 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler';
 import UserModal from '../models/userModel.js';
+import billModel from '../models/billsModel.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -24,9 +25,23 @@ userRoute.get(
     "/",
     asyncHandler(async (req,res) => {
       console.log(req.session.isAuth);
-
+      var listItem = [];
         const user = await UserModal.find({});
-        res.json(user);
+        for (let a of user) {
+          const totalOrder = await billModel.find({idCustomer:a._id.toString()}).count();
+          const totalSpending = await billModel.aggregate([{$match:{idCustomer:a._id.toString()}},{$group: {_id: null, sum: {$sum:"$totalMoney"}}}]);
+          listItem.push({
+            id: a._id.toString(),
+            fullName: a.fullName,
+            email: a.email,
+            biography: a.biography,
+            totalOrder: totalOrder,
+            totalSpending:totalSpending==[]? 0:totalSpending,
+            isActive: a.isActive,
+            isAdmin: a.isAdmin
+          })
+        }
+        res.json(listItem);
     })
 
 );
@@ -64,7 +79,8 @@ userRoute.post(
             const oldUser = await UserModal.findOne({ email });
             if (!oldUser)
               return res.status(404).json({data:null, message: "User doesn't exist" });
-        
+              if (!oldUser.status)
+              return res.status(404).json({data:null, message: "User is still block" });
             const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
         
             if (!isPasswordCorrect)        

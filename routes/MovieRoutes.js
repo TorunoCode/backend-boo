@@ -35,7 +35,75 @@ movieRoute.get(
     asyncHandler(async (req, res) => {
         console.log(req.session.isAuth);
         const movies = await MovieModel.find({});
-        res.json(movies);
+        var listItem=[];
+        for (let a of movies) {
+            const showing = await ShowingModel.findOne({idMovie: a._id.toString()});
+            if(showing==null)
+            {
+                listItem.push({
+                    name:a.name,
+                    describe: a.describe,
+                    genre: a.genre,
+                    language: a.language,
+                    rate: a.rate,
+                    price: a.price,
+                    totalOrder: 0,
+                    revenue: 0
+                })
+            }
+            else{
+                const totalOrder = await orderModel.distinct('idBill',{idShowing:showing._id.toString()}).count();
+            const list = await orderModel.distinct('idBill',{idShowing:showing._id.toString()});
+            var totalSpending=0;
+            for (let b of list)
+            {
+                    const data = await billModel.findById(b);
+                    totalSpending+=data.totalMoney;
+            }
+            listItem.push({
+                name:a.name,
+                describe: a.describe,
+                genre: a.genre,
+                language: a.language,
+                rate: a.rate,
+                price: a.price,
+                totalOrder: totalOrder,
+                revenue: totalSpending
+            });
+        }
+    }
+        res.json(listItem);
+    })
+
+);
+
+movieRoute.get(
+    "/detailGenre",
+    asyncHandler(async (req, res) => {
+        console.log(req.session.isAuth);
+        const genres = await GenreModel.find({});
+        var listItem=[];
+        for (let x of genres) {
+        console.log(x.name);
+        const movies = await MovieModel.find({genre:x.name});
+        var totalSpending=0;
+        for (let a of movies) {
+            const showing = await ShowingModel.findOne({idMovie: a._id.toString()});
+            if(showing!==null){
+            const list = await orderModel.distinct('idBill',{idShowing:showing._id.toString()});
+            for (let b of list)
+            {
+                    const data = await billModel.findById(b);
+                    totalSpending+=data.totalMoney;
+            }            
+        }
+    }
+    listItem.push({
+        name:x.name,
+        revenue:totalSpending
+    });
+}
+        res.json(listItem);
     })
 
 );
@@ -547,7 +615,20 @@ movieRoute.get(
 movieRoute.get(
     "/rating",
     asyncHandler(async (req, res) => {
-        const data = await RatingModel.find({});
+        const data = await RatingModel.find({status:true});
+        await UserModal.updateMany({$set:{isActive:true}});
+        if (data) {
+            return res.json(data);
+        } else {
+            return res.status(400).json({ message: "No item found" });
+        }
+    })
+
+);
+movieRoute.get(
+    "/rating/delete/:id",
+    asyncHandler(async (req, res) => {
+        const data = await RatingModel.findByIdAndDelete(req.params.id);
         if (data) {
             return res.json(data);
         } else {

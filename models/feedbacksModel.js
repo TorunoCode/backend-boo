@@ -38,6 +38,9 @@ const feedbacksSchema = new mongoose.Schema({
     rate: {
         type: Number,
         required: true
+    },
+    status:{
+        type: Boolean
     }
 },{
     timestamps: true
