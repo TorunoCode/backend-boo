@@ -321,7 +321,29 @@ app.get("/summary/:date", async (req, res) => {
         smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
         result["day"] = smallResult;
     } catch (error) {
-        result["day"] = [];
+        result["day"] = [
+            {
+              icon: "bx bx-dollar-circle",
+              count: "0$",
+              title: " Revenue",
+            },
+        
+            {
+              icon: "bx bx-receipt",
+              count: "0",
+              title: " orders",
+            },
+            {
+              icon: "bx bx-user",
+              count: "0",
+              title: " users",
+            },
+            {
+              icon: "bx bx-film",
+              count: "0",
+              title: "Movies",
+            },
+          ];
     }
 
     next_day_to_find = first_day_of_next_month.getFullYear() + "-" + (first_day_of_next_month.getMonth() + 1) + "-" + first_day_of_next_month.getDate();
@@ -370,7 +392,29 @@ app.get("/summary/:date", async (req, res) => {
 
         result["mounth"] = smallResult;
     } catch (error) {
-        result["mounth"] = [];
+        result["mounth"] = [
+            {
+              icon: "bx bx-dollar-circle",
+              count: "0$",
+              title: " Revenue",
+            },
+        
+            {
+              icon: "bx bx-receipt",
+              count: "0",
+              title: " orders",
+            },
+            {
+              icon: "bx bx-user",
+              count: "0",
+              title: " users",
+            },
+            {
+              icon: "bx bx-film",
+              count: "0",
+              title: "Movies",
+            },
+          ];
     }
 
 
@@ -389,7 +433,29 @@ app.get("/summary/:date", async (req, res) => {
         smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
         result["total"] = smallResult
     } catch (error) {
-        result["total"] = [];
+        result["total"] = [
+            {
+              icon: "bx bx-dollar-circle",
+              count: "0$",
+              title: " Revenue",
+            },
+        
+            {
+              icon: "bx bx-receipt",
+              count: "0",
+              title: " orders",
+            },
+            {
+              icon: "bx bx-user",
+              count: "0",
+              title: " users",
+            },
+            {
+              icon: "bx bx-film",
+              count: "0",
+              title: "Movies",
+            },
+          ]
     }
 
     res.status(200).send(result);
