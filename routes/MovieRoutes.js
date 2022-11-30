@@ -249,7 +249,6 @@ movieRoute.get(
             throw new Error("Add showing not successfull");
         }
     })
-
 );
 movieRoute.get('/showing/delete/:id', async (req, res) => {
     try {
@@ -454,6 +453,57 @@ movieRoute.get(
     })
 
 );
+movieRoute.get(
+    "/listBillManage",
+    asyncHandler(async (req, res) => {
+        var listItem = [];
+        const bill = await billModel.find({});
+        for (let x of bill){
+            const ticket = await orderModel.distinct('idShowing',{ idBill: x._id.toString() });
+                    for( let b of ticket)
+                    {
+                        console.log(b);
+    
+                    const showing = await ShowingModel.findById(b);   
+                    console.log(showing);
+                    const cinema = await CinemaModel.findById(showing.idCinema);
+                    console.log(cinema);
+    
+                    const movie = await MovieModel.findById(showing.idMovie);
+                    console.log(movie);
+    
+                    let list = [];
+                    const ticketOfMovie = await orderModel.find({ idBill: x._id.toString(),idShowing:b });
+                    let total =0;
+                    for (let c of ticketOfMovie) {
+                        const seat = await showSeatModel.findById(c.idShowSeat);     
+                        total += seat.price;
+                        console.log(seat);
+                        list.push(seat.number);
+                    }
+                    const user = await UserModal.findById(x.idCustomer);
+                    var item = {
+                        idBill:x._id.toString(),
+                        fullName:user.fullName,
+                        movie:movie.name,
+                        cinema: cinema.name,
+                        date: convert(showing.startTime),
+                        session: showing.time,
+                        listItem: list,
+                        createDate:convert(x.createdAt),
+                        totalMoney: total
+                    }
+                    listItem.push(item);
+                    console.log(listItem);
+                }
+        }
+        if (bill) {
+            return res.json(listItem);
+        } else {
+            return res.status(400).json({ message: "No item found" });
+        }
+    })
+);
 function convert(str) {
     var date = new Date(str),
       mnth = ("0" + (date.getMonth() + 1)).slice(-2),
@@ -487,7 +537,10 @@ movieRoute.get(
                     console.log(seat);
                     list.push(seat.number);
                 }
+                const user = await UserModal.findById(bill.idCustomer);
                 var item = {
+                    idBill:bill._id.toString(),
+                    fullName:user.fullName,
                     movie:movie.name,
                     cinema: cinema.name,
                     date: convert(showing.startTime),
