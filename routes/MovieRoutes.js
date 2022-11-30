@@ -45,10 +45,15 @@ movieRoute.get(
                     describe: a.describe,
                     genre: a.genre,
                     language: a.language,
+                    image: a.image,
+                    linkReview: a.linkReview,
+                    cast: a.cast,
+                    director: a.director,
                     rate: a.rate,
                     price: a.price,
                     totalOrder: 0,
-                    revenue: 0
+                    revenue: 0,
+                    createdAt: a.createdAt
                 })
             }
             else{

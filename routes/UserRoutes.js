@@ -30,15 +30,19 @@ userRoute.get(
         for (let a of user) {
           const totalOrder = await billModel.find({idCustomer:a._id.toString()}).count();
           const totalSpending = await billModel.aggregate([{$match:{idCustomer:a._id.toString()}},{$group: {_id: null, sum: {$sum:"$totalMoney"}}}]);
+          var total = 0;
+          totalSpending.map(a=>total=a.sum);
           listItem.push({
             id: a._id.toString(),
             fullName: a.fullName,
             email: a.email,
+            avatar: a.avatar,
             biography: a.biography,
             totalOrder: totalOrder,
-            totalSpending:totalSpending==[]? 0:totalSpending,
+            totalSpending:totalSpending==[]? 0:total,
             isActive: a.isActive,
-            isAdmin: a.isAdmin
+            isAdmin: a.isAdmin,
+            createdAt: a.createdAt
           })
         }
         res.json(listItem);
