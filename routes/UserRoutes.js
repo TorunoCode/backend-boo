@@ -34,6 +34,7 @@ userRoute.get(
           totalSpending.map(a=>total=a.sum);
           listItem.push({
             id: a._id.toString(),
+            name: a.name,
             fullName: a.fullName,
             email: a.email,
             avatar: a.avatar,
