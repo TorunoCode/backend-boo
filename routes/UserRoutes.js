@@ -83,7 +83,7 @@ userRoute.post(
             const oldUser = await UserModal.findOne({ email });
             if (!oldUser)
               return res.status(404).json({data:null, message: "User doesn't exist" });
-              if (!oldUser.status)
+              if (oldUser.status == false)
               return res.status(404).json({data:null, message: "User is still block" });
             const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
         
