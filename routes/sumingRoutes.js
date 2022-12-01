@@ -131,23 +131,41 @@ app.get("/movieInMonth/:month/:year/:page", async (req, res) => {
     for (let i = 0; i < bill.length; i++) {
         let user = await userModel.findById(bill[i].idCustomer);
         userName = user.fullName;
+        console.log(userName)
         sheatNumber = await orderModel.count({ idCustomer: bill[i].idCustomer, idBill: bill[i].id });
-        let idShowings = await orderModel.find({ idCustomer: bill[i].idCustomer, idBill: bill[i].id });
-        for (let j = 0; j < idShowings.length; j++) {
-            showing = await ShowingModel.findById(idShowings[j].idShowing);
+        //let idShowings = await orderModel.find({ idCustomer: bill[i].idCustomer, idBill: bill[i].id });
+        let idShowings = await orderModel.aggregate([{$match:{ idCustomer: bill[i].idCustomer, idBill: bill[i].id }}
+            ,{$group: { _id:"$idShowing"}}])
+        let testthings = idShowings.map(a =>a._id)
+        showing = await ShowingModel.find({_id:{$in:testthings}});
+        let testthings2 = showing.map(a=>a.idMovie)
+        movieName= await MovieModel.find({_id:{$in:testthings2}});
+        movieNames = movieName.map(a=>a.name);
+        movieGenres = movieName.map(a=>a.genre);
+        /*for (let j = 0; j < idShowings.length; j++) {
+            showing = await ShowingModel.findById(idShowings[j]._id);
             movieName = await MovieModel.findById(showing.idMovie);
             movieNames.push(movieName.name);
             movieGenres.push(movieName.genre);
             console.log("inside j: " + j + " idShowing length " + idShowings.length);
-        }
+        }*/
         console.log("inside i: " + i + " bill length " + bill.length);
         //console.log(userName);
         //console.log(movieNames);
         //console.log(movieGenres);
         //console.log(sheatNumber);
         //console.log(bill[i].totalMoney);
-        Object.assign(sumAllOfUser, { "User Name": userName, "Movies name": movieNames, "MovieGenres": movieGenres, "Sum seats": sheatNumber, "Sum money": bill[i].totalMoney, "Date bill": bill[i].createdAt });
+        sumAllOfUser["User Name"]=userName;
+        sumAllOfUser["Movies name"]=movieNames;
+        sumAllOfUser["MovieGenres"]=movieGenres;
+        sumAllOfUser["Sum seats"]=sheatNumber;
+        sumAllOfUser["Sum money"]=bill[i].totalMoney;
+        sumAllOfUser["Date bill"]=bill[i].createdAt ;
+        
         result.push(sumAllOfUser);
+        sumAllOfUser={};
+        movieNames=[];
+        movieGenres=[];
     }
     res.status(200).send(result);
 })
