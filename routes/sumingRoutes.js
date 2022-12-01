@@ -277,11 +277,10 @@ app.get("/summary/:date", async (req, res) => {
 
     let next_day_finding = new Date(day_finding);
     next_day_finding.setDate(day_finding.getDate() + 1);
-    console.log(next_day_finding)
-
+    
     let result = {};
     let smallResult = [];
-
+    let oneResult = {};
     let next_day = next_day_finding.getDate();
     let next_month = next_day_finding.getMonth() + 1;
     let next_year = next_day_finding.getFullYear();
@@ -294,14 +293,7 @@ app.get("/summary/:date", async (req, res) => {
             }
         }
     }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }]);
-    let sum_money2 = await billsModel.aggregate([{
-        $match: {
-            createdAt: {
-                $gte: new Date(day_finding),
-                $lt: new Date(next_day_to_find)
-            }
-        }
-    }, { $group: { _id: "$idCustomer" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
+    let sum_money2 = await userModel.aggregate([ { $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
     let sum_money3 = await billsModel.aggregate([{
         $match: {
             createdAt: {
@@ -310,46 +302,41 @@ app.get("/summary/:date", async (req, res) => {
             }
         }
     }, { $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
+    let sum_money4 = await MovieModel.aggregate([ { $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
+    
+    oneResult={};
+    smallResult=[];
+    
+    
     try {
-        sum_money[0]["Movies"] = 8
-        sum_money[0]["sumOrders"] = sum_money3[0].count
-        sum_money[0]["sumUser"] = sum_money2[0].count
-        console.log(sum_money)
-        smallResult.push({ "icon": "bx bx-dollar-circle", "count": sum_money[0].Revenue + "$", "title": "Revenue" });
-        smallResult.push({ "icon": "bx bx-receipt", "count": sum_money[0].sumOrders + "", "title": "orders" });
-        smallResult.push({ "icon": "bx bx-user", "count": sum_money[0].sumUser + "", "title": "users" });
-        smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
-        result["day"] = smallResult;
+        oneResult["Revenue"] = sum_money[0].Revenue
     } catch (error) {
-        result["day"] = [
-            {
-              icon: "bx bx-dollar-circle",
-              count: "0$",
-              title: " Revenue",
-            },
-        
-            {
-              icon: "bx bx-receipt",
-              count: "0",
-              title: " orders",
-            },
-            {
-              icon: "bx bx-user",
-              count: "0",
-              title: " users",
-            },
-            {
-              icon: "bx bx-film",
-              count: "0",
-              title: "Movies",
-            },
-          ];
+        oneResult["Revenue"] = 0
     }
+    try {
+        oneResult["Movies"] = sum_money4[0].count
+    } catch (error) {
+        oneResult["Movies"] = 0
+    }
+    try {
+        oneResult["sumOrders"] = sum_money3[0].count
+    } catch (error) {
+        oneResult["sumOrders"] = 0
+    }
+    try {
+        oneResult["sumUser"] = sum_money2[0].count
+    } catch (error) {
+        oneResult["sumUser"] = 0
+    }
+    smallResult.push({ "icon": "bx bx-dollar-circle", "count": oneResult.Revenue + "$", "title": "Revenue" });
+    smallResult.push({ "icon": "bx bx-receipt", "count": oneResult.sumOrders + "", "title": "orders" });
+    smallResult.push({ "icon": "bx bx-user", "count": oneResult.sumUser + "", "title": "users" });
+    smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
+    result["day"] = smallResult;
+
 
     next_day_to_find = first_day_of_next_month.getFullYear() + "-" + (first_day_of_next_month.getMonth() + 1) + "-" + first_day_of_next_month.getDate();
 
-    console.log(day_to_find);
-    console.log(next_day_to_find)
     sum_money = await billsModel.aggregate([{
         $match: {
             createdAt: {
@@ -358,15 +345,7 @@ app.get("/summary/:date", async (req, res) => {
             }
         }
     }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
-    console.log("here");
-    sum_money2 = await billsModel.aggregate([{
-        $match: {
-            createdAt: {
-                $gte: new Date(day_to_find),
-                $lt: new Date(next_day_to_find)
-            }
-        }
-    }, { $group: { _id: "$idCustomer" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
+    sum_money2 = await userModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
     sum_money3 = await billsModel.aggregate([{
         $match: {
             createdAt: {
@@ -375,88 +354,70 @@ app.get("/summary/:date", async (req, res) => {
             }
         }
     }, { $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    console.log("now")
-    console.log(sum_money2)
-    console.log(sum_money3)
+    sum_money4 = await MovieModel.aggregate([ { $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
+    console.log(oneResult)
+    oneResult={};
+    smallResult=[];
+    console.log(oneResult)
     try {
-        sum_money[0]["Movies"] = 8
-        sum_money[0]["sumOrders"] = sum_money3[0].count
-        sum_money[0]["sumUser"] = sum_money2[0].count
-
-        console.log(sum_money)
-        smallResult=[]
-        smallResult.push({ "icon": "bx bx-dollar-circle", "count": sum_money[0].Revenue + "$", "title": "Revenue" });
-        smallResult.push({ "icon": "bx bx-receipt", "count": sum_money[0].sumOrders + "", "title": "orders" });
-        smallResult.push({ "icon": "bx bx-user", "count": sum_money[0].sumUser + "", "title": "users" });
-        smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
-
-        result["mounth"] = smallResult;
+        oneResult["Revenue"] = sum_money[0].Revenue
     } catch (error) {
-        result["mounth"] = [
-            {
-              icon: "bx bx-dollar-circle",
-              count: "0$",
-              title: " Revenue",
-            },
-        
-            {
-              icon: "bx bx-receipt",
-              count: "0",
-              title: " orders",
-            },
-            {
-              icon: "bx bx-user",
-              count: "0",
-              title: " users",
-            },
-            {
-              icon: "bx bx-film",
-              count: "0",
-              title: "Movies",
-            },
-          ];
+        oneResult["Revenue"] = 0
     }
+    try {
+        oneResult["Movies"] = sum_money4[0].count
+    } catch (error) {
+        oneResult["Movies"] = 0
+    }
+    try {
+        oneResult["sumOrders"] = sum_money3[0].count
+    } catch (error) {
+        oneResult["sumOrders"] = 0
+    }
+    try {
+        oneResult["sumUser"] = sum_money2[0].count
+    } catch (error) {
+        oneResult["sumUser"] = 0
+    }
+    smallResult.push({ "icon": "bx bx-dollar-circle", "count": oneResult.Revenue + "$", "title": "Revenue" });
+    smallResult.push({ "icon": "bx bx-receipt", "count": oneResult.sumOrders + "", "title": "orders" });
+    smallResult.push({ "icon": "bx bx-user", "count": oneResult.sumUser + "", "title": "users" });
+    smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
+    result["mounth"] = smallResult;
+
 
 
     sum_money = await billsModel.aggregate([{ $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
-    sum_money2 = await billsModel.aggregate([{ $group: { _id: "$idCustomer" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
+    sum_money2 = await userModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
     sum_money3 = await billsModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
+    sum_money4 = await MovieModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
+    oneResult={};
+    smallResult=[];
     try {
-        sum_money[0]["Movies"] = 8
-        sum_money[0]["sumOrders"] = sum_money3[0].count
-        sum_money[0]["sumUser"] = sum_money2[0].count
-        console.log(sum_money)
-        smallResult=[]
-        smallResult.push({ "icon": "bx bx-dollar-circle", "count": sum_money[0].Revenue + "$", "title": "Revenue" });
-        smallResult.push({ "icon": "bx bx-receipt", "count": sum_money[0].sumOrders + "", "title": "orders" });
-        smallResult.push({ "icon": "bx bx-user", "count": sum_money[0].sumUser + "", "title": "users" });
-        smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
-        result["total"] = smallResult
+        oneResult["Revenue"] = sum_money[0].Revenue
     } catch (error) {
-        result["total"] = [
-            {
-              icon: "bx bx-dollar-circle",
-              count: "0$",
-              title: " Revenue",
-            },
-        
-            {
-              icon: "bx bx-receipt",
-              count: "0",
-              title: " orders",
-            },
-            {
-              icon: "bx bx-user",
-              count: "0",
-              title: " users",
-            },
-            {
-              icon: "bx bx-film",
-              count: "0",
-              title: "Movies",
-            },
-          ]
+        oneResult["Revenue"] = 0
     }
+    try {
+        oneResult["Movies"] = sum_money4[0].count
+    } catch (error) {
+        oneResult["Movies"] = 0
+    }
+    try {
+        oneResult["sumOrders"] = sum_money3[0].count
+    } catch (error) {
+        oneResult["sumOrders"] = 0
+    }
+    try {
+        oneResult["sumUser"] = sum_money2[0].count
+    } catch (error) {
+        oneResult["sumUser"] = 0
+    }
+    smallResult.push({ "icon": "bx bx-dollar-circle", "count": oneResult.Revenue + "$", "title": "Revenue" });
+    smallResult.push({ "icon": "bx bx-receipt", "count": oneResult.sumOrders + "", "title": "orders" });
+    smallResult.push({ "icon": "bx bx-user", "count": oneResult.sumUser + "", "title": "users" });
+    smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
+    result["total"] = smallResult;
 
     res.status(200).send(result);
 })
