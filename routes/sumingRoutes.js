@@ -254,7 +254,7 @@ app.get("/top10user", async (req, res) => {
     let userName;
     for (let i = 0; i < sum_money.length; i++) {
         userName = await userModel.findById(sum_money[i]._id)
-        if (typeof userName.fullName =='undefined') userName.fullName = userName.name
+        if (typeof userName.fullName == 'undefined') userName.fullName = userName.name
         result.push({ "username": userName.fullName, "totalOrders": sum_money[i].totalOrders, "totalSpending": sum_money[i].totalSpending })
         console.log(userName.fullName + "/" + userName.name);
     }
@@ -270,12 +270,8 @@ app.get("/top10recent", async (req, res) => {
     let userName;
     for (let i = 0; i < sum_money.length; i++) {
         userName = await userModel.findById(sum_money[i].idCustomer)
-        try {
-            result.push({ "idorder": sum_money[i]._id, "username": userName.fullName, "totalSPrice": sum_money[i].totalMoney, "date": sum_money[i].createdAt, "status": "paid" })
-        }
-        catch (error) {
-            result.push({ "idorder": sum_money[i]._id, "username": userName.name, "totalSPrice": sum_money[i].totalMoney, "date": sum_money[i].createdAt, "status": "paid" })
-        }
+        if (typeof userName.fullName == 'undefined') userName.fullName = userName.name
+        result.push({ "idorder": sum_money[i]._id, "username": userName.fullName, "totalSPrice": sum_money[i].totalMoney, "date": sum_money[i].createdAt, "status": "paid" })
     }
     result.forEach(function callback(value, index) {
         value["stt"] = index;
