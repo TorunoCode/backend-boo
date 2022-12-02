@@ -33,6 +33,7 @@ userRoute.get(
           var total = 0;
           totalSpending.map(a=>total=a.sum);
           listItem.push({
+            _id:a._id.toString(),
             id: a._id.toString(),
             name: a.name,
             fullName: a.fullName,

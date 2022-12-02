@@ -41,6 +41,7 @@ movieRoute.get(
             if(showing==null)
             {
                 listItem.push({
+                    _id:a._id.toString(),
                     name:a.name,
                     describe: a.describe,
                     genre: a.genre,
@@ -66,6 +67,7 @@ movieRoute.get(
                     totalSpending+=data.totalMoney;
             }
             listItem.push({
+                _id:a._id.toString(),
                 name:a.name,
                 describe: a.describe,
                 genre: a.genre,
