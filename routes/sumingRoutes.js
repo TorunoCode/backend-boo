@@ -247,7 +247,7 @@ app.get("/top10user", async (req, res) => {
     const sum_money = await billsModel.aggregate([{
         $group: {
             _id: "$idCustomer", totalSpending: { $sum: "$totalMoney" },
-            totalOrders: { $sum: "$_id" }
+            totalOrders: { $sum: 1 }
         }
     }
         , { $sort: { totalSpending: -1 } }, { $limit: 10 }])
@@ -259,7 +259,7 @@ app.get("/top10user", async (req, res) => {
         console.log(userName.fullName + "/" + userName.name);
     }
     result.forEach(function callback(value, index) {
-        value["stt"] = index;
+        value["stt"] = index+1;
     });
 
     res.status(200).send(result);
@@ -274,7 +274,8 @@ app.get("/top10recent", async (req, res) => {
         result.push({ "idorder": sum_money[i]._id, "username": userName.fullName, "totalSPrice": sum_money[i].totalMoney, "date": sum_money[i].createdAt, "status": "paid" })
     }
     result.forEach(function callback(value, index) {
-        value["stt"] = index;
+        value["date"]= value["date"].getFullYear()+"-"+value["date"].getMonth()+"-"+value["date"].getDate();
+        value["stt"] = index+1;
     });
     res.status(200).send(result);
 })
@@ -491,7 +492,7 @@ app.get("/summary/:date", async (req, res) => {
     smallResult.push({ "icon": "bx bx-receipt", "count": oneResult.sumOrders + "", "title": "orders" });
     smallResult.push({ "icon": "bx bx-user", "count": oneResult.sumUser + "", "title": "users" });
     smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
-    result["1mounthago"] = smallResult;
+    result["onemounthago"] = smallResult;
 
     let day_of_week = (new Date(date)).getDay();
     let diff = (new Date(date)).getDate() - day_of_week + (day_of_week == 0 ? -6 : 1);
