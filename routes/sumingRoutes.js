@@ -258,9 +258,9 @@ app.get("/top10user", async (req, res) => {
         result.push({ "username": userName.fullName, "totalOrders": sum_money[i].totalOrders, "totalSpending": sum_money[i].totalSpending })
         console.log(userName.fullName + "/" + userName.name);
     }
-    result.forEach(function callback(value, index) {
-        value["stt"] = index+1;
-    });
+    for (let [index, value] of result.entries()) {
+        value["stt"] = index + 1;
+    };
 
     res.status(200).send(result);
 })
@@ -273,10 +273,10 @@ app.get("/top10recent", async (req, res) => {
         if (typeof userName.fullName == 'undefined') userName.fullName = userName.name
         result.push({ "idorder": sum_money[i]._id, "username": userName.fullName, "totalSPrice": sum_money[i].totalMoney, "date": sum_money[i].createdAt, "status": "paid" })
     }
-    result.forEach(function callback(value, index) {
-        value["date"]= value["date"].getFullYear()+"-"+value["date"].getMonth()+"-"+value["date"].getDate();
-        value["stt"] = index+1;
-    });
+    for (let [index, value] of result.entries()) {
+        value["date"] = value["date"].getFullYear() + "-" + value["date"].getMonth() + "-" + value["date"].getDate();
+        value["stt"] = index + 1;
+    };
     res.status(200).send(result);
 })
 app.get("/summary/:date", async (req, res) => {
@@ -551,5 +551,96 @@ app.get("/summary/:date", async (req, res) => {
     result["currentweek"] = smallResult;
     res.status(200).send(result);
 })
-
+app.get("/summaryMoneyInThisYearAndLastYear", async (req, res) => {
+    //let year = req.params.year;
+    let year = (new Date()).getFullYear();
+    let result = {};
+    let currentYear = [];
+    let lastYear = [];
+    let months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    for (let month of months) {
+        console.log(month)
+        let last_day_of_month = new Date(year, month);
+        let first_day_of_next_month = new Date(last_day_of_month);
+        first_day_of_next_month.setDate(last_day_of_month.getDate() + 1);
+        let last_day_of_last_month = new Date(last_day_of_month);
+        last_day_of_last_month.setMonth(last_day_of_month.getMonth() - 1);
+        let first_day_of_month_find = new Date(last_day_of_last_month);
+        first_day_of_month_find.setDate(last_day_of_last_month.getDate() + 1);
+        let day_to_find = first_day_of_month_find.getFullYear() + "-" + (first_day_of_month_find.getMonth() + 1) + "-" + first_day_of_month_find.getDate();
+        let next_day_to_find = first_day_of_next_month.getFullYear() + "-" + (first_day_of_next_month.getMonth() + 1) + "-" + first_day_of_next_month.getDate();
+        let sum_money = await billsModel.aggregate([{
+            $match: {
+                createdAt: {
+                    $gte: new Date(day_to_find),
+                    $lt: new Date(next_day_to_find)
+                }
+            }
+        }, { $group: { _id: null, sum_money: { $sum: "$totalMoney" } } }])
+        console.log(sum_money)
+        try {
+            currentYear.push(sum_money[0]['sum_money']);
+        }
+        catch (error) {
+            currentYear.push(0);
+        }
+        first_day_of_month_find.setFullYear(first_day_of_month_find.getFullYear() - 1);
+        first_day_of_next_month.setFullYear(first_day_of_next_month.getFullYear() - 1);
+        day_to_find = first_day_of_month_find.getFullYear() + "-" + (first_day_of_month_find.getMonth() + 1) + "-" + first_day_of_month_find.getDate();
+        next_day_to_find = first_day_of_next_month.getFullYear() + "-" + (first_day_of_next_month.getMonth() + 1) + "-" + first_day_of_next_month.getDate();
+        sum_money = await billsModel.aggregate([{
+            $match: {
+                createdAt: {
+                    $gte: new Date(day_to_find),
+                    $lt: new Date(next_day_to_find)
+                }
+            }
+        }, { $group: { _id: null, sum_money: { $sum: "$totalMoney" } } }])
+        try {
+            lastYear.push(sum_money[0]['sum_money']);
+        }
+        catch (error) {
+            lastYear.push(0);
+        }
+    };
+    result["series"] = [{ "name": "Current Year", "datat": currentYear },
+    {
+        name: "Last Year",
+        data: lastYear,
+    }]
+    result["option"] = {
+        "color": ["#6ab04c", "#2980b9"],
+        "chart": {
+            "background": "transparent",
+        }, "dataLabels": {
+            "enabled": false,
+        },
+        "stroke": {
+            "curve": "smooth",
+        },
+        "xaxis": {
+            "categories": [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+            ],
+        },
+        "legend": {
+            "position": "top",
+        },
+        "grid": {
+            "show": false,
+        }
+    };
+    res.status(200).send(result);
+})
 export default app;
