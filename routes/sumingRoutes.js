@@ -603,12 +603,12 @@ app.get("/summaryMoneyInThisYearAndLastYear", async (req, res) => {
             lastYear.push(0);
         }
     };
-    result["series"] = [{ "name": "Current Year", "datat": currentYear },
+    result["series"] = [{ "name": "Current Year", "data": currentYear },
     {
-        name: "Last Year",
-        data: lastYear,
+        "name": "Last Year",
+        "data": lastYear,
     }]
-    result["option"] = {
+    result["options"] = {
         "color": ["#6ab04c", "#2980b9"],
         "chart": {
             "background": "transparent",
