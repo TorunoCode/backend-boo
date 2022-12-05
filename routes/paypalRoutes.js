@@ -29,9 +29,11 @@ app.get("/test2/mail", async function (req, res) {
   await new Promise((resolve, reject) => {
     emailProvider.sendMail(mailOptions, function (error, info) {
       if (error) {
-        res.status(400).send(error);;
+        res.status(400).send(error);
+        reject(error);
       } else {
         console.log(info)
+        resolve(info);
       }
     })
   });
@@ -184,12 +186,17 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
     subject: 'Sending Email using Node.js',
     html: "<a href= '" + link + "' target='_blank'>Click here to confirm payment</a>"
   };
-  emailProvider.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      res.status(400).send(error);;
-    } else {
-      console.log(link)
-    }
+
+  await new Promise((resolve, reject) => {
+    emailProvider.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        res.status(400).send(error);
+        reject(err);
+      } else {
+        console.log(link)
+        resolve(info);
+      }
+    })
   });
   res.status(200).send({ message: "done" });
 });
