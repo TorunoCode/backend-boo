@@ -17,7 +17,7 @@ const app = express.Router();
 app.get("/test/:id", function (req, res) {
   res.send("paypal Routes");
 });
-app.get("/test2/mail", function (req, res) {
+app.get("/test2/mail", async function (req, res) {
   sgMail.setApiKey('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')
   var mailOptions = {
     from: '19110026@student.hcmute.edu.vn',
@@ -26,7 +26,7 @@ app.get("/test2/mail", function (req, res) {
     subject: 'Sending Email using Node.js',
     html: "test mail"
   };
-  let test = new Promise((resolve, reject) => {
+  await new Promise((resolve, reject) => {
     emailProvider.sendMail(mailOptions, function (error, info) {
       if (error) {
         res.status(400).send(error);;
