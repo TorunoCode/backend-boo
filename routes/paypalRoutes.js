@@ -15,7 +15,7 @@ const app = express.Router();
 app.get("/test/:id", function (req, res) {
   res.send("paypal Routes");
 });
-app.get("/test/mail", function (req, res) {
+app.get("/test/mail", async function (req, res) {
   var mailOptions = {
     from: 'backendmaildt@yahoo.com',
     to: 'test@gmail.comxx',
