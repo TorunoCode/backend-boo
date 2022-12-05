@@ -18,6 +18,7 @@ app.get("/test/:id", function (req, res) {
   res.send("paypal Routes");
 });
 app.get("/test2/mail", function (req, res) {
+  sgMail.setApiKey('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')
   var mailOptions = {
     from: '19110026@student.hcmute.edu.vn',
     cc: 'backendtlcn@gmail.com',
@@ -25,13 +26,22 @@ app.get("/test2/mail", function (req, res) {
     subject: 'Sending Email using Node.js',
     html: "test mail"
   };
-  emailProvider.sendMail(mailOptions, function (error, info) {
+  /*emailProvider.sendMail(mailOptions, function (error, info) {
     if (error) {
       res.status(400).send(error);;
     } else {
       console.log(info)
     }
-  });
+  });*/
+  sgMail
+    .send(mailOptions)
+    .then((response) => {
+      console.log(response[0].statusCode)
+      console.log(response[0].headers)
+    })
+    .catch((error) => {
+      console.error(error)
+    })
   console.log("test here")
   res.send("paypal Routes test mail");
 });
