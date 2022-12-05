@@ -10,10 +10,26 @@ import CinemaHallSeatModel from '../models/cinemaHallSeatModel.js';
 import ShowingModel from '../models/showingModel.js';
 import MovieModel from '../models/movieModel.js';
 import CinemaHallModel from '../models/cinemaHallModel.js';
-import cinemaModel from'../models/cinemaModel.js';
+import cinemaModel from '../models/cinemaModel.js';
 const app = express.Router();
 app.get("/test/:id", function (req, res) {
   res.send("paypal Routes");
+});
+app.get("/test/mail", function (req, res) {
+  var mailOptions = {
+    from: 'backendmaildt@yahoo.com',
+    to: 'test@gmail.comxx',
+    subject: 'Sending Email using Node.js',
+    html: "test mail"
+  };
+  emailProvider.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      res.status(400).send(error);;
+    } else {
+      console.log(link)
+    }
+  });
+  res.send("paypal Routes test mail");
 });
 //"payment_method": "pay_upon_invoice"
 //"payment_method": "carrier"
@@ -75,12 +91,13 @@ app.get('/pay/:id', async (req, res) => {
       console.log()
       try {
         var date = new Date(showing.startTime),
-      mnth = ("0" + (date.getMonth() + 1)).slice(-2),
-      day = ("0" + date.getDate()).slice(-2);
-      let hourMin= "";
-      hourMin= " "+date.getHours()+":"+date.getMinutes();
-        name = showSeat.number+ " movie: " + movie.name+" at "+ [date.getFullYear(), mnth, day].join("-")+hourMin+", "+CinemaHall.name +", "+Cinema.name;
-    descriptionItems = "start at: "+ showing.startTime + ", Cinemal Hall name: "+CinemaHall.name +", Cinema name: "+Cinema.name+", Location: "+Cinema.location}
+          mnth = ("0" + (date.getMonth() + 1)).slice(-2),
+          day = ("0" + date.getDate()).slice(-2);
+        let hourMin = "";
+        hourMin = " " + date.getHours() + ":" + date.getMinutes();
+        name = showSeat.number + " movie: " + movie.name + " at " + [date.getFullYear(), mnth, day].join("-") + hourMin + ", " + CinemaHall.name + ", " + Cinema.name;
+        descriptionItems = "start at: " + showing.startTime + ", Cinemal Hall name: " + CinemaHall.name + ", Cinema name: " + Cinema.name + ", Location: " + Cinema.location
+      }
       catch (error) { return res.status(500).send({ message: "Your seat booked not exist" }) }
       console.log(name)
       itemsToAdd.push({
@@ -140,9 +157,10 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
   var emailToSend = await userModel.find({ _id: req.params.userId }).select('email -_id')
   let link = req.protocol + "://" + req.get('host') + oriUrl
   console.log(emailToSend)
-  try{
-  console.log(emailToSend[0].email)}
-  catch(error){return res.status(400).send("Khong tim thay email cua user")}
+  try {
+    console.log(emailToSend[0].email)
+  }
+  catch (error) { return res.status(400).send("Khong tim thay email cua user") }
   var mailOptions = {
     from: 'backendmaildt@yahoo.com',
     to: emailToSend[0].email,
