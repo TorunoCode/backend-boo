@@ -26,14 +26,16 @@ app.get("/test2/mail", function (req, res) {
     subject: 'Sending Email using Node.js',
     html: "test mail"
   };
-  /*emailProvider.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      res.status(400).send(error);;
-    } else {
-      console.log(info)
-    }
-  });*/
-  sgMail
+  let test = new Promise((resolve, reject) => {
+    emailProvider.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        res.status(400).send(error);;
+      } else {
+        console.log(info)
+      }
+    })
+  });
+  /*sgMail
     .send(mailOptions)
     .then((response) => {
       console.log(response[0].statusCode)
@@ -41,7 +43,7 @@ app.get("/test2/mail", function (req, res) {
     })
     .catch((error) => {
       console.error(error)
-    })
+    })*/
   console.log("test here")
   res.send("paypal Routes test mail");
 });
