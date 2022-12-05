@@ -22,12 +22,14 @@ app.get("/test/mail", function (req, res) {
     subject: 'Sending Email using Node.js',
     html: "test mail"
   };
-  emailProvider.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      res.status(400).send(error);;
-    } else {
-      console.log(link)
-    }
+  await new Promise((resolve, reject) => {
+    emailProvider.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        res.status(400).send(error);;
+      } else {
+        console.log(link)
+      }
+    })
   });
   res.send("paypal Routes test mail");
 });
