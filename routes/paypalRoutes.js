@@ -11,26 +11,28 @@ import ShowingModel from '../models/showingModel.js';
 import MovieModel from '../models/movieModel.js';
 import CinemaHallModel from '../models/cinemaHallModel.js';
 import cinemaModel from '../models/cinemaModel.js';
+import sgMail from '@sendgrid/mail';
+
 const app = express.Router();
 app.get("/test/:id", function (req, res) {
   res.send("paypal Routes");
 });
-app.get("/test/mail", async function (req, res) {
+app.get("/test2/mail", function (req, res) {
   var mailOptions = {
-    from: 'backendmaildt@yahoo.com',
-    to: 'test@gmail.comxx',
+    from: '19110026@student.hcmute.edu.vn',
+    cc: 'backendtlcn@gmail.com',
+    to: 'test@gmail.comxxskd',
     subject: 'Sending Email using Node.js',
     html: "test mail"
   };
-  await new Promise((resolve, reject) => {
-    emailProvider.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        res.status(400).send(error);;
-      } else {
-        console.log(link)
-      }
-    })
+  emailProvider.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      res.status(400).send(error);;
+    } else {
+      console.log(info)
+    }
   });
+  console.log("test here")
   res.send("paypal Routes test mail");
 });
 //"payment_method": "pay_upon_invoice"
@@ -164,7 +166,8 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
   }
   catch (error) { return res.status(400).send("Khong tim thay email cua user") }
   var mailOptions = {
-    from: 'backendmaildt@yahoo.com',
+    from: '19110026@student.hcmute.edu.vn',
+    cc: 'backendtlcn@gmail.com',
     to: emailToSend[0].email,
     subject: 'Sending Email using Node.js',
     html: "<a href= '" + link + "' target='_blank'>Click here to confirm payment</a>"
