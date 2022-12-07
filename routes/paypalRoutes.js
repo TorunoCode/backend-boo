@@ -10,10 +10,44 @@ import CinemaHallSeatModel from '../models/cinemaHallSeatModel.js';
 import ShowingModel from '../models/showingModel.js';
 import MovieModel from '../models/movieModel.js';
 import CinemaHallModel from '../models/cinemaHallModel.js';
-import cinemaModel from'../models/cinemaModel.js';
+import cinemaModel from '../models/cinemaModel.js';
+import sgMail from '@sendgrid/mail';
+
 const app = express.Router();
 app.get("/test/:id", function (req, res) {
   res.send("paypal Routes");
+});
+app.get("/test2/mail", async function (req, res) {
+  sgMail.setApiKey('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')
+  var mailOptions = {
+    from: '19110026@student.hcmute.edu.vn',
+    cc: 'backendtlcn@gmail.com',
+    to: 'test@gmail.comxxskd',
+    subject: 'Sending Email using Node.js',
+    html: "test mail"
+  };
+  await new Promise((resolve, reject) => {
+    emailProvider.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        res.status(400).send(error);
+        reject(error);
+      } else {
+        console.log(info)
+        resolve(info);
+      }
+    })
+  });
+  /*sgMail
+    .send(mailOptions)
+    .then((response) => {
+      console.log(response[0].statusCode)
+      console.log(response[0].headers)
+    })
+    .catch((error) => {
+      console.error(error)
+    })*/
+  console.log("test here")
+  res.send("paypal Routes test mail");
 });
 //"payment_method": "pay_upon_invoice"
 //"payment_method": "carrier"
@@ -75,12 +109,13 @@ app.get('/pay/:id', async (req, res) => {
       console.log()
       try {
         var date = new Date(showing.startTime),
-      mnth = ("0" + (date.getMonth() + 1)).slice(-2),
-      day = ("0" + date.getDate()).slice(-2);
-      let hourMin= "";
-      hourMin= " "+date.getHours()+":"+date.getMinutes();
-        name = showSeat.number+ " movie: " + movie.name+" at "+ [date.getFullYear(), mnth, day].join("-")+hourMin+", "+CinemaHall.name +", "+Cinema.name;
-    descriptionItems = "start at: "+ showing.startTime + ", Cinemal Hall name: "+CinemaHall.name +", Cinema name: "+Cinema.name+", Location: "+Cinema.location}
+          mnth = ("0" + (date.getMonth() + 1)).slice(-2),
+          day = ("0" + date.getDate()).slice(-2);
+        let hourMin = "";
+        hourMin = " " + date.getHours() + ":" + date.getMinutes();
+        name = showSeat.number + " movie: " + movie.name + " at " + [date.getFullYear(), mnth, day].join("-") + hourMin + ", " + CinemaHall.name + ", " + Cinema.name;
+        descriptionItems = "start at: " + showing.startTime + ", Cinemal Hall name: " + CinemaHall.name + ", Cinema name: " + Cinema.name + ", Location: " + Cinema.location
+      }
       catch (error) { return res.status(500).send({ message: "Your seat booked not exist" }) }
       console.log(name)
       itemsToAdd.push({
@@ -140,21 +175,28 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
   var emailToSend = await userModel.find({ _id: req.params.userId }).select('email -_id')
   let link = req.protocol + "://" + req.get('host') + oriUrl
   console.log(emailToSend)
-  try{
-  console.log(emailToSend[0].email)}
-  catch(error){return res.status(400).send("Khong tim thay email cua user")}
+  try {
+    console.log(emailToSend[0].email)
+  }
+  catch (error) { return res.status(400).send("Khong tim thay email cua user") }
   var mailOptions = {
-    from: 'backendmaildt@yahoo.com',
+    from: '19110026@student.hcmute.edu.vn',
+    cc: 'backendtlcn@gmail.com',
     to: emailToSend[0].email,
     subject: 'Sending Email using Node.js',
     html: "<a href= '" + link + "' target='_blank'>Click here to confirm payment</a>"
   };
-  emailProvider.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      res.status(400).send(error);;
-    } else {
-      console.log(link)
-    }
+
+  await new Promise((resolve, reject) => {
+    emailProvider.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        res.status(400).send(error);
+        reject(err);
+      } else {
+        console.log(link)
+        resolve(info);
+      }
+    })
   });
   res.status(200).send({ message: "done" });
 });

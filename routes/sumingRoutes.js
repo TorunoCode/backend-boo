@@ -254,6 +254,7 @@ app.get("/top10user", async (req, res) => {
     let userName;
     for (let i = 0; i < sum_money.length; i++) {
         userName = await userModel.findById(sum_money[i]._id)
+        if (userName == null) continue;
         if (typeof userName.fullName == 'undefined') userName.fullName = userName.name
         result.push({ "username": userName.fullName, "totalOrders": sum_money[i].totalOrders, "totalSpending": sum_money[i].totalSpending })
         console.log(userName.fullName + "/" + userName.name);
@@ -270,6 +271,7 @@ app.get("/top10recent", async (req, res) => {
     let userName;
     for (let i = 0; i < sum_money.length; i++) {
         userName = await userModel.findById(sum_money[i].idCustomer)
+        if (userName == null) continue;
         if (typeof userName.fullName == 'undefined') userName.fullName = userName.name
         result.push({ "idorder": sum_money[i]._id, "username": userName.fullName, "totalSPrice": sum_money[i].totalMoney, "date": sum_money[i].createdAt, "status": "paid" })
     }
@@ -603,12 +605,12 @@ app.get("/summaryMoneyInThisYearAndLastYear", async (req, res) => {
             lastYear.push(0);
         }
     };
-    result["series"] = [{ "name": "Current Year", "datat": currentYear },
+    result["series"] = [{ "name": "Current Year", "data": currentYear },
     {
-        name: "Last Year",
-        data: lastYear,
+        "name": "Last Year",
+        "data": lastYear,
     }]
-    result["option"] = {
+    result["options"] = {
         "color": ["#6ab04c", "#2980b9"],
         "chart": {
             "background": "transparent",
