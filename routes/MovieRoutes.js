@@ -417,13 +417,12 @@ movieRoute.get(
         {
             listItem.push(convert(b));
         }
-        list.push({
-            idMovie:a,
-            movieDate:listItem
-        })
+        list.push(
+            listItem
+        )
        }
         if (data) {
-            return res.json(list);
+            return res.json(list[0]);
         } else {
             return res.status(400).json({ message: "No item found" });
         }
