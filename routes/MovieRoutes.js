@@ -366,16 +366,13 @@ movieRoute.get(
 movieRoute.get(
     "/findMovieCinemaStep2/:id",      //Tim rap dua tren movie (*)
     asyncHandler(async (req, res) => {
-        const data = await ShowingModel.find({idCinema:req.params.id});
+        const data = await ShowingModel.distinct('idMovie',{idCinema:req.params.id});
         var list =[];
        for(let a of data){
-        const data = await MovieModel.findById(a.idMovie);
+        const data = await MovieModel.findById(a);
         list.push({
-            _id:a._id.toString(),
-            idMovie:a.idMovie,
+            idMovie:a,
             nameMovie: data.name,
-            startTime:a.startTime,
-            time:a.time
 
         });
        }
@@ -390,10 +387,10 @@ movieRoute.get(
 movieRoute.get(
     "/findMovieDayStep3/:id/:date",      //Tim rap dua tren id rap
     asyncHandler(async (req, res) => {
-        const data = await ShowingModel.find({idCinema:req.params.id,startTime:req.params.date});
+        const data = await ShowingModel.distinct('idMovie',{idCinema:req.params.id,startTime:req.params.date});
         var list =[];
         for(let a of data){
-            const movie = await MovieModel.findById(a.idMovie);
+            const movie = await MovieModel.findById(a);
             list.push({
                 idMovie:movie._id.toString(),
                 nameMovie:movie.name
@@ -408,16 +405,16 @@ movieRoute.get(
     })
 );
 movieRoute.get(
-    "/findMovieCinemaStep3/:id",      //Tim rap dua tren movie (*)
+    "/findMovieCinemaStep3/:id/:idMovie",      //Tim rap dua tren movie (*)
     asyncHandler(async (req, res) => {
-        const data = await ShowingModel.distinct('idMovie',{idCinema:req.params.id});
+        const data = await ShowingModel.distinct('idMovie',{idCinema:req.params.id,idMovie:req.params.idMovie});
        var list = []
        for(let a of data){
         var listItem=[];
-        const data = await ShowingModel.find({idMovie:a,idCinema:req.params.id})
+        const data = await ShowingModel.distinct('startTime',{idMovie:a,idCinema:req.params.id})
         for(let b of data)
         {
-            listItem.push(convert(b.startTime));
+            listItem.push(convert(b));
         }
         list.push({
             idMovie:a,
@@ -433,14 +430,14 @@ movieRoute.get(
 
 );
 movieRoute.get(
-    "/findMovieCinemaStep4/:id",      //Tim rap dua tren movie (*)
+    "/findMovieCinemaStep4/:id/:idMovie/:idDate",      //Tim rap dua tren movie (*)
     asyncHandler(async (req, res) => {
-        const data = await ShowingModel.distinct('idMovie',{idCinema:req.params.id});
+        const data = await ShowingModel.distinct('idMovie',{idCinema:req.params.id,idMovie:req.params.idMovie});
        var list = []
        for(let a of data){
         var listItem=[];
-        const data = await ShowingModel.distinct('startTime',{idMovie:a,idCinema:req.params.id})
-        console.log(data);
+        var text = req.params.idDate;
+        const data = await ShowingModel.distinct('startTime',{idMovie:a,idCinema:req.params.id,startTime:text[6]+text[7]+text[8]+text[9]+"-"+text[3]+text[4]+"-"+text[0]+text[1]+"T00:00:00.000Z"})
         for(let b of data)
         {
         const data = await ShowingModel.find({idMovie:a,idCinema:req.params.id,startTime:b});
