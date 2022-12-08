@@ -387,7 +387,8 @@ movieRoute.get(
 movieRoute.get(
     "/findMovieDayStep3/:id/:date",      //Tim rap dua tren id rap
     asyncHandler(async (req, res) => {
-        const data = await ShowingModel.distinct('idMovie',{idCinema:req.params.id,startTime:req.params.date});
+        var text = req.params.date;      
+        const data = await ShowingModel.distinct('idMovie',{idCinema:req.params.id,startTime:  text[6]+text[7]+text[8]+text[9]+"-"+text[3]+text[4]+"-"+text[0]+text[1]+"T00:00:00.000Z"});
         var list =[];
         for(let a of data){
             const movie = await MovieModel.findById(a);
@@ -446,13 +447,16 @@ movieRoute.get(
         {
             const data = await showSeatModel.find({idShowing:c._id.toString()}).count();
         const data2 = await showSeatModel.find({idShowing:c._id.toString(),isReserved:true}).count();
-            listSeat.push(c.time,{seat:data-data2+"/"+data});
+            listSeat.push({time: c.time,seat:data-data2+"/"+data});
         }    
-            listItem.push(convert(b),listSeat);
+        console.log(listSeat);
+            listItem.push({date:convert(b),listSeat});
         }
         list.push({
-            idMovie:a,
-            movieDate:listItem
+            idSession:a,
+            nameSession:listItem[0].date,
+            seat:listItem[0].listSeat
+
         })
        }
         if (data) {
@@ -466,28 +470,40 @@ movieRoute.get(
 movieRoute.get(
     "/findMovieDayStep4/:id/:date/:idMovie",      //Tim rap dua tren id rap
     asyncHandler(async (req, res) => {
-        const data = await ShowingModel.find({idCinema:req.params.id,startTime:req.params.date,idMovie:req.params.idMovie},{idSession:"$_id",_id:0,nameSession:"$time"});
+        var text = req.params.date;      
+        const data = await ShowingModel.find({idCinema:req.params.id,startTime:text[6]+text[7]+text[8]+text[9]+"-"+text[3]+text[4]+"-"+text[0]+text[1]+"T00:00:00.000Z",idMovie:req.params.idMovie});
+        var list =[];
+        for(let a of data)
+        {            
+        const data1 = await showSeatModel.find({idShowing: a._id.toString()}).count();
+        const data2 = await showSeatModel.find({idShowing:a._id.toString(),isReserved:true}).count();
+        list.push({
+            idSession:a._id.toString(),
+            nameSession:a.time,
+            seat:data1-data2+"/"+data1
+        })
+    }
         // const nameCinema = cinema.map( a => a._id)
         if (data) {
-            return res.json(data);
+            return res.json(list);
         } else {
             return res.status(400).json({ message: "No item found" });
         }
     })
 );
-movieRoute.get(
-    "/findMovieDayStep5/:id",      //Tim rap dua tren id rap
-    asyncHandler(async (req, res) => {
-        const data = await showSeatModel.find({idShowing:req.params.id}).count();
-        const data2 = await showSeatModel.find({idShowing:req.params.id,isReserved:true}).count();
-        // const nameCinema = cinema.map( a => a._id)
-        if (data) {
-            return res.json({seat:data-data2+"/"+data});
-        } else {
-            return res.status(400).json({ message: "No item found" });
-        }
-    })
-);
+// movieRoute.get(
+//     "/findMovieDayStep5/:id",      //Tim rap dua tren id rap
+//     asyncHandler(async (req, res) => {
+//         const data = await showSeatModel.find({idShowing:req.params.id}).count();
+//         const data2 = await showSeatModel.find({idShowing:req.params.id,isReserved:true}).count();
+//         // const nameCinema = cinema.map( a => a._id)
+//         if (data) {
+//             return res.json({seat:data-data2+"/"+data});
+//         } else {
+//             return res.status(400).json({ message: "No item found" });
+//         }
+//     })
+// );
 movieRoute.get(
     "/findMovieStep1/:id",      //Tim rap dua tren movie (*)
     asyncHandler(async (req, res) => {
