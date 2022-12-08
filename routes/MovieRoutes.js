@@ -338,11 +338,13 @@ movieRoute.get(
 
 );
 movieRoute.get(
-    "/findMovieDayStep2",      //Tim rap dua tren movie (*)
+    "/findMovieDayStep2/:id",      //Tim rap dua tren movie (*)
     asyncHandler(async (req, res) => {
         var date = new Date();
         var textDate =convert(date,1)+"T00:00:00.000Z";
-        console.log(textDate);
+        if(req.params.id!=1)
+        textDate=req.params.id;
+
         const data = await ShowingModel.distinct('idCinema',{startTime:textDate});
         var list = [];
         for(let a of data)
@@ -363,9 +365,20 @@ movieRoute.get(
     "/findMovieCinemaStep2/:id",      //Tim rap dua tren movie (*)
     asyncHandler(async (req, res) => {
         const data = await ShowingModel.find({idCinema:req.params.id});
-       
+        var list =[];
+       for(let a of data){
+        const data = await MovieModel.findById(a.idMovie);
+        list.push({
+            _id:a._id.toString(),
+            idMovie:a.idMovie,
+            nameMovie: data.name,
+            startTime:a.startTime,
+            time:a.time
+
+        });
+       }
         if (data) {
-            return res.json(data);
+            return res.json(list);
         } else {
             return res.status(400).json({ message: "No item found" });
         }
@@ -632,16 +645,10 @@ movieRoute.get(
         for (let x of bill){
             const ticket = await orderModel.distinct('idShowing',{ idBill: x._id.toString() });
                     for( let b of ticket)
-                    {
-                        console.log(b);
-    
+                    {    
                     const showing = await ShowingModel.findById(b);   
-                    console.log(showing);
-                    const cinema = await CinemaModel.findById(showing.idCinema);
-                    console.log(cinema);
-    
+                    const cinema = await CinemaModel.findById(showing.idCinema);    
                     const movie = await MovieModel.findById(showing.idMovie);
-                    console.log(movie);
     
                     let list = [];
                     const ticketOfMovie = await orderModel.find({ idBill: x._id.toString(),idShowing:b });
@@ -649,13 +656,12 @@ movieRoute.get(
                     for (let c of ticketOfMovie) {
                         const seat = await showSeatModel.findById(c.idShowSeat);     
                         total += seat.price;
-                        console.log(seat);
                         list.push(seat.number);
                     }
                     const user = await UserModal.findById(x.idCustomer);
                     var item = {
                         idBill:x._id.toString(),
-                        fullName:user.fullName,
+                        fullName:user.fullName==null?null:user.fullName,
                         movie:movie.name,
                         cinema: cinema.name,
                         date: convert(showing.startTime),
@@ -665,7 +671,6 @@ movieRoute.get(
                         totalMoney: total
                     }
                     listItem.push(item);
-                    console.log(listItem);
                 }
         }
         if (bill) {
