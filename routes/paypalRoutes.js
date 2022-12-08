@@ -20,8 +20,7 @@ app.get("/test/:id", function (req, res) {
 app.get("/test2/mail", async function (req, res) {
   sgMail.setApiKey('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')
   var mailOptions = {
-    from: '19110026@student.hcmute.edu.vn',
-    cc: 'backendtlcn@gmail.com',
+    from: 'backendtlcn@gmail.com',
     to: 'test@gmail.comxxskd',
     subject: 'Sending Email using Node.js',
     html: "test mail"
@@ -180,8 +179,7 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
   }
   catch (error) { return res.status(400).send("Khong tim thay email cua user") }
   var mailOptions = {
-    from: '19110026@student.hcmute.edu.vn',
-    cc: 'backendtlcn@gmail.com',
+    from: 'backendtlcn@gmail.com',
     to: emailToSend[0].email,
     subject: 'Sending Email using Node.js',
     html: "<a href= '" + link + "' target='_blank'>Click here to confirm payment</a>"
