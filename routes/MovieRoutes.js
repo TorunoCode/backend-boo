@@ -417,45 +417,9 @@ movieRoute.get(
         {
             listItem.push(convert(b));
         }
-        list.push(
-            listItem
-        )
-       }
-        if (data) {
-            return res.json(list[0]);
-        } else {
-            return res.status(400).json({ message: "No item found" });
-        }
-    })
-
-);
-movieRoute.get(
-    "/findMovieCinemaStep4/:id/:idMovie/:idDate",      //Tim rap dua tren movie (*)
-    asyncHandler(async (req, res) => {
-        const data = await ShowingModel.distinct('idMovie',{idCinema:req.params.id,idMovie:req.params.idMovie});
-       var list = []
-       for(let a of data){
-        var listItem=[];
-        var text = req.params.idDate;
-        const data = await ShowingModel.distinct('startTime',{idMovie:a,idCinema:req.params.id,startTime:text[6]+text[7]+text[8]+text[9]+"-"+text[3]+text[4]+"-"+text[0]+text[1]+"T00:00:00.000Z"})
-        for(let b of data)
-        {
-        const data = await ShowingModel.find({idMovie:a,idCinema:req.params.id,startTime:b});
-        var listSeat=[];
-        for(let c of data)
-        {
-            const data = await showSeatModel.find({idShowing:c._id.toString()}).count();
-        const data2 = await showSeatModel.find({idShowing:c._id.toString(),isReserved:true}).count();
-            listSeat.push({time: c.time,seat:data-data2+"/"+data});
-        }    
-        console.log(listSeat);
-            listItem.push({date:convert(b),listSeat});
-        }
         list.push({
-            idSession:a,
-            nameSession:listItem[0].date,
-            seat:listItem[0].listSeat
-
+            idMovie:a,
+            movieDate:listItem
         })
        }
         if (data) {
@@ -463,6 +427,62 @@ movieRoute.get(
         } else {
             return res.status(400).json({ message: "No item found" });
         }
+    })
+
+);
+movieRoute.get(
+    "/findMovieCinemaStep4/:id/:idMovie/:date",      //Tim rap dua tren movie (*)
+    asyncHandler(async (req, res) => {
+        var text = req.params.date;      
+        const data = await ShowingModel.find({idCinema:req.params.id,startTime:text[6]+text[7]+text[8]+text[9]+"-"+text[3]+text[4]+"-"+text[0]+text[1]+"T00:00:00.000Z",idMovie:req.params.idMovie});
+        var list =[];
+        for(let a of data)
+        {            
+        const data1 = await showSeatModel.find({idShowing: a._id.toString()}).count();
+        const data2 = await showSeatModel.find({idShowing:a._id.toString(),isReserved:true}).count();
+        list.push({
+            idSession:a._id.toString(),
+            nameSession:a.time,
+            seat:data1-data2+"/"+data1
+        })
+    }
+        // const nameCinema = cinema.map( a => a._id)
+        if (data) {
+            return res.json(list);
+        } else {
+            return res.status(400).json({ message: "No item found" });
+        }
+    //     const data = await ShowingModel.distinct('idMovie',{idCinema:req.params.id,idMovie:req.params.idMovie});
+    //    var list = []
+    //    for(let a of data){
+    //     var listItem=[];
+    //     var text = req.params.idDate;
+    //     const data = await ShowingModel.distinct('startTime',{idMovie:a,idCinema:req.params.id,startTime:text[6]+text[7]+text[8]+text[9]+"-"+text[3]+text[4]+"-"+text[0]+text[1]+"T00:00:00.000Z"})
+    //     for(let b of data)
+    //     {
+    //     const data = await ShowingModel.find({idMovie:a,idCinema:req.params.id,startTime:b});
+    //     var listSeat=[];
+    //     for(let c of data)
+    //     {
+    //         const data = await showSeatModel.find({idShowing:c._id.toString()}).count();
+    //     const data2 = await showSeatModel.find({idShowing:c._id.toString(),isReserved:true}).count();
+    //         listSeat.push({time: c.time,seat:data-data2+"/"+data});
+    //     }    
+    //     console.log(listSeat);
+    //         listItem.push({date:convert(b),listSeat});
+    //     }
+    //     list.push({
+    //         idSession:a,
+    //         nameSession:listItem[0].date,
+    //         seat:listItem[0].listSeat
+
+    //     })
+    //    }
+    //     if (data) {
+    //         return res.json(list);
+    //     } else {
+    //         return res.status(400).json({ message: "No item found" });
+    //     }
     })
 
 );
