@@ -245,6 +245,8 @@ app.get("/moneyInYear/:year", async (req, res) => {
 app.get("/top10user", async (req, res) => {
     let result = []
     const sum_money = await billsModel.aggregate([{
+        $match: { "status": "1" }
+    }, {
         $group: {
             _id: "$idCustomer", totalSpending: { $sum: "$totalMoney" },
             totalOrders: { $sum: 1 }
@@ -270,7 +272,7 @@ app.get("/top10user", async (req, res) => {
 })
 app.get("/top10recent", async (req, res) => {
     let result = []
-    const sum_money = await billsModel.find({}).sort({ "createdAt": -1 }).limit(10)
+    const sum_money = await billsModel.find({ "status": "1" }).sort({ "createdAt": -1 }).limit(10)
     let userName;
     for (let i = 0; i < sum_money.length; i++) {
         userName = await userModel.findById(sum_money[i].idCustomer)
@@ -282,7 +284,7 @@ app.get("/top10recent", async (req, res) => {
         result.push({ "idorder": sum_money[i]._id, "username": userName.fullName, "totalSPrice": sum_money[i].totalMoney, "date": sum_money[i].createdAt, "status": "paid" })
     }
     for (let [index, value] of result.entries()) {
-        value["date"] = value["date"].getDate() + "-" + ( value["date"].getMonth()+1) + "-" + value["date"].getFullYear();
+        value["date"] = value["date"].getDate() + "-" + (value["date"].getMonth() + 1) + "-" + value["date"].getFullYear();
         value["stt"] = index + 1;
     };
     res.status(200).send(result);
@@ -310,6 +312,8 @@ app.get("/summary/:date", async (req, res) => {
     let next_year = next_day_finding.getFullYear();
     let next_day_to_find = next_year + "-" + next_month + "-" + next_day;
     let sum_money = await billsModel.aggregate([{
+        $match: { "status": "1" }
+    }, {
         $match: {
             createdAt: {
                 $gte: new Date(day_finding),
@@ -319,6 +323,8 @@ app.get("/summary/:date", async (req, res) => {
     }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }]);
     let sum_money2 = await userModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
     let sum_money3 = await billsModel.aggregate([{
+        $match: { "status": "1" }
+    }, {
         $match: {
             createdAt: {
                 $gte: new Date(day_finding),
@@ -364,6 +370,8 @@ app.get("/summary/:date", async (req, res) => {
     console.log(day_to_find)
     console.log(next_day_to_find);
     sum_money = await billsModel.aggregate([{
+        $match: { "status": "1" }
+    }, {
         $match: {
             createdAt: {
                 $gte: new Date(day_to_find),
@@ -373,6 +381,8 @@ app.get("/summary/:date", async (req, res) => {
     }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
     sum_money2 = await userModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
     sum_money3 = await billsModel.aggregate([{
+        $match: { "status": "1" }
+    }, {
         $match: {
             createdAt: {
                 $gte: new Date(day_to_find),
@@ -414,9 +424,13 @@ app.get("/summary/:date", async (req, res) => {
 
 
 
-    sum_money = await billsModel.aggregate([{ $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
+    sum_money = await billsModel.aggregate([{
+        $match: { "status": "1" }
+    }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
     sum_money2 = await userModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    sum_money3 = await billsModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
+    sum_money3 = await billsModel.aggregate([{
+        $match: { "status": "1" }
+    }, { $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
     sum_money4 = await MovieModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
     oneResult = {};
     smallResult = [];
