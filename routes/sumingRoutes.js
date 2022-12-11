@@ -469,24 +469,22 @@ app.get("/summary/:date", async (req, res) => {
     console.log(day_to_find)
     console.log(next_day_to_find);
     sum_money = await billsModel.aggregate([{
-        $match: { "status": "1" }
-    }, {
         $match: {
             createdAt: {
                 $gte: new Date(day_to_find),
                 $lt: new Date(next_day_to_find)
-            }
+            },
+            "status": "1"
         }
     }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
     sum_money2 = await userModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
     sum_money3 = await billsModel.aggregate([{
-        $match: { "status": "1" }
-    }, {
         $match: {
             createdAt: {
                 $gte: new Date(day_to_find),
                 $lt: new Date(next_day_to_find)
-            }
+            },
+            "status": "1"
         }
     }, { $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
     sum_money4 = await MovieModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
