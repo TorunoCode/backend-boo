@@ -282,7 +282,7 @@ app.get("/top10recent", async (req, res) => {
         result.push({ "idorder": sum_money[i]._id, "username": userName.fullName, "totalSPrice": sum_money[i].totalMoney, "date": sum_money[i].createdAt, "status": "paid" })
     }
     for (let [index, value] of result.entries()) {
-        value["date"] = value["date"].getFullYear() + "-" + value["date"].getMonth() + "-" + value["date"].getDate();
+        value["date"] = value["date"].getDate() + "-" + ( value["date"].getMonth()+1) + "-" + value["date"].getFullYear();
         value["stt"] = index + 1;
     };
     res.status(200).send(result);
