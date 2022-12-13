@@ -35,14 +35,13 @@ movieRoute.get(
     asyncHandler(async (req, res) => {
         console.log(req.session.isAuth);
         const movies = await MovieModel.find({});
-        var listItem=[];
+        var listItem = [];
         for (let a of movies) {
-            const showing = await ShowingModel.findOne({idMovie: a._id.toString()});
-            if(showing==null)
-            {
+            const showing = await ShowingModel.findOne({ idMovie: a._id.toString() });
+            if (showing == null) {
                 listItem.push({
-                    _id:a._id.toString(),
-                    name:a.name,
+                    _id: a._id.toString(),
+                    name: a.name,
                     describe: a.describe,
                     genre: a.genre,
                     language: a.language,
@@ -57,32 +56,31 @@ movieRoute.get(
                     createdAt: a.createdAt
                 })
             }
-            else{
-                const totalOrder = await orderModel.distinct('idBill',{idShowing:showing._id.toString()}).count();
-            const list = await orderModel.distinct('idBill',{idShowing:showing._id.toString()});
-            var totalSpending=0;
-            for (let b of list)
-            {
+            else {
+                const totalOrder = await orderModel.distinct('idBill', { idShowing: showing._id.toString() }).count();
+                const list = await orderModel.distinct('idBill', { idShowing: showing._id.toString() });
+                var totalSpending = 0;
+                for (let b of list) {
                     const data = await billModel.findById(b);
-                    totalSpending+=data.totalMoney;
-            }
-            listItem.push({
-                _id:a._id.toString(),
-                name:a.name,
-                describe: a.describe,
-                genre: a.genre,
-                language: a.language,
-                image: a.image,
+                    totalSpending += data.totalMoney;
+                }
+                listItem.push({
+                    _id: a._id.toString(),
+                    name: a.name,
+                    describe: a.describe,
+                    genre: a.genre,
+                    language: a.language,
+                    image: a.image,
                     linkReview: a.linkReview,
                     cast: a.cast,
                     director: a.director,
-                rate: a.rate,
-                price: a.price,
-                totalOrder: totalOrder,
-                revenue: totalSpending
-            });
+                    rate: a.rate,
+                    price: a.price,
+                    totalOrder: totalOrder,
+                    revenue: totalSpending
+                });
+            }
         }
-    }
         res.json(listItem);
     })
 
@@ -93,27 +91,26 @@ movieRoute.get(
     asyncHandler(async (req, res) => {
         console.log(req.session.isAuth);
         const genres = await GenreModel.find({});
-        var listItem=[];
+        var listItem = [];
         for (let x of genres) {
-        console.log(x.name);
-        const movies = await MovieModel.find({genre:x.name});
-        var totalSpending=0;
-        for (let a of movies) {
-            const showing = await ShowingModel.findOne({idMovie: a._id.toString()});
-            if(showing!==null){
-            const list = await orderModel.distinct('idBill',{idShowing:showing._id.toString()});
-            for (let b of list)
-            {
-                    const data = await billModel.findById(b);
-                    totalSpending+=data.totalMoney;
-            }            
+            console.log(x.name);
+            const movies = await MovieModel.find({ genre: x.name });
+            var totalSpending = 0;
+            for (let a of movies) {
+                const showing = await ShowingModel.findOne({ idMovie: a._id.toString() });
+                if (showing !== null) {
+                    const list = await orderModel.distinct('idBill', { idShowing: showing._id.toString() });
+                    for (let b of list) {
+                        const data = await billModel.findById(b);
+                        totalSpending += data.totalMoney;
+                    }
+                }
+            }
+            listItem.push({
+                name: x.name,
+                revenue: totalSpending
+            });
         }
-    }
-    listItem.push({
-        name:x.name,
-        revenue:totalSpending
-    });
-}
         res.json(listItem);
     })
 
@@ -193,7 +190,7 @@ movieRoute.post(
     asyncHandler(async (req, res) => {
         req.session.idCustomer = req.params.id; //"636b67fa4f1670cf789a8a80";
         const body = req.body.data;
-         console.log(req.body);
+        console.log(req.body);
         const check = await billModel.findOne({ idCustomer: req.params.id, status: -1 });   //kiem tra da co bill chua   
         const checkShowing = await ShowingModel.findById(req.body.idShowing);
         if (checkShowing == null) res.status(500).json({ message: "Something went wrong" });
@@ -235,7 +232,7 @@ movieRoute.post(
                 await showSeatModel.findById(a).updateOne({}, { $set: { isReserved: true } });
                 console.log("sum: " + (total.totalMoney + data.price))
             }
-            return res.status(400).json({message: "add successfully" });
+            return res.status(400).json({ message: "add successfully" });
         }
     })
 
@@ -341,16 +338,15 @@ movieRoute.get(
     "/findMovieDayStep2/:id",      //Tim rap dua tren movie (*)
     asyncHandler(async (req, res) => {
         var date = new Date();
-        var textDate =convert(date,1)+"T00:00:00.000Z";
+        var textDate = convert(date, 1) + "T00:00:00.000Z";
         var text = req.params.id;
-       
-        if(req.params.id!=1)
-        textDate=text[6]+text[7]+text[8]+text[9]+"-"+text[3]+text[4]+"-"+text[0]+text[1]+"T00:00:00.000Z";
 
-        const data = await ShowingModel.distinct('idCinema',{startTime:textDate});
+        if (req.params.id != 1)
+            textDate = text[6] + text[7] + text[8] + text[9] + "-" + text[3] + text[4] + "-" + text[0] + text[1] + "T00:00:00.000Z";
+
+        const data = await ShowingModel.distinct('idCinema', { startTime: textDate });
         var list = [];
-        for(let a of data)
-        {
+        for (let a of data) {
             const data = await CinemaModel.findById(a);
             list.push(data);
         }
@@ -366,16 +362,16 @@ movieRoute.get(
 movieRoute.get(
     "/findMovieCinemaStep2/:id",      //Tim rap dua tren movie (*)
     asyncHandler(async (req, res) => {
-        const data = await ShowingModel.distinct('idMovie',{idCinema:req.params.id});
-        var list =[];
-       for(let a of data){
-        const data = await MovieModel.findById(a);
-        list.push({
-            idMovie:a,
-            nameMovie: data.name,
+        const data = await ShowingModel.distinct('idMovie', { idCinema: req.params.id });
+        var list = [];
+        for (let a of data) {
+            const data = await MovieModel.findById(a);
+            list.push({
+                idMovie: a,
+                nameMovie: data.name,
 
-        });
-       }
+            });
+        }
         if (data) {
             return res.json(list);
         } else {
@@ -387,14 +383,14 @@ movieRoute.get(
 movieRoute.get(
     "/findMovieDayStep3/:id/:date",      //Tim rap dua tren id rap
     asyncHandler(async (req, res) => {
-        var text = req.params.date;      
-        const data = await ShowingModel.distinct('idMovie',{idCinema:req.params.id,startTime:  text[6]+text[7]+text[8]+text[9]+"-"+text[3]+text[4]+"-"+text[0]+text[1]+"T00:00:00.000Z"});
-        var list =[];
-        for(let a of data){
+        var text = req.params.date;
+        const data = await ShowingModel.distinct('idMovie', { idCinema: req.params.id, startTime: text[6] + text[7] + text[8] + text[9] + "-" + text[3] + text[4] + "-" + text[0] + text[1] + "T00:00:00.000Z" });
+        var list = [];
+        for (let a of data) {
             const movie = await MovieModel.findById(a);
             list.push({
-                idMovie:movie._id.toString(),
-                nameMovie:movie.name
+                idMovie: movie._id.toString(),
+                nameMovie: movie.name
             })
         }
         // const nameCinema = cinema.map( a => a._id)
@@ -408,20 +404,19 @@ movieRoute.get(
 movieRoute.get(
     "/findMovieCinemaStep3/:id/:idMovie",      //Tim rap dua tren movie (*)
     asyncHandler(async (req, res) => {
-        const data = await ShowingModel.distinct('idMovie',{idCinema:req.params.id,idMovie:req.params.idMovie});
-       var list = []
-       for(let a of data){
-        var listItem=[];
-        const data = await ShowingModel.distinct('startTime',{idMovie:a,idCinema:req.params.id})
-        for(let b of data)
-        {
-            listItem.push(convert(b));
+        const data = await ShowingModel.distinct('idMovie', { idCinema: req.params.id, idMovie: req.params.idMovie });
+        var list = []
+        for (let a of data) {
+            var listItem = [];
+            const data = await ShowingModel.distinct('startTime', { idMovie: a, idCinema: req.params.id })
+            for (let b of data) {
+                listItem.push(convert(b));
+            }
+            list.push({
+                idMovie: a,
+                movieDate: listItem
+            })
         }
-        list.push({
-            idMovie:a,
-            movieDate:listItem
-        })
-       }
         if (data) {
             return res.json(list);
         } else {
@@ -433,75 +428,73 @@ movieRoute.get(
 movieRoute.get(
     "/findMovieCinemaStep4/:id/:idMovie/:date",      //Tim rap dua tren movie (*)
     asyncHandler(async (req, res) => {
-        var text = req.params.date;      
-        const data = await ShowingModel.find({idCinema:req.params.id,startTime:text[6]+text[7]+text[8]+text[9]+"-"+text[3]+text[4]+"-"+text[0]+text[1]+"T00:00:00.000Z",idMovie:req.params.idMovie});
-        var list =[];
-        for(let a of data)
-        {            
-        const data1 = await showSeatModel.find({idShowing: a._id.toString()}).count();
-        const data2 = await showSeatModel.find({idShowing:a._id.toString(),isReserved:true}).count();
-        list.push({
-            idSession:a._id.toString(),
-            nameSession:a.time,
-            seat:data1-data2+"/"+data1
-        })
-    }
+        var text = req.params.date;
+        const data = await ShowingModel.find({ idCinema: req.params.id, startTime: text[6] + text[7] + text[8] + text[9] + "-" + text[3] + text[4] + "-" + text[0] + text[1] + "T00:00:00.000Z", idMovie: req.params.idMovie });
+        var list = [];
+        for (let a of data) {
+            const data1 = await showSeatModel.find({ idShowing: a._id.toString() }).count();
+            const data2 = await showSeatModel.find({ idShowing: a._id.toString(), isReserved: true }).count();
+            list.push({
+                idSession: a._id.toString(),
+                nameSession: a.time,
+                seat: data1 - data2 + "/" + data1
+            })
+        }
         // const nameCinema = cinema.map( a => a._id)
         if (data) {
             return res.json(list);
         } else {
             return res.status(400).json({ message: "No item found" });
         }
-    //     const data = await ShowingModel.distinct('idMovie',{idCinema:req.params.id,idMovie:req.params.idMovie});
-    //    var list = []
-    //    for(let a of data){
-    //     var listItem=[];
-    //     var text = req.params.idDate;
-    //     const data = await ShowingModel.distinct('startTime',{idMovie:a,idCinema:req.params.id,startTime:text[6]+text[7]+text[8]+text[9]+"-"+text[3]+text[4]+"-"+text[0]+text[1]+"T00:00:00.000Z"})
-    //     for(let b of data)
-    //     {
-    //     const data = await ShowingModel.find({idMovie:a,idCinema:req.params.id,startTime:b});
-    //     var listSeat=[];
-    //     for(let c of data)
-    //     {
-    //         const data = await showSeatModel.find({idShowing:c._id.toString()}).count();
-    //     const data2 = await showSeatModel.find({idShowing:c._id.toString(),isReserved:true}).count();
-    //         listSeat.push({time: c.time,seat:data-data2+"/"+data});
-    //     }    
-    //     console.log(listSeat);
-    //         listItem.push({date:convert(b),listSeat});
-    //     }
-    //     list.push({
-    //         idSession:a,
-    //         nameSession:listItem[0].date,
-    //         seat:listItem[0].listSeat
+        //     const data = await ShowingModel.distinct('idMovie',{idCinema:req.params.id,idMovie:req.params.idMovie});
+        //    var list = []
+        //    for(let a of data){
+        //     var listItem=[];
+        //     var text = req.params.idDate;
+        //     const data = await ShowingModel.distinct('startTime',{idMovie:a,idCinema:req.params.id,startTime:text[6]+text[7]+text[8]+text[9]+"-"+text[3]+text[4]+"-"+text[0]+text[1]+"T00:00:00.000Z"})
+        //     for(let b of data)
+        //     {
+        //     const data = await ShowingModel.find({idMovie:a,idCinema:req.params.id,startTime:b});
+        //     var listSeat=[];
+        //     for(let c of data)
+        //     {
+        //         const data = await showSeatModel.find({idShowing:c._id.toString()}).count();
+        //     const data2 = await showSeatModel.find({idShowing:c._id.toString(),isReserved:true}).count();
+        //         listSeat.push({time: c.time,seat:data-data2+"/"+data});
+        //     }    
+        //     console.log(listSeat);
+        //         listItem.push({date:convert(b),listSeat});
+        //     }
+        //     list.push({
+        //         idSession:a,
+        //         nameSession:listItem[0].date,
+        //         seat:listItem[0].listSeat
 
-    //     })
-    //    }
-    //     if (data) {
-    //         return res.json(list);
-    //     } else {
-    //         return res.status(400).json({ message: "No item found" });
-    //     }
+        //     })
+        //    }
+        //     if (data) {
+        //         return res.json(list);
+        //     } else {
+        //         return res.status(400).json({ message: "No item found" });
+        //     }
     })
 
 );
 movieRoute.get(
     "/findMovieDayStep4/:id/:date/:idMovie",      //Tim rap dua tren id rap
     asyncHandler(async (req, res) => {
-        var text = req.params.date;      
-        const data = await ShowingModel.find({idCinema:req.params.id,startTime:text[6]+text[7]+text[8]+text[9]+"-"+text[3]+text[4]+"-"+text[0]+text[1]+"T00:00:00.000Z",idMovie:req.params.idMovie});
-        var list =[];
-        for(let a of data)
-        {            
-        const data1 = await showSeatModel.find({idShowing: a._id.toString()}).count();
-        const data2 = await showSeatModel.find({idShowing:a._id.toString(),isReserved:true}).count();
-        list.push({
-            idSession:a._id.toString(),
-            nameSession:a.time,
-            seat:data1-data2+"/"+data1
-        })
-    }
+        var text = req.params.date;
+        const data = await ShowingModel.find({ idCinema: req.params.id, startTime: text[6] + text[7] + text[8] + text[9] + "-" + text[3] + text[4] + "-" + text[0] + text[1] + "T00:00:00.000Z", idMovie: req.params.idMovie });
+        var list = [];
+        for (let a of data) {
+            const data1 = await showSeatModel.find({ idShowing: a._id.toString() }).count();
+            const data2 = await showSeatModel.find({ idShowing: a._id.toString(), isReserved: true }).count();
+            list.push({
+                idSession: a._id.toString(),
+                nameSession: a.time,
+                seat: data1 - data2 + "/" + data1
+            })
+        }
         // const nameCinema = cinema.map( a => a._id)
         if (data) {
             return res.json(list);
@@ -620,19 +613,17 @@ movieRoute.get(
 movieRoute.get(
     "/historyBooking/:id",
     asyncHandler(async (req, res) => {
-        const bill = await billModel.find({ idCustomer: req.params.id });  
-        var  listItem =[];     
-              for (let a of bill) 
-              {
-                console.log(a);
+        const bill = await billModel.find({ idCustomer: req.params.id });
+        var listItem = [];
+        for (let a of bill) {
+            console.log(a);
 
-                const ticket = await orderModel.distinct('idShowing',{ idBill: a._id.toString() });
-                console.log(ticket);
-                for( let b of ticket)
-                {
-                    console.log("b"+b);
+            const ticket = await orderModel.distinct('idShowing', { idBill: a._id.toString() });
+            console.log(ticket);
+            for (let b of ticket) {
+                console.log("b" + b);
 
-                const showing = await ShowingModel.findById(b);   
+                const showing = await ShowingModel.findById(b);
                 console.log(showing);
                 const cinema = await CinemaModel.findById(showing.idCinema);
                 console.log(cinema);
@@ -641,28 +632,28 @@ movieRoute.get(
                 console.log(movie);
 
                 let list = [];
-                const ticketOfMovie = await orderModel.find({ idBill: a._id.toString(),idShowing:b });
+                const ticketOfMovie = await orderModel.find({ idBill: a._id.toString(), idShowing: b });
                 console.log(ticketOfMovie);
                 for (let c of ticketOfMovie) {
-                    const seat = await showSeatModel.findById(c.idShowSeat);     
+                    const seat = await showSeatModel.findById(c.idShowSeat);
                     console.log(seat);
                     list.push(seat.number);
                 }
                 var item = {
                     idBill: a._id.toString(),
-                    movie:movie.name,
+                    movie: movie.name,
                     cinema: cinema.name,
                     date: convert(showing.startTime),
                     session: showing.time,
                     listItem: list,
-                    createDate:convert(a.createdAt),
+                    createDate: convert(a.createdAt),
                 }
                 listItem.push(item);
                 console.log(listItem);
 
             }
-            }
-            console.log(listItem);
+        }
+        console.log(listItem);
         if (bill) {
             return res.json(listItem);
         } else {
@@ -676,36 +667,36 @@ movieRoute.get(
     asyncHandler(async (req, res) => {
         var listItem = [];
         const bill = await billModel.find({});
-        for (let x of bill){
-            const ticket = await orderModel.distinct('idShowing',{ idBill: x._id.toString() });
-                    for( let b of ticket)
-                    {    
-                    const showing = await ShowingModel.findById(b);   
-                    const cinema = await CinemaModel.findById(showing.idCinema);    
-                    const movie = await MovieModel.findById(showing.idMovie);
-    
-                    let list = [];
-                    const ticketOfMovie = await orderModel.find({ idBill: x._id.toString(),idShowing:b });
-                    let total =0;
-                    for (let c of ticketOfMovie) {
-                        const seat = await showSeatModel.findById(c.idShowSeat);     
-                        total += seat.price;
-                        list.push(seat.number);
-                    }
-                    const user = await UserModal.findById(x.idCustomer);
-                    var item = {
-                        idBill:x._id.toString(),
-                        fullName:user.fullName==null?null:user.fullName,
-                        movie:movie.name,
-                        cinema: cinema.name,
-                        date: convert(showing.startTime),
-                        session: showing.time,
-                        listItem: list,
-                        createDate:convert(x.createdAt),
-                        totalMoney: total
-                    }
-                    listItem.push(item);
+        console.log(bill)
+        for (let x of bill) {
+            const ticket = await orderModel.distinct('idShowing', { idBill: x._id.toString() });
+            for (let b of ticket) {
+                const showing = await ShowingModel.findById(b);
+                const cinema = await CinemaModel.findById(showing.idCinema);
+                const movie = await MovieModel.findById(showing.idMovie);
+
+                let list = [];
+                const ticketOfMovie = await orderModel.find({ idBill: x._id.toString(), idShowing: b });
+                let total = 0;
+                for (let c of ticketOfMovie) {
+                    const seat = await showSeatModel.findById(c.idShowSeat);
+                    total += seat.price;
+                    list.push(seat.number);
                 }
+                const user = await UserModal.findById(x.idCustomer);
+                var item = {
+                    idBill: x._id.toString(),
+                    fullName: user.fullName == null ? null : user.fullName,
+                    movie: movie.name,
+                    cinema: cinema.name,
+                    date: convert(showing.startTime),
+                    session: showing.time,
+                    listItem: list,
+                    createDate: convert(x.createdAt),
+                    totalMoney: total
+                }
+                listItem.push(item);
+            }
         }
         if (bill) {
             return res.json(listItem);
@@ -714,58 +705,57 @@ movieRoute.get(
         }
     })
 );
-function convert(str,a) {
+function convert(str, a) {
     var date = new Date(str),
-      mnth = ("0" + (date.getMonth() + 1)).slice(-2),
-      day = ("0" + date.getDate()).slice(-2);
-    if(a==null)
-     return [day,mnth,date.getFullYear()].join("-");
-           else
-      return [date.getFullYear(),mnth,day].join("-") ;
-  }
+        mnth = ("0" + (date.getMonth() + 1)).slice(-2),
+        day = ("0" + date.getDate()).slice(-2);
+    if (a == null)
+        return [day, mnth, date.getFullYear()].join("-");
+    else
+        return [date.getFullYear(), mnth, day].join("-");
+}
 movieRoute.get(
     "/detailBooking/:id",
     asyncHandler(async (req, res) => {
         const bill = await billModel.findOne({ idBill: req.params.id });
-        const ticket = await orderModel.distinct('idShowing',{ idBill: bill._id.toString() });
-        var  listItem =[];     
-                for( let b of ticket)
-                {
-                    console.log(b);
+        const ticket = await orderModel.distinct('idShowing', { idBill: bill._id.toString() });
+        var listItem = [];
+        for (let b of ticket) {
+            console.log(b);
 
-                const showing = await ShowingModel.findById(b);   
-                console.log(showing);
-                const cinema = await CinemaModel.findById(showing.idCinema);
-                console.log(cinema);
+            const showing = await ShowingModel.findById(b);
+            console.log(showing);
+            const cinema = await CinemaModel.findById(showing.idCinema);
+            console.log(cinema);
 
-                const movie = await MovieModel.findById(showing.idMovie);
-                console.log(movie);
+            const movie = await MovieModel.findById(showing.idMovie);
+            console.log(movie);
 
-                let list = [];
-                const ticketOfMovie = await orderModel.find({ idBill: bill._id.toString(),idShowing:b });
-                let total =0;
-                for (let c of ticketOfMovie) {
-                    const seat = await showSeatModel.findById(c.idShowSeat);     
-                    total += seat.price;
-                    console.log(seat);
-                    list.push(seat.number);
-                }
-                const user = await UserModal.findById(bill.idCustomer);
-                var item = {
-                    idBill:bill._id.toString(),
-                    fullName:user.fullName,
-                    movie:movie.name,
-                    cinema: cinema.name,
-                    date: convert(showing.startTime),
-                    session: showing.time,
-                    listItem: list,
-                    createDate:convert(bill.createdAt),
-                    totalMoney: total
-                }
-                listItem.push(item);
-                console.log(listItem);
-
+            let list = [];
+            const ticketOfMovie = await orderModel.find({ idBill: bill._id.toString(), idShowing: b });
+            let total = 0;
+            for (let c of ticketOfMovie) {
+                const seat = await showSeatModel.findById(c.idShowSeat);
+                total += seat.price;
+                console.log(seat);
+                list.push(seat.number);
             }
+            const user = await UserModal.findById(bill.idCustomer);
+            var item = {
+                idBill: bill._id.toString(),
+                fullName: user.fullName,
+                movie: movie.name,
+                cinema: cinema.name,
+                date: convert(showing.startTime),
+                session: showing.time,
+                listItem: list,
+                createDate: convert(bill.createdAt),
+                totalMoney: total
+            }
+            listItem.push(item);
+            console.log(listItem);
+
+        }
         if (ticket) {
             return res.json(listItem);
         } else {
@@ -886,8 +876,8 @@ movieRoute.get(
 movieRoute.get(
     "/rating",
     asyncHandler(async (req, res) => {
-        const data = await RatingModel.find({status:true});
-        await UserModal.updateMany({$set:{isActive:true}});
+        const data = await RatingModel.find({ status: true });
+        await UserModal.updateMany({ $set: { isActive: true } });
         if (data) {
             return res.json(data);
         } else {

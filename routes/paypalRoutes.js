@@ -111,8 +111,9 @@ app.get('/pay/:id', async (req, res) => {
           mnth = ("0" + (date.getMonth() + 1)).slice(-2),
           day = ("0" + date.getDate()).slice(-2);
         let hourMin = "";
-        hourMin = " " + date.getHours() + ":" + date.getMinutes();
-        name = showSeat.number + " movie: " + movie.name + " at " + [date.getFullYear(), mnth, day].join("-") + hourMin + ", " + CinemaHall.name + ", " + Cinema.name;
+        console.log(showing.time)
+        hourMin = showing.time;
+        name = showSeat.number + " movie: " + movie.name + " at " + [date.getFullYear(), mnth, day].join("-") + " " + hourMin + ", " + CinemaHall.name + ", " + Cinema.name;
         descriptionItems = "start at: " + showing.startTime + ", Cinemal Hall name: " + CinemaHall.name + ", Cinema name: " + Cinema.name + ", Location: " + Cinema.location
       }
       catch (error) { return res.status(500).send({ message: "Your seat booked not exist" }) }
