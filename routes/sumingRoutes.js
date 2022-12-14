@@ -282,7 +282,7 @@ app.get("/top10recent", async (req, res) => {
         result.push({ "idorder": sum_money[i]._id, "username": userName.fullName, "totalSPrice": sum_money[i].totalMoney, "date": sum_money[i].createdAt, "status": "paid" })
     }
     for (let [index, value] of result.entries()) {
-        value["date"] = value["date"].getDate() + "-" + ( value["date"].getMonth()+1) + "-" + value["date"].getFullYear();
+        value["date"] = value["date"].getDate() + "-" + (value["date"].getMonth() + 1) + "-" + value["date"].getFullYear();
         value["stt"] = index + 1;
     };
     res.status(200).send(result);
@@ -459,8 +459,7 @@ app.get("/summary/:date", async (req, res) => {
             createdAt: {
                 $gte: new Date(day_to_find),
                 $lt: new Date(next_day_to_find)
-            },
-            "status": "1"
+            }
         }
     }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
     sum_money2 = await userModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
@@ -469,8 +468,7 @@ app.get("/summary/:date", async (req, res) => {
             createdAt: {
                 $gte: new Date(day_to_find),
                 $lt: new Date(next_day_to_find)
-            },
-            "status": "1"
+            }
         }
     }, { $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
     sum_money4 = await MovieModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
@@ -518,7 +516,6 @@ app.get("/summary/:date", async (req, res) => {
                 $gte: new Date(first_day_of_week),
                 $lt: new Date(last_day_of_week)
             }
-            , "status": "1"
         }
     }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
     sum_money2 = await userModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
@@ -528,7 +525,6 @@ app.get("/summary/:date", async (req, res) => {
                 $gte: new Date(first_day_of_week),
                 $lt: new Date(last_day_of_week)
             }
-            , "status": "1"
         }
     }, { $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
     sum_money4 = await MovieModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
