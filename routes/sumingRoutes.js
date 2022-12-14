@@ -583,7 +583,6 @@ app.get("/summaryMoneyInThisYearAndLastYear", async (req, res) => {
                     $gte: new Date(day_to_find),
                     $lt: new Date(next_day_to_find)
                 }
-                , "status": "1"
             }
         }, { $group: { _id: null, sum_money: { $sum: "$totalMoney" } } }])
         console.log(sum_money)
@@ -603,7 +602,6 @@ app.get("/summaryMoneyInThisYearAndLastYear", async (req, res) => {
                     $gte: new Date(day_to_find),
                     $lt: new Date(next_day_to_find)
                 }
-                , "status": "1"
             }
         }, { $group: { _id: null, sum_money: { $sum: "$totalMoney" } } }])
         try {
