@@ -145,9 +145,18 @@ movieRoute.post(
         console.log(req.body);
         const movie = new MovieModel(req.body);
         if (movie.name != null) {
-            movie.save();
-            res.json(movie);
-        } else {
+            if (movie.describe != null) {
+                if (movie.language != null) {
+                    if (movie.price != null) {
+                        if (movie.isActive != null) {
+                            movie.save();
+                            res.json(movie);
+                        }
+                    }
+                }
+            }
+        }
+        {
             res.status(404)
             throw new Error("Add movie not successfull");
         }
@@ -539,10 +548,15 @@ movieRoute.get(
 movieRoute.get(
     "/findMovieStep2/:idMovie/:idCinema",      //Tim ngay chieu dua tren rap (*)
     asyncHandler(async (req, res) => {
-        const data = await ShowingModel.distinct('startTime', { idMovie: req.params.idMovie, idCinema: req.params.idCinema });
-        if (data) {
-            return res.json(data);
-        } else {
+        if (req.params.idMovie != null) {
+            if (req.params.idCinema != null) {
+                const data = await ShowingModel.distinct('startTime', { idMovie: req.params.idMovie, idCinema: req.params.idCinema });
+                if (data) {
+                    return res.json(data);
+                }
+            }
+        }
+        {
             return res.status(400).json({ message: "No item found" });
         }
     })
