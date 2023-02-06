@@ -94,7 +94,7 @@ app.get("/test3", async function (req, res) {
       }
       let subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt2.html'), 'utf8')
       subHtml = subHtml.replace('OrderNumber', paymentId)
-      subHtml = subHtml.replace('DateOrder', paymentInfo.update_time)
+      subHtml = subHtml.replace('DateOrder', paymentInfo.update_time.getFullYear + "-" + ("0" + (paymentInfo.update_time.getMonth() + 1)).slice(-2) + '-' + ("0" + paymentInfo.update_time.getDate()).slice(-2))
 
       let bill = await billsModel.find({ idCustomer: payment.transactions[0].description, status: "-1" });
       //luc chua thanh toan moi nguoi chi co 1 bill
@@ -116,21 +116,31 @@ app.get("/test3", async function (req, res) {
         var datetemp = new Date(showing.startTime),
           mnthtemp = ("0" + (datetemp.getMonth() + 1)).slice(-2),
           daytemp = ("0" + datetemp.getDate()).slice(-2);
-        session = session + ', ' + showing.time;
-        date = date + ', ' + [datetemp.getFullYear(), mnthtemp, daytemp].join("-");
+        if (session.indexOf(showing.time) != -1)
+          session = session + ', ' + showing.time;
+        if (date.indexOf([datetemp.getFullYear(), mnthtemp, daytemp].join("-")) != -1)
+          date = date + ', ' + [datetemp.getFullYear(), mnthtemp, daytemp].join("-");
         movietemp = await MovieModel.findById(showing.idMovie);
         CinemaHalltemp = await CinemaHallModel.findById(showing.idHall);
         Cinematemp = await cinemaModel.findById(CinemaHall.idCinema);
-        movie = movie + ', ' + movietemp;
-        CinemaHall = CinemaHall + ', ' + CinemaHalltemp;
-        Cinema = Cinema + ', ' + Cinematemp;
-        seat = seat + ', ' + showSeat.number
+        if (movie.indexOf(movietemp) != -1)
+          movie = movie + ', ' + movietemp;
+        if (CinemaHall.indexOf(CinemaHalltemp) != -1)
+          CinemaHall = CinemaHall + ', ' + CinemaHalltemp;
+        if (Cinema.indexOf(Cinematemp) != -1)
+          Cinema = Cinema + ', ' + Cinematemp;
+        if (seat.indexOf(showSeat.number) != -1)
+          seat = seat + ', ' + showSeat.number
       }
-
+      movie = movie.substring(1);
       subHtml.replace('MovieName', movie);
+      Cinema = Cinema.substring(1);
       subHtml.replace('CinemaName', Cinema);
+      date = date.substring(1);
       subHtml.replace('DateName', date);
+      session = session.substring(1);
       subHtml.replace('SessionName', session);
+      seat = seat.substring(1);
       subHtml.replace('SeatName', seat);
       subHtml.replace('SeatQuantity', billsOfUser.length);
       subHtml.replace('SeatQuantityMoney', paymentInfo.transactions[0].amount.details.subTotal)
