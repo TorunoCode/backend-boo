@@ -158,7 +158,7 @@ app.get('/pay/:id', async (req, res) => {
     };
     paypal.payment.create(create_payment_json, function (error, payment) {
       if (error) {
-        res.status(400).send(error);
+        res.status(400).send(error + '   hello  ' + billsOfUser.toString() + " hello " + billsOfUser.toString().split());
       } else {
         for (let i = 0; i < payment.links.length; i++) {
           if (payment.links[i].rel === 'approval_url') {
@@ -283,7 +283,7 @@ app.get('/success/:buyer_id', async (req, res) => {
               subHtml = fs.readFileSync('template/mailreceipt2.html', 'utf8')
               subHtml = subHtml.replace('OrderNumber', paymentId)
               subHtml = subHtml.replace('DateOrder', paymentInfo.transactions[0].related_resources[0].sale.update_time)
-              let billsOfUser = payment.transactions[0].description;
+              let billsOfUser = payment.transactions[0].description.split();
               let showing = '';
               let movie = '';
               let CinemaHall = '';
