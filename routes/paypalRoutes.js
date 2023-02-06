@@ -363,179 +363,180 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
 app.get('/success/:buyer_id', async (req, res) => {
   var subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
   const paymentId = req.query.paymentId;
-  await paypal.payment.get(paymentId, function (error, payment) {
-    if (error) {
-      subHtml = subHtml.replace('responseBody', "Co loi lay hoa don thanh toan")
-      res.status(400);
-      res.write(subHtml);
-      res.end();
-      return;
-    } else {
-      console.log("Get Payment Response");
-      {
-        const payerId = req.query.PayerID;
-        const currency_for_execute = payment.transactions[0].amount.currency;
-        const total_for_execute = payment.transactions[0].amount.total;
-        console.log(payerId)
-        const execute_payment_json = {
-          "payer_id": payerId,
-          "transactions": [{
-            "amount": {
-              "currency": currency_for_execute,
-              "total": total_for_execute
-            }
-          }]
-        };
-        if (payment.state == "approved") {
-          subHtml = subHtml.replace('responseBody', "Ban da tra cho hoa don nay")
-          res.status(400);
-          res.write(subHtml);
-          res.end();
-          return;
-        }
-        let paymentInfo;
-        // Obtains the transaction details from paypal
-        paypal.payment.execute(paymentId, execute_payment_json, async function (error, payment) {
-          //When error occurs when due to non-existent transaction, throw an error else log the transaction details in the console then send a Success string reposponse to the user.
-          if (error) {
-            subHtml = subHtml.replace('responseBody', "co loi giao dich")
+  new Promise(() => {
+    paypal.payment.get(paymentId, function (error, payment) {
+      if (error) {
+        subHtml = subHtml.replace('responseBody', "Co loi lay hoa don thanh toan")
+        res.status(400);
+        res.write(subHtml);
+        res.end();
+        return;
+      } else {
+        console.log("Get Payment Response");
+        {
+          const payerId = req.query.PayerID;
+          const currency_for_execute = payment.transactions[0].amount.currency;
+          const total_for_execute = payment.transactions[0].amount.total;
+          console.log(payerId)
+          const execute_payment_json = {
+            "payer_id": payerId,
+            "transactions": [{
+              "amount": {
+                "currency": currency_for_execute,
+                "total": total_for_execute
+              }
+            }]
+          };
+          if (payment.state == "approved") {
+            subHtml = subHtml.replace('responseBody', "Ban da tra cho hoa don nay")
             res.status(400);
             res.write(subHtml);
             res.end();
             return;
-          } else {
-            paymentInfo = payment;
-            let buyer_id = req.params.buyer_id;
-            let Name_items = [];
-            let Sku_items = [];
-            let Currency_items = [];
-            let Price_items = [];
-            let Quantity_items = [];
-            try {
-              for (let i = 0; i < paymentInfo.transactions[0].item_list.items.length; i++) {
-                Name_items[i] = paymentInfo.transactions[0].item_list.items[i].name;
-                Sku_items[i] = paymentInfo.transactions[0].item_list.items[i].sku;
-                Quantity_items[i] = paymentInfo.transactions[0].item_list.items[i].quantity;
-                Currency_items[i] = paymentInfo.transactions[0].item_list.items[i].currency;
-                Price_items[i] = paymentInfo.transactions[0].item_list.items[i].price;
-              }
-              subHtml = fs.readFileSync('template/mailreceipt2.html', 'utf8')
-              subHtml = subHtml.replace('OrderNumber', paymentId)
-              subHtml = subHtml.replace('DateOrder', paymentInfo.transactions[0].related_resources[0].sale.update_time)
-              let bill = await billsModel.find({ idCustomer: payment.transactions[0].description, status: "-1" });
-              //luc chua thanh toan moi nguoi chi co 1 bill
-              let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
-              let movie = '';
-              let Cinema = '';
-              let date = '';
-              let session = '';
-              let seat = '';
-              for (let i = 0; i < billsOfUser.length; i++) {
-                let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
-                let CinemaHallSeat = await CinemaHallSeatModel.find({ _id: showSeat.idCinemaHallSeat });
-                console.log("tohere")
-                try {
-                  let showingtemp;
-                  let movietemp;
-                  let CinemaHalltemp;
-                  let Cinematemp;
-                  showingtemp = await ShowingModel.findById(showSeat.idShowing);
-                  movietemp = await MovieModel.findById(showingtemp.idMovie);
-                  movietemp = movietemp.name;
-                  CinemaHalltemp = await CinemaHallModel.findById(showingtemp.idHall);
-                  Cinematemp = await cinemaModel.findById(CinemaHalltemp.idCinema);
-                  Cinematemp = Cinematemp.name;
-                  var datetemp = new Date(showingtemp.startTime),
-                    mnthtemp = ("0" + (datetemp.getMonth() + 1)).slice(-2),
-                    daytemp = ("0" + datetemp.getDate()).slice(-2);
-                  session = session + ', ' + showingtemp.time;
-                  date = date + ', ' + [datetemp.getFullYear(), mnthtemp, daytemp].join("-");
-                  movie = movie + ', ' + movietemp;
-                  Cinema = Cinema + ', ' + Cinematemp;
-                  seat = seat + ', ' + showSeat.number
-                }
-                catch (error) { return res.status(500).send(error) }
-              }
-              console.log(movie)
-              subHtml = subHtml.replace('MovieName', '' + movie + '');
-              console.log(Cinema)
-              subHtml = subHtml.replace('CinemaName', '' + Cinema + '');
-              console.log(date)
-              subHtml = subHtml.replace('DateName', '' + date + '');
-              console.log(session)
-              subHtml = subHtml.replace('SessionName', '' + session + '');
-              console.log(seat)
-              subHtml = subHtml.replace('SeatName', '' + seat + '');
-              console.log(billsOfUser.length)
-              subHtml = subHtml.replace('SeatQuantity', '' + billsOfUser.length + '');
-              console.log(total_for_execute)
-              subHtml = subHtml.replace('SeatQuantityMoney', '' + total_for_execute + '')
-              subHtml = subHtml.replace('TotalVatMoney', '' + total_for_execute + '')
-              console.log("done to hererrrrrrr")
-              var emailToSend = await userModel.find({ _id: payment.transactions[0].description }).select('email -_id')
-              var mailOptions = {
-                from: 'backendtlcn@gmail.com',
-                to: emailToSend[0].email,
-                subject: 'Sending Email using Node.js',
-                html: subHtml
-              };
-              console.log(emailToSend)
-              console.log("done to hererrrrrrr 2")
-              await new Promise((resolve, reject) => {
-                emailProvider.sendMail(mailOptions, function (error, info) {
-                  if (error) {
-                    res.status(400).send(error);
-                    reject(error);
-                  } else {
-                    console.log(info)
-                    resolve(info);
-                  }
-                })
-              });
-              console.log("toherrrrrrrrer")
-              await billsModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
-              await showSeatModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
-              await orderModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
-              subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
-              subHtml = subHtml.replace('responseBody', "Da Thanh toan va gui xac nhan qua mail xong")
-              res.status(400);
-              res.write(subHtml);
-              res.end();
-              /*              const data = await transactionsModel.create({
-                              buyer: buyer_id,
-                              Fname: paymentInfo.payer.payer_info.first_name,
-                              Lname: paymentInfo.payer.payer_info.last_name,
-                              recipient_name: paymentInfo.payer.payer_info.shipping_address.recipient_name,
-                              Seller: paymentInfo.transactions[0].payee.email,
-                              Line1: paymentInfo.payer.payer_info.shipping_address.line1,
-                              City: paymentInfo.payer.payer_info.shipping_address.city,
-                              postal_code: paymentInfo.payer.payer_info.shipping_address.postal_code,
-                              country_code: paymentInfo.payer.payer_info.shipping_address.country_code,
-                              Name_items: Name_items,
-                              Sku_items: Sku_items,
-                              dateCreate: paymentInfo.transactions[0].related_resources[0].sale.create_time,
-                              dateUpdate: paymentInfo.transactions[0].related_resources[0].sale.update_time,
-                              status: paymentInfo.payer.status,
-                              subTotal: paymentInfo.transactions[0].amount.details.subTotal,
-                              Fee_payment: paymentInfo.transactions[0].amount.details.handling_fee,
-                              Quantity_items: Quantity_items,
-                              Currency_items: Currency_items,
-                              Price_items: Price_items
-                            });*/
-            } catch (error) {
-              subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
-              subHtml = subHtml.replace('responseBody', "Khong tim thay cac ghe trong giao dich")
-              res.status(400);
-              res.write(subHtml);
-              res.end();
-            }
           }
-        });
+          let paymentInfo;
+          // Obtains the transaction details from paypal
+          paypal.payment.execute(paymentId, execute_payment_json, async function (error, payment) {
+            //When error occurs when due to non-existent transaction, throw an error else log the transaction details in the console then send a Success string reposponse to the user.
+            if (error) {
+              subHtml = subHtml.replace('responseBody', "co loi giao dich")
+              res.status(400);
+              res.write(subHtml);
+              res.end();
+              return;
+            } else {
+              paymentInfo = payment;
+              let buyer_id = req.params.buyer_id;
+              let Name_items = [];
+              let Sku_items = [];
+              let Currency_items = [];
+              let Price_items = [];
+              let Quantity_items = [];
+              try {
+                for (let i = 0; i < paymentInfo.transactions[0].item_list.items.length; i++) {
+                  Name_items[i] = paymentInfo.transactions[0].item_list.items[i].name;
+                  Sku_items[i] = paymentInfo.transactions[0].item_list.items[i].sku;
+                  Quantity_items[i] = paymentInfo.transactions[0].item_list.items[i].quantity;
+                  Currency_items[i] = paymentInfo.transactions[0].item_list.items[i].currency;
+                  Price_items[i] = paymentInfo.transactions[0].item_list.items[i].price;
+                }
+                subHtml = fs.readFileSync('template/mailreceipt2.html', 'utf8')
+                subHtml = subHtml.replace('OrderNumber', paymentId)
+                subHtml = subHtml.replace('DateOrder', paymentInfo.transactions[0].related_resources[0].sale.update_time)
+                let bill = await billsModel.find({ idCustomer: payment.transactions[0].description, status: "-1" });
+                //luc chua thanh toan moi nguoi chi co 1 bill
+                let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
+                let movie = '';
+                let Cinema = '';
+                let date = '';
+                let session = '';
+                let seat = '';
+                for (let i = 0; i < billsOfUser.length; i++) {
+                  let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
+                  let CinemaHallSeat = await CinemaHallSeatModel.find({ _id: showSeat.idCinemaHallSeat });
+                  console.log("tohere")
+                  try {
+                    let showingtemp;
+                    let movietemp;
+                    let CinemaHalltemp;
+                    let Cinematemp;
+                    showingtemp = await ShowingModel.findById(showSeat.idShowing);
+                    movietemp = await MovieModel.findById(showingtemp.idMovie);
+                    movietemp = movietemp.name;
+                    CinemaHalltemp = await CinemaHallModel.findById(showingtemp.idHall);
+                    Cinematemp = await cinemaModel.findById(CinemaHalltemp.idCinema);
+                    Cinematemp = Cinematemp.name;
+                    var datetemp = new Date(showingtemp.startTime),
+                      mnthtemp = ("0" + (datetemp.getMonth() + 1)).slice(-2),
+                      daytemp = ("0" + datetemp.getDate()).slice(-2);
+                    session = session + ', ' + showingtemp.time;
+                    date = date + ', ' + [datetemp.getFullYear(), mnthtemp, daytemp].join("-");
+                    movie = movie + ', ' + movietemp;
+                    Cinema = Cinema + ', ' + Cinematemp;
+                    seat = seat + ', ' + showSeat.number
+                  }
+                  catch (error) { return res.status(500).send(error) }
+                }
+                console.log(movie)
+                subHtml = subHtml.replace('MovieName', '' + movie + '');
+                console.log(Cinema)
+                subHtml = subHtml.replace('CinemaName', '' + Cinema + '');
+                console.log(date)
+                subHtml = subHtml.replace('DateName', '' + date + '');
+                console.log(session)
+                subHtml = subHtml.replace('SessionName', '' + session + '');
+                console.log(seat)
+                subHtml = subHtml.replace('SeatName', '' + seat + '');
+                console.log(billsOfUser.length)
+                subHtml = subHtml.replace('SeatQuantity', '' + billsOfUser.length + '');
+                console.log(total_for_execute)
+                subHtml = subHtml.replace('SeatQuantityMoney', '' + total_for_execute + '')
+                subHtml = subHtml.replace('TotalVatMoney', '' + total_for_execute + '')
+                console.log("done to hererrrrrrr")
+                var emailToSend = await userModel.find({ _id: payment.transactions[0].description }).select('email -_id')
+                var mailOptions = {
+                  from: 'backendtlcn@gmail.com',
+                  to: emailToSend[0].email,
+                  subject: 'Sending Email using Node.js',
+                  html: subHtml
+                };
+                console.log(emailToSend)
+                console.log("done to hererrrrrrr 2")
+                await new Promise((resolve, reject) => {
+                  emailProvider.sendMail(mailOptions, function (error, info) {
+                    if (error) {
+                      res.status(400).send(error);
+                      reject(error);
+                    } else {
+                      console.log(info)
+                      resolve(info);
+                    }
+                  })
+                });
+                console.log("toherrrrrrrrer")
+                await billsModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
+                await showSeatModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
+                await orderModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
+                subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
+                subHtml = subHtml.replace('responseBody', "Da Thanh toan va gui xac nhan qua mail xong")
+                res.status(400);
+                res.write(subHtml);
+                res.end();
+                /*              const data = await transactionsModel.create({
+                                buyer: buyer_id,
+                                Fname: paymentInfo.payer.payer_info.first_name,
+                                Lname: paymentInfo.payer.payer_info.last_name,
+                                recipient_name: paymentInfo.payer.payer_info.shipping_address.recipient_name,
+                                Seller: paymentInfo.transactions[0].payee.email,
+                                Line1: paymentInfo.payer.payer_info.shipping_address.line1,
+                                City: paymentInfo.payer.payer_info.shipping_address.city,
+                                postal_code: paymentInfo.payer.payer_info.shipping_address.postal_code,
+                                country_code: paymentInfo.payer.payer_info.shipping_address.country_code,
+                                Name_items: Name_items,
+                                Sku_items: Sku_items,
+                                dateCreate: paymentInfo.transactions[0].related_resources[0].sale.create_time,
+                                dateUpdate: paymentInfo.transactions[0].related_resources[0].sale.update_time,
+                                status: paymentInfo.payer.status,
+                                subTotal: paymentInfo.transactions[0].amount.details.subTotal,
+                                Fee_payment: paymentInfo.transactions[0].amount.details.handling_fee,
+                                Quantity_items: Quantity_items,
+                                Currency_items: Currency_items,
+                                Price_items: Price_items
+                              });*/
+              } catch (error) {
+                subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
+                subHtml = subHtml.replace('responseBody', "Khong tim thay cac ghe trong giao dich")
+                res.status(400);
+                res.write(subHtml);
+                res.end();
+              }
+            }
+          });
+        }
       }
-    }
 
+    });
   });
-
 });
 
 app.post("/delete_transactions", async (request, response) => {
