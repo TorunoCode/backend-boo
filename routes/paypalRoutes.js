@@ -79,8 +79,9 @@ app.get("/test3", async function (req, res) {
       }
       let subHtml = fs.readFileSync('template/mailreceipt2.html', 'utf8')
       subHtml = subHtml.replace('OrderNumber', paymentId)
-      subHtml = subHtml.replace('DateOrder', paymentInfo.transactions[0].related_resources[0].sale.update_time)
-      let billsOfUser = payment.transactions[0].description.split(';');
+      console.log(paymentInfo.update_time)
+      subHtml = subHtml.replace('DateOrder', paymentInfo.update_time)
+      let billsOfUser = $.parseJSON('[' + payment.transactions[0].description + ']');
       console.log(billsOfUser.length)
       console.log(billsOfUser)
       let showing = '';
@@ -249,10 +250,6 @@ app.get('/pay/:id', async (req, res) => {
       })
     }
     total = bill[0].totalMoney;
-    let billsOfUserString = '';
-    for (let i = 0; i < billsOfUser.length; i++) {
-      billsOfUserString = billsOfUserString + ';' + billsOfUser[i].toString()
-    }
     const create_payment_json = {
       "intent": "sale",
       "payer": {
@@ -274,7 +271,7 @@ app.get('/pay/:id', async (req, res) => {
           "currency": "USD",
           "total": total
         },
-        "description": billsOfUserString
+        "description": billsOfUser.toString()
       }]
     };
     paypal.payment.create(create_payment_json, function (error, payment) {
@@ -404,7 +401,7 @@ app.get('/success/:buyer_id', async (req, res) => {
               subHtml = fs.readFileSync('template/mailreceipt2.html', 'utf8')
               subHtml = subHtml.replace('OrderNumber', paymentId)
               subHtml = subHtml.replace('DateOrder', paymentInfo.transactions[0].related_resources[0].sale.update_time)
-              let billsOfUser = payment.transactions[0].description.split();
+              let billsOfUser = $.parseJSON('[' + payment.transactions[0].description + ']');
               let showing = '';
               let movie = '';
               let CinemaHall = '';
