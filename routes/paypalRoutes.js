@@ -22,7 +22,7 @@ app.get("/testssssu/:id", function (req, res) {
 });
 app.get("/test2/mail", async function (req, res) {
   //sgMail.setApiKey('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')
-  /*var subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
+  var subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
   subHtml = subHtml.replace('responseBody', 'test responseBody')
   var mailOptions = {
     from: 'backendtlcn@gmail.com',
@@ -48,7 +48,7 @@ app.get("/test2/mail", async function (req, res) {
       }
     })
   });
-  sgMail
+  /*sgMail
     .send(mailOptions)
     .then((response) => {
       console.log(response[0].statusCode)
@@ -56,10 +56,12 @@ app.get("/test2/mail", async function (req, res) {
     })
     .catch((error) => {
       console.error(error)
-    })
+    })*/
   console.log("test here")
   res.write(subHtml);
-  res.end();*/
+  res.end();
+  res.send();
+  return
 });
 
 app.get("/test3", async function (req, res) {
