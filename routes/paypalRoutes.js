@@ -79,11 +79,11 @@ app.get("/test3", async function (req, res) {
       }
       let subHtml = fs.readFileSync('template/mailreceipt2.html', 'utf8')
       subHtml = subHtml.replace('OrderNumber', paymentId)
-
-      console.log(payment.transactions[0].description)
-      console.log(paymentInfo.update_time)
       subHtml = subHtml.replace('DateOrder', paymentInfo.update_time)
-      let billsOfUser = $.parseJSON('[' + payment.transactions[0].description + ']');
+
+      let bill = await billsModel.find({ idCustomer: payment.transactions[0].description, status: "-1" });
+      //luc chua thanh toan moi nguoi chi co 1 bill
+      let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
       console.log(billsOfUser.length)
       console.log(billsOfUser)
       let showing = '';
@@ -413,6 +413,7 @@ app.get('/success/:buyer_id', async (req, res) => {
               for (let i = 0; i < billsOfUser.length; i++) {
                 let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
                 let CinemaHallSeat = await CinemaHallSeatModel.find({ _id: showSeat.idCinemaHallSeat });
+                console.log("tohere")
                 try {
                   let showingtemp;
                   let movietemp;
