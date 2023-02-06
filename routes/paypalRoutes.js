@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { response } from 'express';
 import paypal from 'paypal-rest-sdk';
 import transactionsModel from "../models/transactionsModel.js"
 import billsModel from "../models/billsModel.js"
@@ -22,45 +22,48 @@ app.get("/testssssu/:id", function (req, res) {
 });
 app.get("/test2/mail", async function (req, res) {
   //sgMail.setApiKey('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')
-  var subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
-  subHtml = subHtml.replace('responseBody', 'test responseBody')
-  var mailOptions = {
-    from: 'backendtlcn@gmail.com',
-    to: 'test@gmail.comxxskd',
-    subject: 'Sending Email using Node.js',
-    html: subHtml
-  };
-  var mailOptions = {
-    from: 'backendtlcn@gmail.com',
-    to: 'test@gmail.comxxskd',
-    subject: 'Sending Email using Node.js',
-    html: 'test'
-  };
-  console.log("done to hererrrrrrr 2")
-  await new Promise((resolve, reject) => {
-    emailProvider.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        res.status(400).send(error);
-        reject(error);
-      } else {
-        console.log(info)
-        resolve(info);
-      }
-    })
-  });
-  /*sgMail
-    .send(mailOptions)
-    .then((response) => {
-      console.log(response[0].statusCode)
-      console.log(response[0].headers)
-    })
-    .catch((error) => {
-      console.error(error)
-    })*/
-  console.log("test here")
-  res.write(subHtml);
-  res.end();
-  res.send();
+  try {
+    var subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
+    subHtml = subHtml.replace('responseBody', 'test responseBody')
+    var mailOptions = {
+      from: 'backendtlcn@gmail.com',
+      to: 'test@gmail.comxxskd',
+      subject: 'Sending Email using Node.js',
+      html: subHtml
+    };
+    var mailOptions = {
+      from: 'backendtlcn@gmail.com',
+      to: 'test@gmail.comxxskd',
+      subject: 'Sending Email using Node.js',
+      html: 'test'
+    };
+    console.log("done to hererrrrrrr 2")
+    await new Promise((resolve, reject) => {
+      emailProvider.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          res.status(400).send(error);
+          reject(error);
+        } else {
+          console.log(info)
+          resolve(info);
+        }
+      })
+    });
+    /*sgMail
+      .send(mailOptions)
+      .then((response) => {
+        console.log(response[0].statusCode)
+        console.log(response[0].headers)
+      })
+      .catch((error) => {
+        console.error(error)
+      })*/
+    console.log("test here")
+    res.write(subHtml);
+    res.end();
+    res.send();
+  }
+  catch (error) { return res.send(error) }
   return
 });
 
