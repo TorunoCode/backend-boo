@@ -363,7 +363,7 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
 app.get('/success/:buyer_id', async (req, res) => {
   var subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
   const paymentId = req.query.paymentId;
-  paypal.payment.get(paymentId, function (error, payment) {
+  await paypal.payment.get(paymentId, function (error, payment) {
     if (error) {
       subHtml = subHtml.replace('responseBody', "Co loi lay hoa don thanh toan")
       res.status(400);
