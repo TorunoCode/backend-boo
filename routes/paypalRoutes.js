@@ -429,7 +429,9 @@ app.get('/success/:buyer_id', async (req, res) => {
                 }
                 subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt2.html'), 'utf8')
                 subHtml = subHtml.replace('OrderNumber', paymentId)
-                subHtml = subHtml.replace('DateOrder', paymentInfo.transactions[0].related_resources[0].sale.update_time)
+                subHtml = subHtml.replace('DateOrder', paymentInfo.transactions[0].related_resources[0].sale.update_time + '-' +
+                  ("0" + (paymentInfo.transactions[0].related_resources[0].sale.update_time.getMonth() + 1)).slice(-2)) + '-' +
+                  ("0" + paymentInfo.transactions[0].related_resources[0].sale.update_time.getDate()).slice(-2)
                 let bill = await billsModel.find({ idCustomer: payment.transactions[0].description, status: "-1" });
                 //luc chua thanh toan moi nguoi chi co 1 bill
                 let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
@@ -456,23 +458,33 @@ app.get('/success/:buyer_id', async (req, res) => {
                     var datetemp = new Date(showingtemp.startTime),
                       mnthtemp = ("0" + (datetemp.getMonth() + 1)).slice(-2),
                       daytemp = ("0" + datetemp.getDate()).slice(-2);
-                    session = session + ', ' + showingtemp.time;
-                    date = date + ', ' + [datetemp.getFullYear(), mnthtemp, daytemp].join("-");
-                    movie = movie + ', ' + movietemp;
-                    Cinema = Cinema + ', ' + Cinematemp;
-                    seat = seat + ', ' + showSeat.number
+                    if (session.indexOf(showingtemp.time) == -1)
+                      session = session + ', ' + showingtemp.time;
+                    if (date.indexOf([datetemp.getFullYear(), mnthtemp, daytemp].join("-")) == -1)
+                      date = date + ', ' + [datetemp.getFullYear(), mnthtemp, daytemp].join("-");
+                    if (movie.indexOf(movietemp) == -1)
+                      movie = movie + ', ' + movietemp;
+                    if (Cinema.indexOf(Cinematemp) == -1)
+                      Cinema = Cinema + ', ' + Cinematemp;
+                    if (seat.indexOf(showSeat.number) == -1)
+                      seat = seat + ', ' + showSeat.number
                   }
                   catch (error) { return res.status(500).send(error) }
                 }
                 console.log(movie)
+                movie = movie.substring(1)
                 subHtml = subHtml.replace('MovieName', '' + movie + '');
+                Cinema = Cinema.substring(1)
                 console.log(Cinema)
                 subHtml = subHtml.replace('CinemaName', '' + Cinema + '');
+                date = date.substring(1)
                 console.log(date)
                 subHtml = subHtml.replace('DateName', '' + date + '');
+                session = session.substring(1)
                 console.log(session)
                 subHtml = subHtml.replace('SessionName', '' + session + '');
                 console.log(seat)
+                seat = seat.substring(1)
                 subHtml = subHtml.replace('SeatName', '' + seat + '');
                 console.log(billsOfUser.length)
                 subHtml = subHtml.replace('SeatQuantity', '' + billsOfUser.length + '');
