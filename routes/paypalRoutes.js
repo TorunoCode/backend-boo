@@ -23,7 +23,7 @@ app.get("/testssssu/:id", function (req, res) {
 app.get("/test2/mail", async function (req, res) {
   //sgMail.setApiKey('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')
   try {
-    var subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
+    var subHtml = fs.readFileSync('../template/mailreceipt3.html', 'utf8')
     subHtml = subHtml.replace('responseBody', 'test responseBody')
     var mailOptions = {
       from: 'backendtlcn@gmail.com',
