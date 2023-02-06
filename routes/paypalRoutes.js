@@ -153,7 +153,7 @@ app.get('/pay/:id', async (req, res) => {
           "currency": "USD",
           "total": total
         },
-        "description": billsOfUser
+        "description": billsOfUser.toString()
       }]
     };
     paypal.payment.create(create_payment_json, function (error, payment) {
