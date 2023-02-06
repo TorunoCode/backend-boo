@@ -17,6 +17,9 @@ const app = express.Router();
 app.get("/test/:id", function (req, res) {
   res.send("paypal Routes");
 });
+app.get("/testssssu/:id", function (req, res) {
+  res.send("paypal Routes");
+});
 app.get("/test2/mail", async function (req, res) {
   //sgMail.setApiKey('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')
   var subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
