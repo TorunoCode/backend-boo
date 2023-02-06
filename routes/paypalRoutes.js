@@ -37,21 +37,6 @@ app.get("/test2/mail", async function (req, res) {
   await new Promise((resolve, reject) => {
     emailProvider.sendMail(mailOptions, function (error, info) {
       if (error) {
-        //console.log(error)
-        //let subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
-        //subHtml = subHtml.replace('responseBody', "Khong gui mail thanh cong")
-        //res.status(400);
-        //res.write(subHtml);
-        reject(error);
-      } else {
-        console.log(link)
-        resolve(info);
-      }
-    })
-  });
-  /*await new Promise((resolve, reject) => {
-    emailProvider.sendMail(mailOptions, function (error, info) {
-      if (error) {
         res.status(400).send(error);
         reject(error);
       } else {
@@ -59,7 +44,7 @@ app.get("/test2/mail", async function (req, res) {
         resolve(info);
       }
     })
-  });*/
+  });
   /*sgMail
     .send(mailOptions)
     .then((response) => {
