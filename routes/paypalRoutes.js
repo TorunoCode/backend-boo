@@ -132,15 +132,15 @@ app.get("/test3", async function (req, res) {
         if (seat.indexOf(showSeat.number) != -1)
           seat = seat + ', ' + showSeat.number
       }
-      movie = movie.substring(1);
+      movie = movie.substring(2);
       subHtml.replace('MovieName', movie);
-      Cinema = Cinema.substring(1);
+      Cinema = Cinema.substring(2);
       subHtml.replace('CinemaName', Cinema);
-      date = date.substring(1);
+      date = date.substring(2);
       subHtml.replace('DateName', date);
-      session = session.substring(1);
+      session = session.substring(2);
       subHtml.replace('SessionName', session);
-      seat = seat.substring(1);
+      seat = seat.substring(2);
       subHtml.replace('SeatName', seat);
       subHtml.replace('SeatQuantity', billsOfUser.length);
       subHtml.replace('SeatQuantityMoney', paymentInfo.transactions[0].amount.details.subTotal)
