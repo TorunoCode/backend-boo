@@ -457,20 +457,20 @@ app.get('/success/:buyer_id', async (req, res) => {
                 catch (error) { return res.status(500).send(error) }
               }
               console.log(movie)
-              subHtml.replace('MovieName', movie.toString());
+              subHtml.replace('MovieName', '' + movie + '');
               console.log(Cinema)
-              subHtml.replace('CinemaName', Cinema.toString());
+              subHtml.replace('CinemaName', '' + Cinema + '');
               console.log(date)
-              subHtml.replace('DateName', date.toString());
+              subHtml.replace('DateName', '' + date + '');
               console.log(session)
-              subHtml.replace('SessionName', session.toString());
+              subHtml.replace('SessionName', '' + session + '');
               console.log(seat)
-              subHtml.replace('SeatName', seat.toString());
+              subHtml.replace('SeatName', '' + seat + '');
               console.log(billsOfUser.length)
-              subHtml.replace('SeatQuantity', billsOfUser.length);
+              subHtml.replace('SeatQuantity', '' + billsOfUser.length + '');
               console.log(total_for_execute)
-              subHtml.replace('SeatQuantityMoney', total_for_execute)
-              subHtml.replace('TotalVatMoney', total_for_execute)
+              subHtml.replace('SeatQuantityMoney', '' + total_for_execute + '')
+              subHtml.replace('TotalVatMoney', '' + total_for_execute + '')
               console.log("done to hererrrrrrr")
               var emailToSend = await userModel.find({ _id: payment.transactions[0].description }).select('email -_id')
               var mailOptions = {
