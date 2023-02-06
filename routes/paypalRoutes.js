@@ -429,9 +429,7 @@ app.get('/success/:buyer_id', async (req, res) => {
                 }
                 subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt2.html'), 'utf8')
                 subHtml = subHtml.replace('OrderNumber', paymentId)
-                subHtml = subHtml.replace('DateOrder', paymentInfo.transactions[0].related_resources[0].sale.update_time + '-' +
-                  ("0" + (paymentInfo.transactions[0].related_resources[0].sale.update_time.getMonth() + 1)).slice(-2)) + '-' +
-                  ("0" + paymentInfo.transactions[0].related_resources[0].sale.update_time.getDate()).slice(-2)
+                subHtml = subHtml.replace('DateOrder', paymentInfo.transactions[0].related_resources[0].sale.update_time.substring(0, 8))
                 let bill = await billsModel.find({ idCustomer: payment.transactions[0].description, status: "-1" });
                 //luc chua thanh toan moi nguoi chi co 1 bill
                 let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
