@@ -492,10 +492,10 @@ app.get('/success/:buyer_id', async (req, res) => {
                   }
                 })
               });
-              console.log(toherrrrrrrrer)
-              await billsModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
-              await showSeatModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
-              await orderModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
+              console.log("toherrrrrrrrer")
+              await billsModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
+              await showSeatModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
+              await orderModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
               subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
               subHtml = subHtml.replace('responseBody', "Da Thanh toan va gui xac nhan qua mail xong")
               res.status(400);
