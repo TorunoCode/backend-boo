@@ -457,15 +457,15 @@ app.get('/success/:buyer_id', async (req, res) => {
                 catch (error) { return res.status(500).send(error) }
               }
               console.log(movie)
-              subHtml.replace('MovieName', movie);
+              subHtml.replace('MovieName', movie.toString());
               console.log(Cinema)
-              subHtml.replace('CinemaName', Cinema);
+              subHtml.replace('CinemaName', Cinema.toString());
               console.log(date)
-              subHtml.replace('DateName', date);
+              subHtml.replace('DateName', date.toString());
               console.log(session)
-              subHtml.replace('SessionName', session);
+              subHtml.replace('SessionName', session.toString());
               console.log(seat)
-              subHtml.replace('SeatName', seat);
+              subHtml.replace('SeatName', seat.toString());
               console.log(billsOfUser.length)
               subHtml.replace('SeatQuantity', billsOfUser.length);
               console.log(total_for_execute)
@@ -477,7 +477,7 @@ app.get('/success/:buyer_id', async (req, res) => {
                 from: 'backendtlcn@gmail.com',
                 to: emailToSend[0].email,
                 subject: 'Sending Email using Node.js',
-                html: 'test'
+                html: subHtml
               };
               console.log(emailToSend)
               console.log("done to hererrrrrrr 2")
