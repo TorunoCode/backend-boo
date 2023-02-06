@@ -79,6 +79,8 @@ app.get("/test3", async function (req, res) {
       }
       let subHtml = fs.readFileSync('template/mailreceipt2.html', 'utf8')
       subHtml = subHtml.replace('OrderNumber', paymentId)
+
+      console.log(payment.transactions[0].description)
       console.log(paymentInfo.update_time)
       subHtml = subHtml.replace('DateOrder', paymentInfo.update_time)
       let billsOfUser = $.parseJSON('[' + payment.transactions[0].description + ']');
@@ -271,7 +273,7 @@ app.get('/pay/:id', async (req, res) => {
           "currency": "USD",
           "total": total
         },
-        "description": billsOfUser.toString()
+        "description": req.params.id
       }]
     };
     paypal.payment.create(create_payment_json, function (error, payment) {
@@ -337,9 +339,6 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
   res.end();
 });*/
 app.get('/success/:buyer_id', async (req, res) => {
-  await billsModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
-  await showSeatModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
-  await orderModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
   var subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
   const paymentId = req.query.paymentId;
   paypal.payment.get(paymentId, function (error, payment) {
@@ -401,7 +400,9 @@ app.get('/success/:buyer_id', async (req, res) => {
               subHtml = fs.readFileSync('template/mailreceipt2.html', 'utf8')
               subHtml = subHtml.replace('OrderNumber', paymentId)
               subHtml = subHtml.replace('DateOrder', paymentInfo.transactions[0].related_resources[0].sale.update_time)
-              let billsOfUser = $.parseJSON('[' + payment.transactions[0].description + ']');
+              let bill = await billsModel.find({ idCustomer: payment.transactions[0].description, status: "-1" });
+              //luc chua thanh toan moi nguoi chi co 1 bill
+              let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
               let showing = '';
               let movie = '';
               let CinemaHall = '';
@@ -466,6 +467,9 @@ app.get('/success/:buyer_id', async (req, res) => {
                 })
               });
 
+              await billsModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
+              await showSeatModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
+              await orderModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
               subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
               subHtml = subHtml.replace('responseBody', "Da Thanh toan va gui xac nhan qua mail xong")
               res.status(400);
