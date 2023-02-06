@@ -4,6 +4,7 @@ import responseToCommentsModel from "../models/responseToCommentsModel.js";
 import feedbacksModel from "../models/feedbacksModel.js";
 import UserModal from '../models/userModel.js';
 import MovieModel from '../models/movieModel.js';
+
 import RatingModel from '../models/feedbacksModel.js';
 import feedbackModel from '../models/feedbacksModel.js';
 
@@ -120,76 +121,74 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
     for (const element of feedbacks) {
         let nameUser = await UserModal.findById(element['userId']);
         console.log(nameUser)
-        if(!nameUser){
+        if (!nameUser) {
             const eachUser = {}
-        var updatedAt = +element.updatedAt.getHours() + ':' + element.updatedAt.getMinutes() + ':' + element.updatedAt.getSeconds() + ' - ' + element.updatedAt.getDate() + '/' + (element.updatedAt.getMonth()+1) + '/' + element.updatedAt.getFullYear()
-        var createdAt = +element.createdAt.getHours() + ':' + element.createdAt.getMinutes() + ':' + element.createdAt.getSeconds() + ' - ' + element.createdAt.getDate() + '/' + (element.createdAt.getMonth()+1) + '/' + element.createdAt.getFullYear()
-        let updatedAtTimeElapsed = (Date.now()- element.updatedAt);
-        let createdAtTimeElapsed = Date.now()- element.createdAt;
-        updatedAtTimeElapsed = updatedAtTimeElapsed/1000;
-        createdAtTimeElapsed = createdAtTimeElapsed/1000;
-        let updatedAtTimeElapsedModded = Math.floor(Number(updatedAtTimeElapsed) / 3600/24)+'day(s) '+Math.floor(Number(updatedAtTimeElapsed) / 3600 % 24)+'h '+Math.floor(Number(updatedAtTimeElapsed)  % 3600 / 60)+'m '+Math.floor(Number(updatedAtTimeElapsed)  % 3600 % 60)+'s';
-        let createdAtTimeElapsedModded = Math.floor(Number(createdAtTimeElapsed) / 3600/24)+'day(s) '+Math.floor(Number(createdAtTimeElapsed) / 3600 % 24)+'h '+Math.floor(Number(createdAtTimeElapsed)  % 3600 / 60)+'m '+Math.floor(Number(createdAtTimeElapsed)  % 3600 % 60)+'s';
-        console.log(updatedAt+'///'+element.updatedAt.getMonth()+'///'+element.updatedAt);
-        Object.assign(eachUser, {
-            '_id': element.id, 'userId': element.userId, 'title': element.title,
-            'detail': element.detail, 'movieId': element.movieId, 'rate': element.rate,
-            'createdAt': createdAt, 'updatedAt': updatedAt, '__v': element.__v,
-            'userName': 'User delted, delete user id:'+element['userId'],
-            'orgirnUpdatedAt':element.updatedAt,'orgirnCreatedAt':element.createdAt,
-            'updatedAtTimeElapsed':updatedAtTimeElapsed,
-            'createdAtTimeElapsed':createdAtTimeElapsed,
-            'updatedAtTimeElapsedModded':updatedAtTimeElapsedModded,
-            'createdAtTimeElapsedModded':createdAtTimeElapsedModded,
-            'fullName':'User delted, delete user id:'+element['userId'],
-            'avatar':null
-        })
-        console.log(eachUser);
-        result.push(eachUser);
+            var updatedAt = +element.updatedAt.getHours() + ':' + element.updatedAt.getMinutes() + ':' + element.updatedAt.getSeconds() + ' - ' + element.updatedAt.getDate() + '/' + (element.updatedAt.getMonth() + 1) + '/' + element.updatedAt.getFullYear()
+            var createdAt = +element.createdAt.getHours() + ':' + element.createdAt.getMinutes() + ':' + element.createdAt.getSeconds() + ' - ' + element.createdAt.getDate() + '/' + (element.createdAt.getMonth() + 1) + '/' + element.createdAt.getFullYear()
+            let updatedAtTimeElapsed = (Date.now() - element.updatedAt);
+            let createdAtTimeElapsed = Date.now() - element.createdAt;
+            updatedAtTimeElapsed = updatedAtTimeElapsed / 1000;
+            createdAtTimeElapsed = createdAtTimeElapsed / 1000;
+            let updatedAtTimeElapsedModded = Math.floor(Number(updatedAtTimeElapsed) / 3600 / 24) + 'day(s) ' + Math.floor(Number(updatedAtTimeElapsed) / 3600 % 24) + 'h ' + Math.floor(Number(updatedAtTimeElapsed) % 3600 / 60) + 'm ' + Math.floor(Number(updatedAtTimeElapsed) % 3600 % 60) + 's';
+            let createdAtTimeElapsedModded = Math.floor(Number(createdAtTimeElapsed) / 3600 / 24) + 'day(s) ' + Math.floor(Number(createdAtTimeElapsed) / 3600 % 24) + 'h ' + Math.floor(Number(createdAtTimeElapsed) % 3600 / 60) + 'm ' + Math.floor(Number(createdAtTimeElapsed) % 3600 % 60) + 's';
+            console.log(updatedAt + '///' + element.updatedAt.getMonth() + '///' + element.updatedAt);
+            Object.assign(eachUser, {
+                '_id': element.id, 'userId': element.userId, 'title': element.title,
+                'detail': element.detail, 'movieId': element.movieId, 'rate': element.rate,
+                'createdAt': createdAt, 'updatedAt': updatedAt, '__v': element.__v,
+                'userName': 'User delted, delete user id:' + element['userId'],
+                'orgirnUpdatedAt': element.updatedAt, 'orgirnCreatedAt': element.createdAt,
+                'updatedAtTimeElapsed': updatedAtTimeElapsed,
+                'createdAtTimeElapsed': createdAtTimeElapsed,
+                'updatedAtTimeElapsedModded': updatedAtTimeElapsedModded,
+                'createdAtTimeElapsedModded': createdAtTimeElapsedModded,
+                'fullName': 'User delted, delete user id:' + element['userId'],
+                'avatar': null
+            })
+            console.log(eachUser);
+            result.push(eachUser);
             continue;
         }
         const eachUser = {}
-        var updatedAt = +element.updatedAt.getHours() + ':' + element.updatedAt.getMinutes() + ':' + element.updatedAt.getSeconds() + ' - ' + element.updatedAt.getDate() + '/' + (element.updatedAt.getMonth()+1) + '/' + element.updatedAt.getFullYear()
-        var createdAt = +element.createdAt.getHours() + ':' + element.createdAt.getMinutes() + ':' + element.createdAt.getSeconds() + ' - ' + element.createdAt.getDate() + '/' + (element.createdAt.getMonth()+1) + '/' + element.createdAt.getFullYear()
-        let updatedAtTimeElapsed = (Date.now()- element.updatedAt);
-        let createdAtTimeElapsed = Date.now()- element.createdAt;
-        updatedAtTimeElapsed = updatedAtTimeElapsed/1000;
-        createdAtTimeElapsed = createdAtTimeElapsed/1000;
-        let updatedAtTimeElapsedModded = Math.floor(Number(updatedAtTimeElapsed) / 3600/24)+'day(s) '+Math.floor(Number(updatedAtTimeElapsed) / 3600 % 24)+'h '+Math.floor(Number(updatedAtTimeElapsed)  % 3600 / 60)+'m '+Math.floor(Number(updatedAtTimeElapsed)  % 3600 % 60)+'s';
-        let createdAtTimeElapsedModded = Math.floor(Number(createdAtTimeElapsed) / 3600/24)+'day(s) '+Math.floor(Number(createdAtTimeElapsed) / 3600 % 24)+'h '+Math.floor(Number(createdAtTimeElapsed)  % 3600 / 60)+'m '+Math.floor(Number(createdAtTimeElapsed)  % 3600 % 60)+'s';
-        console.log(updatedAt+'///'+element.updatedAt.getMonth()+'///'+element.updatedAt);
-        if(nameUser['fullName']==null)nameUser['fullName']="";
+        var updatedAt = +element.updatedAt.getHours() + ':' + element.updatedAt.getMinutes() + ':' + element.updatedAt.getSeconds() + ' - ' + element.updatedAt.getDate() + '/' + (element.updatedAt.getMonth() + 1) + '/' + element.updatedAt.getFullYear()
+        var createdAt = +element.createdAt.getHours() + ':' + element.createdAt.getMinutes() + ':' + element.createdAt.getSeconds() + ' - ' + element.createdAt.getDate() + '/' + (element.createdAt.getMonth() + 1) + '/' + element.createdAt.getFullYear()
+        let updatedAtTimeElapsed = (Date.now() - element.updatedAt);
+        let createdAtTimeElapsed = Date.now() - element.createdAt;
+        updatedAtTimeElapsed = updatedAtTimeElapsed / 1000;
+        createdAtTimeElapsed = createdAtTimeElapsed / 1000;
+        let updatedAtTimeElapsedModded = Math.floor(Number(updatedAtTimeElapsed) / 3600 / 24) + 'day(s) ' + Math.floor(Number(updatedAtTimeElapsed) / 3600 % 24) + 'h ' + Math.floor(Number(updatedAtTimeElapsed) % 3600 / 60) + 'm ' + Math.floor(Number(updatedAtTimeElapsed) % 3600 % 60) + 's';
+        let createdAtTimeElapsedModded = Math.floor(Number(createdAtTimeElapsed) / 3600 / 24) + 'day(s) ' + Math.floor(Number(createdAtTimeElapsed) / 3600 % 24) + 'h ' + Math.floor(Number(createdAtTimeElapsed) % 3600 / 60) + 'm ' + Math.floor(Number(createdAtTimeElapsed) % 3600 % 60) + 's';
+        console.log(updatedAt + '///' + element.updatedAt.getMonth() + '///' + element.updatedAt);
+        if (nameUser['fullName'] == null) nameUser['fullName'] = "";
         Object.assign(eachUser, {
             '_id': element.id, 'userId': element.userId, 'title': element.title,
             'detail': element.detail, 'movieId': element.movieId, 'rate': element.rate,
             'createdAt': createdAt, 'updatedAt': updatedAt, '__v': element.__v,
             'userName': nameUser['name'],
-            'orgirnUpdatedAt':element.updatedAt,'orgirnCreatedAt':element.createdAt,
-            'updatedAtTimeElapsed':updatedAtTimeElapsed,
-            'createdAtTimeElapsed':createdAtTimeElapsed,
-            'updatedAtTimeElapsedModded':updatedAtTimeElapsedModded,
-            'createdAtTimeElapsedModded':createdAtTimeElapsedModded,
-            'fullName':nameUser['fullName'],
-            'avatar':nameUser['avatar']
+            'orgirnUpdatedAt': element.updatedAt, 'orgirnCreatedAt': element.createdAt,
+            'updatedAtTimeElapsed': updatedAtTimeElapsed,
+            'createdAtTimeElapsed': createdAtTimeElapsed,
+            'updatedAtTimeElapsedModded': updatedAtTimeElapsedModded,
+            'createdAtTimeElapsedModded': createdAtTimeElapsedModded,
+            'fullName': nameUser['fullName'],
+            'avatar': nameUser['avatar']
         })
-        console.log(nameUser['avatar']+'/'+nameUser['fullName'])
+        console.log(nameUser['avatar'] + '/' + nameUser['fullName'])
         result.push(eachUser);
     }
     result.push(allCommentsOfMovie);
-     var data = await RatingModel.aggregate([{$group: {_id:"$movieId", avg_val:{$avg:"$rate"}}}]);
-        data.map(async(a) => {
-            await MovieModel.findByIdAndUpdate(a._id,{$set:{rate:Math.round(a.avg_val*10)/10}});
-            a.avg_val=Math.round(a.avg_val*10)/10;
-         } );
-         const movie = await MovieModel.find({});
-         const rating = await feedbackModel.distinct('movieId',{});
- 
-         for (let item of movie)
-         {
-             const data = await feedbackModel.findOne({movieId:item._id.toString()});
-            if(data==null)
-           { await MovieModel.findById(item._id.toString()).updateOne({$set:{rate:0}});}
-         }        
+    var data = await RatingModel.aggregate([{ $group: { _id: "$movieId", avg_val: { $avg: "$rate" } } }]);
+    data.map(async (a) => {
+        await MovieModel.findByIdAndUpdate(a._id, { $set: { rate: Math.round(a.avg_val * 10) / 10 } });
+        a.avg_val = Math.round(a.avg_val * 10) / 10;
+    });
+    const movie = await MovieModel.find({});
+    //const rating = await feedbackModel.distinct('movieId',{});
+
+    for (let item of movie) {
+        const data = await feedbackModel.findOne({ movieId: item._id.toString() });
+        if (data == null) { await MovieModel.findById(item._id.toString()).updateOne({ $set: { rate: 0 } }); }
+    }
     try {
         response.send(result);
     } catch (error) {

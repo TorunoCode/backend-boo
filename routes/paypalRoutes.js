@@ -12,20 +12,22 @@ import MovieModel from '../models/movieModel.js';
 import CinemaHallModel from '../models/cinemaHallModel.js';
 import cinemaModel from '../models/cinemaModel.js';
 import sgMail from '@sendgrid/mail';
-
+import fs from 'fs';
 const app = express.Router();
 app.get("/test/:id", function (req, res) {
   res.send("paypal Routes");
 });
 app.get("/test2/mail", async function (req, res) {
-  sgMail.setApiKey('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')
+  //sgMail.setApiKey('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')
+  var subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
+  subHtml = subHtml.replace('responseBody', 'test responseBody')
   var mailOptions = {
     from: 'backendtlcn@gmail.com',
     to: 'test@gmail.comxxskd',
     subject: 'Sending Email using Node.js',
-    html: "test mail"
+    html: subHtml
   };
-  await new Promise((resolve, reject) => {
+  /*await new Promise((resolve, reject) => {
     emailProvider.sendMail(mailOptions, function (error, info) {
       if (error) {
         res.status(400).send(error);
@@ -35,7 +37,7 @@ app.get("/test2/mail", async function (req, res) {
         resolve(info);
       }
     })
-  });
+  });*/
   /*sgMail
     .send(mailOptions)
     .then((response) => {
@@ -46,7 +48,9 @@ app.get("/test2/mail", async function (req, res) {
       console.error(error)
     })*/
   console.log("test here")
-  res.send("paypal Routes test mail");
+  res.write(subHtml);
+  res.end();
+  return
 });
 //"payment_method": "pay_upon_invoice"
 //"payment_method": "carrier"
@@ -68,13 +72,13 @@ app.get("/test2/mail", async function (req, res) {
                 }
             }*/
 app.get('/pay/:id', async (req, res) => {
-  let rand = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const charactersLength = characters.length;
-  for (let i = 0; i < 6; i++) {
-    rand += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  console.log(rand);
+  /*  let rand = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    for (let i = 0; i < 6; i++) {
+      rand += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    console.log(rand);*/
   let total = 0;
   let itemsToAdd = []
   let countStatusChecking = await billsModel.count({ idCustomer: req.params.id, status: "0" });
@@ -134,7 +138,7 @@ app.get('/pay/:id', async (req, res) => {
         "payment_method": "paypal"
       },
       "redirect_urls": {
-        "return_url": req.protocol + "://" + req.get('host') + "/api/paypal/send_verify/" + req.params.id + "/" + rand,
+        "return_url": req.protocol + "://" + req.get('host') + "/api/paypal/success/" + req.params.id,
         "cancel_url": req.protocol + "://" + req.get('host') + "/api/paypal/cancel"
       },
       "transactions": [{
@@ -149,7 +153,7 @@ app.get('/pay/:id', async (req, res) => {
           "currency": "USD",
           "total": total
         },
-        "description": rand
+        "description": billsOfUser
       }]
     };
     paypal.payment.create(create_payment_json, function (error, payment) {
@@ -166,30 +170,42 @@ app.get('/pay/:id', async (req, res) => {
     });
   }
 });
+/*
 app.get('/send_verify/:userId/:rand', async (req, res) => {
-  await billsModel.updateMany({ idCustomer: req.params.userId }, { "$set": { status: "0" } })
-  await showSeatModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "0" } })
-  await orderModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "0" } })
+  await billsModel.updateMany({ idCustomer: req.params.userId }, { "$set": { status: "1" } })
+  await showSeatModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
+  await orderModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
   let oriUrl = req.originalUrl + '';
   oriUrl = oriUrl.replace('send_verify', 'success')
   var emailToSend = await userModel.find({ _id: req.params.userId }).select('email -_id')
   let link = req.protocol + "://" + req.get('host') + oriUrl
   console.log(emailToSend)
+  var subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
   try {
     console.log(emailToSend[0].email)
   }
-  catch (error) { return res.status(400).send("Khong tim thay email cua user") }
+  catch (error) {
+    subHtml = subHtml.replace('responseBody', "Khong tim thay email cua user")
+    res.status(400);
+    res.write(subHtml);
+    res.end();
+    //return res.status(400).send("Khong tim thay email cua user")
+  }
+  subHtml = subHtml.replace('responseBody', "<a href= '" + link + "' target='_blank'>Click here to confirm payment</a>")
   var mailOptions = {
     from: 'backendtlcn@gmail.com',
     to: emailToSend[0].email,
     subject: 'Sending Email using Node.js',
-    html: "<a href= '" + link + "' target='_blank'>Click here to confirm payment</a>"
+    html: subHtml
   };
 
   await new Promise((resolve, reject) => {
     emailProvider.sendMail(mailOptions, function (error, info) {
       if (error) {
-        res.status(400).send(error);
+        subHtml = subHtml.replace('responseBody', "Khong gui mail thanh cong")
+        res.status(400);
+        res.write(subHtml);
+        res.end();
         reject(err);
       } else {
         console.log(link)
@@ -197,21 +213,27 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
       }
     })
   });
-  res.status(200).send({ message: "done" });
-});
-app.get('/success/:buyer_id/:rand', async (req, res) => {
+  subHtml = subHtml.replace('responseBody', "Da Thanh toan xong vui long xem")
+  res.status(400);
+  res.write(subHtml);
+  res.end();
+});*/
+app.get('/success/:buyer_id', async (req, res) => {
   await billsModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
   await showSeatModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
   await orderModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
+  var subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
   const paymentId = req.query.paymentId;
   paypal.payment.get(paymentId, function (error, payment) {
     if (error) {
-      res.status(400).send(error)
+      subHtml = subHtml.replace('responseBody', "Co loi lay hoa don thanh toan")
+      res.status(400);
+      res.write(subHtml);
+      res.end();
+      return;
     } else {
       console.log("Get Payment Response");
-      console.log(payment.transactions[0].description)
-      let rand = req.params.rand;
-      if (rand == payment.transactions[0].description) {
+      {
         const payerId = req.query.PayerID;
         const currency_for_execute = payment.transactions[0].amount.currency;
         const total_for_execute = payment.transactions[0].amount.total;
@@ -226,15 +248,22 @@ app.get('/success/:buyer_id/:rand', async (req, res) => {
           }]
         };
         if (payment.state == "approved") {
-          return res.status(400).send("You have paid")
+          subHtml = subHtml.replace('responseBody', "Ban da tra cho hoa don nay")
+          res.status(400);
+          res.write(subHtml);
+          res.end();
+          return;
         }
         let paymentInfo;
         // Obtains the transaction details from paypal
         paypal.payment.execute(paymentId, execute_payment_json, async function (error, payment) {
           //When error occurs when due to non-existent transaction, throw an error else log the transaction details in the console then send a Success string reposponse to the user.
           if (error) {
-            console.log(error.response);
-            res.status(500).send(error);
+            subHtml = subHtml.replace('responseBody', "co loi giao dich")
+            res.status(400);
+            res.write(subHtml);
+            res.end();
+            return;
           } else {
             paymentInfo = payment;
             let buyer_id = req.params.buyer_id;
@@ -251,33 +280,110 @@ app.get('/success/:buyer_id/:rand', async (req, res) => {
                 Currency_items[i] = paymentInfo.transactions[0].item_list.items[i].currency;
                 Price_items[i] = paymentInfo.transactions[0].item_list.items[i].price;
               }
-              const data = await transactionsModel.create({
-                buyer: buyer_id,
-                Fname: paymentInfo.payer.payer_info.first_name,
-                Lname: paymentInfo.payer.payer_info.last_name,
-                recipient_name: paymentInfo.payer.payer_info.shipping_address.recipient_name,
-                Seller: paymentInfo.transactions[0].payee.email,
-                Line1: paymentInfo.payer.payer_info.shipping_address.line1,
-                City: paymentInfo.payer.payer_info.shipping_address.city,
-                postal_code: paymentInfo.payer.payer_info.shipping_address.postal_code,
-                country_code: paymentInfo.payer.payer_info.shipping_address.country_code,
-                Name_items: Name_items,
-                Sku_items: Sku_items,
-                dateCreate: paymentInfo.transactions[0].related_resources[0].sale.create_time,
-                dateUpdate: paymentInfo.transactions[0].related_resources[0].sale.update_time,
-                status: paymentInfo.payer.status,
-                subTotal: paymentInfo.transactions[0].amount.details.subTotal,
-                Fee_payment: paymentInfo.transactions[0].amount.details.handling_fee,
-                Quantity_items: Quantity_items,
-                Currency_items: Currency_items,
-                Price_items: Price_items
+              subHtml = fs.readFileSync('template/mailreceipt2.html', 'utf8')
+              subHtml = subHtml.replace('OrderNumber', paymentId)
+              subHtml = subHtml.replace('DateOrder', paymentInfo.transactions[0].related_resources[0].sale.update_time)
+              let billsOfUser = payment.transactions[0].description;
+              let showing = '';
+              let movie = '';
+              let CinemaHall = '';
+              let Cinema = '';
+              let date = '';
+              let session = '';
+              let seat = '';
+              for (let i = 0; i < billsOfUser.length; i++) {
+                let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
+                let CinemaHallSeat = await CinemaHallSeatModel.find({ _id: showSeat.idCinemaHallSeat });
+                try {
+                  let showingtemp;
+                  let movietemp;
+                  let CinemaHalltemp;
+                  let Cinematemp;
+                  var datetemp = new Date(showing.startTime),
+                    mnthtemp = ("0" + (date.getMonth() + 1)).slice(-2),
+                    daytemp = ("0" + date.getDate()).slice(-2);
+                  session = session + ', ' + showing.time;
+                  date = date + ', ' + [datetemp.getFullYear(), mnthtemp, daytemp].join("-");
+                  showingtemp = await ShowingModel.findById(showSeat.idShowing);
+                  movietemp = await MovieModel.findById(showing.idMovie);
+                  CinemaHalltemp = await CinemaHallModel.findById(showing.idHall);
+                  Cinematemp = await cinemaModel.findById(CinemaHall.idCinema);
+                  showing = showing + ', ' + showingtemp;
+                  movie = movie + ', ' + movietemp;
+                  CinemaHall = CinemaHall + ', ' + CinemaHalltemp;
+                  Cinema = Cinema + ', ' + Cinematemp;
+                  seat = seat + ', ' + showSeat.number
+                }
+                catch (error) { return res.status(500).send({ message: "Your movie booked not exist" }) }
+              }
+
+              subHtml.replace('MovieName', movie);
+              subHtml.replace('CinemaName', Cinema);
+              subHtml.replace('DateName', date);
+              subHtml.replace('SessionName', session);
+              subHtml.replace('SeatName', seat);
+              subHtml.replace('SeatQuantity', billsOfUser.length);
+              subHtml.replace('SeatQuantityMoney', paymentInfo.transactions[0].amount.details.subTotal)
+              subHtml.replace('TotalVatMoney', paymentInfo.transactions[0].amount.details.subTotal)
+              var mailOptions = {
+                from: 'backendtlcn@gmail.com',
+                to: emailToSend[0].email,
+                subject: 'Sending Email using Node.js',
+                html: subHtml
+              };
+
+              await new Promise((resolve, reject) => {
+                emailProvider.sendMail(mailOptions, function (error, info) {
+                  if (error) {
+                    subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
+                    subHtml = subHtml.replace('responseBody', "Khong gui mail thanh cong")
+                    res.status(400);
+                    res.write(subHtml);
+                    res.end();
+                    reject(err);
+                  } else {
+                    console.log(link)
+                    resolve(info);
+                  }
+                })
               });
-            } catch (error) { return res.status(500).send("Your items in payment is null got error") }
-            res.status(200).send("done paying");
+
+              subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
+              subHtml = subHtml.replace('responseBody', "Da Thanh toan va gui xac nhan qua mail xong")
+              res.status(400);
+              res.write(subHtml);
+              res.end();
+              /*              const data = await transactionsModel.create({
+                              buyer: buyer_id,
+                              Fname: paymentInfo.payer.payer_info.first_name,
+                              Lname: paymentInfo.payer.payer_info.last_name,
+                              recipient_name: paymentInfo.payer.payer_info.shipping_address.recipient_name,
+                              Seller: paymentInfo.transactions[0].payee.email,
+                              Line1: paymentInfo.payer.payer_info.shipping_address.line1,
+                              City: paymentInfo.payer.payer_info.shipping_address.city,
+                              postal_code: paymentInfo.payer.payer_info.shipping_address.postal_code,
+                              country_code: paymentInfo.payer.payer_info.shipping_address.country_code,
+                              Name_items: Name_items,
+                              Sku_items: Sku_items,
+                              dateCreate: paymentInfo.transactions[0].related_resources[0].sale.create_time,
+                              dateUpdate: paymentInfo.transactions[0].related_resources[0].sale.update_time,
+                              status: paymentInfo.payer.status,
+                              subTotal: paymentInfo.transactions[0].amount.details.subTotal,
+                              Fee_payment: paymentInfo.transactions[0].amount.details.handling_fee,
+                              Quantity_items: Quantity_items,
+                              Currency_items: Currency_items,
+                              Price_items: Price_items
+                            });*/
+            } catch (error) {
+              subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
+              subHtml = subHtml.replace('responseBody', "Khong tim thay cac ghe trong giao dich")
+              res.status(400);
+              res.write(subHtml);
+              res.end();
+            }
           }
         });
       }
-      else { res.status(500).send("can't confirm"); }
     }
 
   });
