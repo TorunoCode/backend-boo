@@ -544,7 +544,8 @@ app.get('/success/:buyer_id', async (req, res) => {
                               });*/
               } catch (error) {
                 subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt3.html'), 'utf8')
-                subHtml = subHtml.replace('responseBody', "Khong tim thay cac ghe trong giao dich")
+                subHtml = subHtml.replace('responseBody', error)
+                //"Khong tim thay cac ghe trong giao dich"
                 res.status(400);
                 res.write(subHtml);
                 res.end();
