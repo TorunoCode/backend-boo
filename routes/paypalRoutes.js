@@ -467,7 +467,6 @@ app.get('/success/:buyer_id', async (req, res) => {
                     subHtml = subHtml.replace('responseBody', "Khong gui mail thanh cong")
                     res.status(400);
                     res.write(subHtml);
-                    res.end();
                     reject(err);
                   } else {
                     console.log(link)
