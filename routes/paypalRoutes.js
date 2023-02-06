@@ -52,6 +52,123 @@ app.get("/test2/mail", async function (req, res) {
   res.end();
   return
 });
+
+app.get("/test3", async function (req, res) {
+  const paymentId = req.query.paymentId;
+  paypal.payment.get(paymentId, async function (error, payment) {
+    if (error) {
+      subHtml = subHtml.replace('responseBody', "Co loi lay hoa don thanh toan")
+      res.status(400);
+      res.write(subHtml);
+      res.end();
+      return;
+    } else {
+      let paymentInfo = payment;
+      let buyer_id = req.params.buyer_id;
+      let Name_items = [];
+      let Sku_items = [];
+      let Currency_items = [];
+      let Price_items = [];
+      let Quantity_items = [];
+      for (let i = 0; i < paymentInfo.transactions[0].item_list.items.length; i++) {
+        Name_items[i] = paymentInfo.transactions[0].item_list.items[i].name;
+        Sku_items[i] = paymentInfo.transactions[0].item_list.items[i].sku;
+        Quantity_items[i] = paymentInfo.transactions[0].item_list.items[i].quantity;
+        Currency_items[i] = paymentInfo.transactions[0].item_list.items[i].currency;
+        Price_items[i] = paymentInfo.transactions[0].item_list.items[i].price;
+      }
+      let subHtml = fs.readFileSync('template/mailreceipt2.html', 'utf8')
+      subHtml = subHtml.replace('OrderNumber', paymentId)
+      subHtml = subHtml.replace('DateOrder', paymentInfo.transactions[0].related_resources[0].sale.update_time)
+      let billsOfUser = payment.transactions[0].description.split(';');
+      console.log(billsOfUser.length)
+      console.log(billsOfUser)
+      let showing = '';
+      let movie = '';
+      let CinemaHall = '';
+      let Cinema = '';
+      let date = '';
+      let session = '';
+      let seat = '';
+      for (let i = 0; i < billsOfUser.length; i++) {
+        let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
+        let movietemp;
+        let CinemaHalltemp;
+        let Cinematemp;
+        var datetemp = new Date(showing.startTime),
+          mnthtemp = ("0" + (datetemp.getMonth() + 1)).slice(-2),
+          daytemp = ("0" + datetemp.getDate()).slice(-2);
+        session = session + ', ' + showing.time;
+        date = date + ', ' + [datetemp.getFullYear(), mnthtemp, daytemp].join("-");
+        movietemp = await MovieModel.findById(showing.idMovie);
+        CinemaHalltemp = await CinemaHallModel.findById(showing.idHall);
+        Cinematemp = await cinemaModel.findById(CinemaHall.idCinema);
+        movie = movie + ', ' + movietemp;
+        CinemaHall = CinemaHall + ', ' + CinemaHalltemp;
+        Cinema = Cinema + ', ' + Cinematemp;
+        seat = seat + ', ' + showSeat.number
+      }
+
+      subHtml.replace('MovieName', movie);
+      subHtml.replace('CinemaName', Cinema);
+      subHtml.replace('DateName', date);
+      subHtml.replace('SessionName', session);
+      subHtml.replace('SeatName', seat);
+      subHtml.replace('SeatQuantity', billsOfUser.length);
+      subHtml.replace('SeatQuantityMoney', paymentInfo.transactions[0].amount.details.subTotal)
+      subHtml.replace('TotalVatMoney', paymentInfo.transactions[0].amount.details.subTotal)
+      var mailOptions = {
+        from: 'backendtlcn@gmail.com',
+        to: emailToSend[0].email,
+        subject: 'Sending Email using Node.js',
+        html: subHtml
+      };
+
+      await new Promise((resolve, reject) => {
+        emailProvider.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
+            subHtml = subHtml.replace('responseBody', "Khong gui mail thanh cong")
+            res.status(400);
+            res.write(subHtml);
+            res.end();
+            reject(err);
+          } else {
+            console.log(link)
+            resolve(info);
+          }
+        })
+      });
+
+      subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
+      subHtml = subHtml.replace('responseBody', "Da Thanh toan va gui xac nhan qua mail xong")
+      res.status(400);
+      res.write(subHtml);
+      res.end();
+    }
+  });
+  /*              const data = await transactionsModel.create({
+                  buyer: buyer_id,
+                  Fname: paymentInfo.payer.payer_info.first_name,
+                  Lname: paymentInfo.payer.payer_info.last_name,
+                  recipient_name: paymentInfo.payer.payer_info.shipping_address.recipient_name,
+                  Seller: paymentInfo.transactions[0].payee.email,
+                  Line1: paymentInfo.payer.payer_info.shipping_address.line1,
+                  City: paymentInfo.payer.payer_info.shipping_address.city,
+                  postal_code: paymentInfo.payer.payer_info.shipping_address.postal_code,
+                  country_code: paymentInfo.payer.payer_info.shipping_address.country_code,
+                  Name_items: Name_items,
+                  Sku_items: Sku_items,
+                  dateCreate: paymentInfo.transactions[0].related_resources[0].sale.create_time,
+                  dateUpdate: paymentInfo.transactions[0].related_resources[0].sale.update_time,
+                  status: paymentInfo.payer.status,
+                  subTotal: paymentInfo.transactions[0].amount.details.subTotal,
+                  Fee_payment: paymentInfo.transactions[0].amount.details.handling_fee,
+                  Quantity_items: Quantity_items,
+                  Currency_items: Currency_items,
+                  Price_items: Price_items
+                });*/
+});
 //"payment_method": "pay_upon_invoice"
 //"payment_method": "carrier"
 //"payment_method": "alternate_payment"
@@ -132,6 +249,10 @@ app.get('/pay/:id', async (req, res) => {
       })
     }
     total = bill[0].totalMoney;
+    let billsOfUserString = '';
+    for (let i = 0; i < billsOfUser.length; i++) {
+      billsOfUserString = billsOfUserString + ';' + billsOfUser[i].toString()
+    }
     const create_payment_json = {
       "intent": "sale",
       "payer": {
@@ -153,12 +274,12 @@ app.get('/pay/:id', async (req, res) => {
           "currency": "USD",
           "total": total
         },
-        "description": billsOfUser.toString()
+        "description": billsOfUserString
       }]
     };
     paypal.payment.create(create_payment_json, function (error, payment) {
       if (error) {
-        res.status(400).send(error + '   hello  ' + billsOfUser.toString() + " hello " + billsOfUser.toString().split());
+        res.status(400).send(error);
       } else {
         for (let i = 0; i < payment.links.length; i++) {
           if (payment.links[i].rel === 'approval_url') {
