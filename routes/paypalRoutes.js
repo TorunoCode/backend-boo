@@ -27,6 +27,28 @@ app.get("/test2/mail", async function (req, res) {
     subject: 'Sending Email using Node.js',
     html: subHtml
   };
+  var mailOptions = {
+    from: 'backendtlcn@gmail.com',
+    to: 'test@gmail.comxxskd',
+    subject: 'Sending Email using Node.js',
+    html: 'test'
+  };
+  console.log("done to hererrrrrrr 2")
+  await new Promise((resolve, reject) => {
+    emailProvider.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        //console.log(error)
+        //let subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
+        //subHtml = subHtml.replace('responseBody', "Khong gui mail thanh cong")
+        //res.status(400);
+        //res.write(subHtml);
+        reject(error);
+      } else {
+        console.log(link)
+        resolve(info);
+      }
+    })
+  });
   /*await new Promise((resolve, reject) => {
     emailProvider.sendMail(mailOptions, function (error, info) {
       if (error) {
@@ -455,21 +477,17 @@ app.get('/success/:buyer_id', async (req, res) => {
                 from: 'backendtlcn@gmail.com',
                 to: emailToSend[0].email,
                 subject: 'Sending Email using Node.js',
-                html: subHtml
+                html: 'test'
               };
               console.log(emailToSend)
               console.log("done to hererrrrrrr 2")
               await new Promise((resolve, reject) => {
                 emailProvider.sendMail(mailOptions, function (error, info) {
                   if (error) {
-                    console.log(error)
-                    subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
-                    subHtml = subHtml.replace('responseBody', "Khong gui mail thanh cong")
-                    res.status(400);
-                    res.write(subHtml);
-                    reject(err);
+                    res.status(400).send(error);
+                    reject(error);
                   } else {
-                    console.log(link)
+                    console.log(info)
                     resolve(info);
                   }
                 })
