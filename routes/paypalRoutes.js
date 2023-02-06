@@ -19,7 +19,11 @@ app.get("/test/:id", function (req, res) {
   res.send("paypal Routes");
 });
 app.get("/testssssu/:id", function (req, res) {
-  res.send("paypal Routes");
+  let test = ',a,a'
+  if (test.indexOf('a') == -1)
+    test = test + 'a'
+  test = test.substring(1)
+  res.send(test);
 });
 app.get("/test2/mail", async function (req, res) {
   //sgMail.setApiKey('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')
@@ -116,31 +120,31 @@ app.get("/test3", async function (req, res) {
         var datetemp = new Date(showing.startTime),
           mnthtemp = ("0" + (datetemp.getMonth() + 1)).slice(-2),
           daytemp = ("0" + datetemp.getDate()).slice(-2);
-        if (session.indexOf(showing.time) != -1)
+        if (session.indexOf(showing.time) == -1)
           session = session + ', ' + showing.time;
-        if (date.indexOf([datetemp.getFullYear(), mnthtemp, daytemp].join("-")) != -1)
+        if (date.indexOf([datetemp.getFullYear(), mnthtemp, daytemp].join("-")) == -1)
           date = date + ', ' + [datetemp.getFullYear(), mnthtemp, daytemp].join("-");
         movietemp = await MovieModel.findById(showing.idMovie);
         CinemaHalltemp = await CinemaHallModel.findById(showing.idHall);
         Cinematemp = await cinemaModel.findById(CinemaHall.idCinema);
-        if (movie.indexOf(movietemp) != -1)
+        if (movie.indexOf(movietemp) == -1)
           movie = movie + ', ' + movietemp;
-        if (CinemaHall.indexOf(CinemaHalltemp) != -1)
+        if (CinemaHall.indexOf(CinemaHalltemp) == -1)
           CinemaHall = CinemaHall + ', ' + CinemaHalltemp;
-        if (Cinema.indexOf(Cinematemp) != -1)
+        if (Cinema.indexOf(Cinematemp) == -1)
           Cinema = Cinema + ', ' + Cinematemp;
-        if (seat.indexOf(showSeat.number) != -1)
+        if (seat.indexOf(showSeat.number) == -1)
           seat = seat + ', ' + showSeat.number
       }
-      movie = movie.substring(2);
+      movie = movie.substring(1);
       subHtml.replace('MovieName', movie);
-      Cinema = Cinema.substring(2);
+      Cinema = Cinema.substring(1);
       subHtml.replace('CinemaName', Cinema);
-      date = date.substring(2);
+      date = date.substring(1);
       subHtml.replace('DateName', date);
-      session = session.substring(2);
+      session = session.substring(1);
       subHtml.replace('SessionName', session);
-      seat = seat.substring(2);
+      seat = seat.substring(1);
       subHtml.replace('SeatName', seat);
       subHtml.replace('SeatQuantity', billsOfUser.length);
       subHtml.replace('SeatQuantityMoney', paymentInfo.transactions[0].amount.details.subTotal)
