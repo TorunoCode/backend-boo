@@ -403,9 +403,7 @@ app.get('/success/:buyer_id', async (req, res) => {
               let bill = await billsModel.find({ idCustomer: payment.transactions[0].description, status: "-1" });
               //luc chua thanh toan moi nguoi chi co 1 bill
               let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
-              let showing = '';
               let movie = '';
-              let CinemaHall = '';
               let Cinema = '';
               let date = '';
               let session = '';
@@ -419,42 +417,52 @@ app.get('/success/:buyer_id', async (req, res) => {
                   let movietemp;
                   let CinemaHalltemp;
                   let Cinematemp;
-                  var datetemp = new Date(showing.startTime),
-                    mnthtemp = ("0" + (date.getMonth() + 1)).slice(-2),
-                    daytemp = ("0" + date.getDate()).slice(-2);
-                  session = session + ', ' + showing.time;
-                  date = date + ', ' + [datetemp.getFullYear(), mnthtemp, daytemp].join("-");
                   showingtemp = await ShowingModel.findById(showSeat.idShowing);
-                  movietemp = await MovieModel.findById(showing.idMovie);
-                  CinemaHalltemp = await CinemaHallModel.findById(showing.idHall);
-                  Cinematemp = await cinemaModel.findById(CinemaHall.idCinema);
-                  showing = showing + ', ' + showingtemp;
+                  movietemp = await MovieModel.findById(showingtemp.idMovie);
+                  movietemp = movietemp.name;
+                  CinemaHalltemp = await CinemaHallModel.findById(showingtemp.idHall);
+                  Cinematemp = await cinemaModel.findById(CinemaHalltemp.idCinema);
+                  Cinematemp = Cinematemp.name;
+                  var datetemp = new Date(showingtemp.startTime),
+                    mnthtemp = ("0" + (datetemp.getMonth() + 1)).slice(-2),
+                    daytemp = ("0" + datetemp.getDate()).slice(-2);
+                  session = session + ', ' + showingtemp.time;
+                  date = date + ', ' + [datetemp.getFullYear(), mnthtemp, daytemp].join("-");
                   movie = movie + ', ' + movietemp;
-                  CinemaHall = CinemaHall + ', ' + CinemaHalltemp;
                   Cinema = Cinema + ', ' + Cinematemp;
                   seat = seat + ', ' + showSeat.number
                 }
-                catch (error) { return res.status(500).send({ message: "Your movie booked not exist" }) }
+                catch (error) { return res.status(500).send(error) }
               }
-
+              console.log(movie)
               subHtml.replace('MovieName', movie);
+              console.log(Cinema)
               subHtml.replace('CinemaName', Cinema);
+              console.log(date)
               subHtml.replace('DateName', date);
+              console.log(session)
               subHtml.replace('SessionName', session);
+              console.log(seat)
               subHtml.replace('SeatName', seat);
+              console.log(billsOfUser.length)
               subHtml.replace('SeatQuantity', billsOfUser.length);
-              subHtml.replace('SeatQuantityMoney', paymentInfo.transactions[0].amount.details.subTotal)
-              subHtml.replace('TotalVatMoney', paymentInfo.transactions[0].amount.details.subTotal)
+              console.log(total_for_execute)
+              subHtml.replace('SeatQuantityMoney', total_for_execute)
+              subHtml.replace('TotalVatMoney', total_for_execute)
+              console.log("done to hererrrrrrr")
+              var emailToSend = await userModel.find({ _id: payment.transactions[0].description }).select('email -_id')
               var mailOptions = {
                 from: 'backendtlcn@gmail.com',
                 to: emailToSend[0].email,
                 subject: 'Sending Email using Node.js',
                 html: subHtml
               };
-
+              console.log(emailToSend)
+              console.log("done to hererrrrrrr 2")
               await new Promise((resolve, reject) => {
                 emailProvider.sendMail(mailOptions, function (error, info) {
                   if (error) {
+                    console.log(error)
                     subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
                     subHtml = subHtml.replace('responseBody', "Khong gui mail thanh cong")
                     res.status(400);
@@ -467,7 +475,7 @@ app.get('/success/:buyer_id', async (req, res) => {
                   }
                 })
               });
-
+              console.log(toherrrrrrrrer)
               await billsModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
               await showSeatModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
               await orderModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
