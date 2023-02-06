@@ -92,7 +92,7 @@ app.get("/test3", async function (req, res) {
         Currency_items[i] = paymentInfo.transactions[0].item_list.items[i].currency;
         Price_items[i] = paymentInfo.transactions[0].item_list.items[i].price;
       }
-      let subHtml = fs.readFileSync('template/mailreceipt2.html', 'utf8')
+      let subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt2.html'), 'utf8')
       subHtml = subHtml.replace('OrderNumber', paymentId)
       subHtml = subHtml.replace('DateOrder', paymentInfo.update_time)
 
@@ -145,7 +145,7 @@ app.get("/test3", async function (req, res) {
       await new Promise((resolve, reject) => {
         emailProvider.sendMail(mailOptions, function (error, info) {
           if (error) {
-            subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
+            subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt3.html'), 'utf8')
             subHtml = subHtml.replace('responseBody', "Khong gui mail thanh cong")
             res.status(400);
             res.write(subHtml);
@@ -158,7 +158,7 @@ app.get("/test3", async function (req, res) {
         })
       });
 
-      subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
+      subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt3.html'), 'utf8')
       subHtml = subHtml.replace('responseBody', "Da Thanh toan va gui xac nhan qua mail xong")
       res.status(400);
       res.write(subHtml);
@@ -354,7 +354,7 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
   res.end();
 });*/
 app.get('/success/:buyer_id', async (req, res) => {
-  var subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
+  var subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt3.html'), 'utf8')
   const paymentId = req.query.paymentId;
   new Promise(() => {
     paypal.payment.get(paymentId, function (error, payment) {
@@ -413,7 +413,7 @@ app.get('/success/:buyer_id', async (req, res) => {
                   Currency_items[i] = paymentInfo.transactions[0].item_list.items[i].currency;
                   Price_items[i] = paymentInfo.transactions[0].item_list.items[i].price;
                 }
-                subHtml = fs.readFileSync('template/mailreceipt2.html', 'utf8')
+                subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt2.html'), 'utf8')
                 subHtml = subHtml.replace('OrderNumber', paymentId)
                 subHtml = subHtml.replace('DateOrder', paymentInfo.transactions[0].related_resources[0].sale.update_time)
                 let bill = await billsModel.find({ idCustomer: payment.transactions[0].description, status: "-1" });
@@ -490,7 +490,7 @@ app.get('/success/:buyer_id', async (req, res) => {
                 await billsModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
                 await showSeatModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
                 await orderModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
-                subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
+                subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt3.html'), 'utf8')
                 subHtml = subHtml.replace('responseBody', "Da Thanh toan va gui xac nhan qua mail xong")
                 res.status(400);
                 res.write(subHtml);
@@ -517,7 +517,7 @@ app.get('/success/:buyer_id', async (req, res) => {
                                 Price_items: Price_items
                               });*/
               } catch (error) {
-                subHtml = fs.readFileSync('template/mailreceipt3.html', 'utf8')
+                subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt3.html'), 'utf8')
                 subHtml = subHtml.replace('responseBody', "Khong tim thay cac ghe trong giao dich")
                 res.status(400);
                 res.write(subHtml);
