@@ -230,11 +230,8 @@ app.get('/pay/:id', async (req, res) => {
     console.log(rand);*/
   let total = 0;
   let itemsToAdd = []
-  let countStatusChecking = await billsModel.count({ idCustomer: req.params.id, status: "0" });
-  if (countStatusChecking > 0) {
-    res.status(400).send("confirm old payment first");
-  }
-  else {
+  let countStatusChecking
+  {
     let countStatusChecking2 = await billsModel.count({ idCustomer: req.params.id, status: "-1" });
     if (countStatusChecking2 == 0) {
       return res.status(400).send("no bills to pay");
