@@ -4,6 +4,9 @@ import { OAuth2Client } from 'google-auth-library';
 import UserModal from '../models/userModel.js';
 import User from '../models/userModel.js';
 const app = express.Router();
+app.get("/", async (req, res) => {
+    res.send({ message: "api/oAuthGoogleRoutes/Signup" })
+})
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 let DB = [];
