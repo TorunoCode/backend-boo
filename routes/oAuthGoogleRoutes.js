@@ -41,10 +41,7 @@ app.post("/Signup", async (req, res) => {
             const profile = verificationResponse?.payload;
             console.log(profile?.email)
             const oldUser = await UserModal.findOne({ email: profile?.email });
-            if (oldUser) {
-                return res.status(400).json({ data: null, message: "User already exists" });
-            }
-            else {
+            if (!oldUser) {
                 const email = profile?.email;
                 const given_name = profile?.given_name;
                 const data = await UserModal.create({
