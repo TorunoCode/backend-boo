@@ -7,7 +7,7 @@ const app = express.Router();
 app.get("/", async (req, res) => {
     res.send({ message: "api/oAuthGoogleRoutes/Signup" })
 })
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_ID = "475445624769-n5bdbpqcobh1n28trk88lnjnb55b669f.apps.googleusercontent.com";
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 let DB = [];
 
@@ -17,8 +17,11 @@ async function verifyGoogleToken(token) {
             idToken: token,
             audience: GOOGLE_CLIENT_ID,
         });
+        console.log("done here")
         return { payload: ticket.getPayload() };
     } catch (error) {
+        console.log(GOOGLE_CLIENT_ID)
+        console.log(error)
         return { error: "Invalid user detected. Please try again" };
     }
 }
@@ -31,22 +34,24 @@ app.post("/Signup", async (req, res) => {
 
             if (verificationResponse.error) {
                 return res.status(400).json({
-                    message: "Can't sign up",
+                    message: verificationResponse.error
                 });
             }
 
             const profile = verificationResponse?.payload;
+            console.log(profile?.email)
             const oldUser = await UserModal.findOne({ email: profile?.email });
             if (oldUser) {
                 return res.status(400).json({ data: null, message: "User already exists" });
             }
-
-            const email = profile?.email;
-            const given_name = profile?.given_name;
-            const data = await UserModal.create({
-                email: email, password: "", name: given_name, pin: "",
-                isActive: true, isAdmin: false, fullName: profile?.family_name + profile?.given_name
-            })
+            else {
+                const email = profile?.email;
+                const given_name = profile?.given_name;
+                const data = await UserModal.create({
+                    email: email, password: "", name: given_name, pin: "",
+                    isActive: true, isAdmin: false, fullName: profile?.family_name + profile?.given_name
+                })
+            }
 
             res.status(201).json({
                 message: "Signup was successful",
@@ -63,7 +68,7 @@ app.post("/Signup", async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({
-            message: "An error occurred. Registration failed.",
+            message: error
         });
     }
 });
