@@ -25,6 +25,7 @@ async function verifyGoogleToken(token) {
 app.post("/Signup", async (req, res) => {
     try {
         // console.log({ verified: verifyGoogleToken(req.body.credential) });
+        console.log("tohere")
         if (req.body.credential) {
             const verificationResponse = await verifyGoogleToken(req.body.credential);
 
@@ -69,6 +70,7 @@ app.post("/Signup", async (req, res) => {
 // server.js
 app.post("/login", async (req, res) => {
     try {
+        console.log("login here")
         if (req.body.credential) {
             const verificationResponse = await verifyGoogleToken(req.body.credential);
             if (verificationResponse.error) {
