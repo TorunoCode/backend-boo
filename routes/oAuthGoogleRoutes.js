@@ -39,7 +39,7 @@ app.post("/Signup", async (req, res) => {
             }
 
             const profile = verificationResponse?.payload;
-            console.log(profile?.email)
+            console.log(profile)
             const oldUser = await UserModal.findOne({ email: profile?.email });
             if (!oldUser) {
                 const email = profile?.email;
