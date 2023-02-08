@@ -10,68 +10,74 @@ import movieRoute from './routes/MovieRoutes.js';
 import userRoute from './routes/UserRoutes.js';
 import { errorHandler, notFound } from './Middleware/errors.js';
 import commentsFeedback from './routes/commentsFeedbacksRoutes.js';
-import paypal from'paypal-rest-sdk';
-import paypalRoute from'./routes/paypalRoutes.js';
-import billRoute from'./routes/billRoutes.js';
+import paypal from 'paypal-rest-sdk';
+import paypalRoute from './routes/paypalRoutes.js';
+import billRoute from './routes/billRoutes.js';
 import session from 'express-session';
-import MongoDBSession from'connect-mongodb-session';
-import summingRoute from'./routes/sumingRoutes.js';
+import MongoDBSession from 'connect-mongodb-session';
+import summingRoute from './routes/sumingRoutes.js';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import { OAuth2Client } from 'google-auth-library';
+import oAuthGoogleRoutes from './routes/oAuthGoogleRoutes.js';
 const MongoStore = MongoDBSession(session);
 paypal.configure({
-    'mode': 'sandbox', //sandbox or live
-    'client_id': 'AYQgAnSGvQmxgRu3DPGAqhi8bQar2z6B9B9QHDPAdVoUbxOQHi81qbffwJLnlkUuKuHz2eOP_mHyMZBK',
-    'client_secret': 'EO_1MPZ3huDwSDTa_eX5yYCdEYyTTFdO38LBiqLFGfE2H5TaoY7m4Q0Xpt9H0N7uy7iXzy0AqjkiZB11'
-  });
+  'mode': 'sandbox', //sandbox or live
+  'client_id': 'AYQgAnSGvQmxgRu3DPGAqhi8bQar2z6B9B9QHDPAdVoUbxOQHi81qbffwJLnlkUuKuHz2eOP_mHyMZBK',
+  'client_secret': 'EO_1MPZ3huDwSDTa_eX5yYCdEYyTTFdO38LBiqLFGfE2H5TaoY7m4Q0Xpt9H0N7uy7iXzy0AqjkiZB11'
+});
 console.log('done set up paypal');
 dotenv.config();
 connectDatabase();
 const app = express();
 const store = new MongoStore({
-    uri: process.env.CONNECTION_URL,
-    collection:"mySessions",
-  });
-  app.use(express.json());
+  uri: process.env.CONNECTION_URL,
+  collection: "mySessions",
+});
+app.use(express.json());
+
 app.use(
-    session({
-      secret:"key that will sign cookie",
-       cookie: {
-      maxAge: 1000 * 60 * 12*24 // 1 week
-       },
-      resave:true,
-      saveUninitialized:true,
-      store: store,
-    })
-  )
-  
-  
+  session({
+    secret: "key that will sign cookie",
+    cookie: {
+      maxAge: 1000 * 60 * 12 * 24 // 1 week
+    },
+    resave: true,
+    saveUninitialized: true,
+    store: store,
+  })
+)
+
+
 process.env.TZ = "Asia/Ho_Chi_Minh";
 app.use(cors());
-app.use(bodyParser.json({limit:"30mb",extended:true}));
-app.use(bodyParser.urlencoded({limit:"30mb",extended:true}));
+app.use(bodyParser.json({ limit: "30mb", extended: true }));
+app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 
 // API
-app.use("/api/import",ImportData);
-app.use("/api/movies",movieRoute);
-app.use("/api/user",userRoute);
-app.use("/api/commentsFeedback",commentsFeedback)
-app.use("/api/paypal",paypalRoute);
-app.use("/api/bill",billRoute);
-app.use("/api/summing",summingRoute);
+app.use("/api/import", ImportData);
+app.use("/api/movies", movieRoute);
+app.use("/api/user", userRoute);
+app.use("/api/commentsFeedback", commentsFeedback)
+app.use("/api/paypal", paypalRoute);
+app.use("/api/bill", billRoute);
+app.use("/api/summing", summingRoute);
+app.use("/api/oAuthGoogleRoutes", oAuthGoogleRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-app.get("/api/movies",(req,res) => {
-    res.json(movies);
+app.get("/api/movies", (req, res) => {
+  res.json(movies);
 
 });
-app.get("/api/movies/:id",(req,res) => {
-    const movie = movies.find((p)=> p.id == req.params.id);
-    res.json(movie);
+app.get("/api/movies/:id", (req, res) => {
+  const movie = movies.find((p) => p.id == req.params.id);
+  res.json(movie);
 });
-app.get("/",(req,res) => {
-    res.send("API is running.....");
+app.get("/", (req, res) => {
+  res.send("API is running.....");
 });
-app.listen(PORT,()=>{console.log(`server is running ${PORT}`);})
+app.listen(PORT, () => { console.log(`server is running ${PORT}`); })
+
+
