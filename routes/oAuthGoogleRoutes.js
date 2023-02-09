@@ -70,7 +70,7 @@ app.post("/Signup", async (req, res) => {
     }
 });
 // server.js
-app.post("/login", async (req, res) => {
+app.get("/login", async (req, res) => {
     return res.send(req.body)
     /*try {
         console.log("login here")
