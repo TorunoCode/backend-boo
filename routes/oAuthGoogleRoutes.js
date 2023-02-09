@@ -7,7 +7,7 @@ const app = express.Router();
 app.get("/", async (req, res) => {
     res.send({ message: "api/oAuthGoogleRoutes/Signup" })
 })
-const GOOGLE_CLIENT_ID = "604913372656-gtida0d9a0g441h2574m4dblgcnh7tmv.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = "1049176429942-4243i6lqlhfu6cdcbu4lk9aitn2tijj6.apps.googleusercontent.com";
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 let DB = [];
 
