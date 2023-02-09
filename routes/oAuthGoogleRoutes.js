@@ -7,7 +7,7 @@ const app = express.Router();
 app.get("/", async (req, res) => {
     res.send({ message: "api/oAuthGoogleRoutes/Signup" })
 })
-const GOOGLE_CLIENT_ID = "475445624769-n5bdbpqcobh1n28trk88lnjnb55b669f.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = "604913372656-gtida0d9a0g441h2574m4dblgcnh7tmv.apps.googleusercontent.com";
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 let DB = [];
 
@@ -71,7 +71,8 @@ app.post("/Signup", async (req, res) => {
 });
 // server.js
 app.post("/login", async (req, res) => {
-    try {
+    return res.send(req.body)
+    /*try {
         console.log("login here")
         if (req.body.credential) {
             const verificationResponse = await verifyGoogleToken(req.body.credential);
@@ -108,6 +109,6 @@ app.post("/login", async (req, res) => {
         res.status(500).json({
             message: error?.message || error,
         });
-    }
+    }*/
 });
 export default app;
