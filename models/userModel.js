@@ -38,10 +38,6 @@ const userSchema = new mongoose.Schema({
     isAdmin: {
         type: Boolean,
         require: true
-    },
-    SignupMethod: {
-        type: String,
-        default: "SignupPage"
     }
 },
     {

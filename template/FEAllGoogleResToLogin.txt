@@ -1,0 +1,52 @@
+{
+    "Ca": "102164313198658789103",
+    "xc": {
+        "token_type": "Bearer",
+        "access_token": "ya29.a0AVvZVsooj3kE3MHbQpdgkfQlK9jkn2rWzL0c8napg0KAxUhh0Nz6RB2Ec7zx4MpDR3s36EXCXCuvan96tnjZR0l0B-hRl84O2Cb-ATfOI2Iktgb2S0-xr9TJk3AFoatrxXTxW1L15JnNJu0d8CicaZRU1VKM_gaCgYKAT4SARISFQGbdwaInKIXEwSnCZHZpwX7MvY-qg0165",
+        "scope": "email profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid",
+        "login_hint": "AJDLj6JUa8yxXrhHdWRHIV0S13cAG4_bcdvhpemOKZOi0VNWkwQNuD9dE5JkWD6DJp9siae8RyFxGEKGcw8xBLyRNfbX36VynA",
+        "expires_in": 3599,
+        "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImI0OWM1MDYyZDg5MGY1Y2U0NDllODkwYzg4ZThkZDk4YzRmZWUwYWIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiNjA0OTEzMzcyNjU2LWd0aWRhMGQ5YTBnNDQxaDI1NzRtNGRibGdjbmg3dG12LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiNjA0OTEzMzcyNjU2LWd0aWRhMGQ5YTBnNDQxaDI1NzRtNGRibGdjbmg3dG12LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTAyMTY0MzEzMTk4NjU4Nzg5MTAzIiwiZW1haWwiOiJ4eHRyYW50aWVucGhhdHh4QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoicUpzdk9BLUFsNFZnS2hlQkM1WmsyQSIsIm5hbWUiOiJUcuG6p24gVGnhur9uIFBow6F0IiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FFZEZUcDYtR2F1VDJwcXhVYmNoSXNvQVJOcXVNM1FEU1otdi1VQ3hOY0U5PXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6IlRy4bqnbiBUaeG6v24gUGjDoXQiLCJsb2NhbGUiOiJ2aSIsImlhdCI6MTY3NTkwODcyNiwiZXhwIjoxNjc1OTEyMzI2LCJqdGkiOiJkNTlkYTFmYmQ5MTMzY2EwMDA5YjM5YmJhMmJlZGI2ODQ5ZGVmYmExIn0.ozWqygxYQWenRuRlJZlXQ7v3B3AfjJnOzRB0HAOJjjH4GnPmH2bIhdduQ7JDkf_ADXVmgnHGa-OVeBtdSYZ3XRURRX0JAKokYiVVr1dC2PzCNacgqsetMS626JlYQLt20_6e2qJR7uGXelRG8tKI-IBl6ZCtNZGE_8gNlAlStEIcfG0jnOQZo6GTnyQQ7Bqc-n1AnF2M9i00vR3syQ_qHxOaLClDJrMtuXepOHN2X_W5h2HAlleWW9aS2DaCV80CRoa9cDZ0NVT-sPStDnVHS8TDUq1VZrHYP3Mbv8BsOGWu4ntID9_ZrCoS2lGJAMpSPoK5zAg0qz10p5bFNSMX5g",
+        "session_state": {
+            "extraQueryParams": {
+                "authuser": "0"
+            }
+        },
+        "first_issued_at": 1675908726284,
+        "expires_at": 1675912325284,
+        "idpId": "google"
+    },
+    "wt": {
+        "NT": "102164313198658789103",
+        "Ad": "Trần Tiến Phát",
+        "rV": "Trần Tiến Phát",
+        "hK": "https://lh3.googleusercontent.com/a/AEdFTp6-GauT2pqxUbchIsoARNquM3QDSZ-v-UCxNcE9=s96-c",
+        "cu": "xxtrantienphatxx@gmail.com"
+    },
+    "googleId": "102164313198658789103",
+    "tokenObj": {
+        "token_type": "Bearer",
+        "access_token": "ya29.a0AVvZVsooj3kE3MHbQpdgkfQlK9jkn2rWzL0c8napg0KAxUhh0Nz6RB2Ec7zx4MpDR3s36EXCXCuvan96tnjZR0l0B-hRl84O2Cb-ATfOI2Iktgb2S0-xr9TJk3AFoatrxXTxW1L15JnNJu0d8CicaZRU1VKM_gaCgYKAT4SARISFQGbdwaInKIXEwSnCZHZpwX7MvY-qg0165",
+        "scope": "email profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid",
+        "login_hint": "AJDLj6JUa8yxXrhHdWRHIV0S13cAG4_bcdvhpemOKZOi0VNWkwQNuD9dE5JkWD6DJp9siae8RyFxGEKGcw8xBLyRNfbX36VynA",
+        "expires_in": 3599,
+        "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImI0OWM1MDYyZDg5MGY1Y2U0NDllODkwYzg4ZThkZDk4YzRmZWUwYWIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiNjA0OTEzMzcyNjU2LWd0aWRhMGQ5YTBnNDQxaDI1NzRtNGRibGdjbmg3dG12LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiNjA0OTEzMzcyNjU2LWd0aWRhMGQ5YTBnNDQxaDI1NzRtNGRibGdjbmg3dG12LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTAyMTY0MzEzMTk4NjU4Nzg5MTAzIiwiZW1haWwiOiJ4eHRyYW50aWVucGhhdHh4QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoicUpzdk9BLUFsNFZnS2hlQkM1WmsyQSIsIm5hbWUiOiJUcuG6p24gVGnhur9uIFBow6F0IiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FFZEZUcDYtR2F1VDJwcXhVYmNoSXNvQVJOcXVNM1FEU1otdi1VQ3hOY0U5PXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6IlRy4bqnbiBUaeG6v24gUGjDoXQiLCJsb2NhbGUiOiJ2aSIsImlhdCI6MTY3NTkwODcyNiwiZXhwIjoxNjc1OTEyMzI2LCJqdGkiOiJkNTlkYTFmYmQ5MTMzY2EwMDA5YjM5YmJhMmJlZGI2ODQ5ZGVmYmExIn0.ozWqygxYQWenRuRlJZlXQ7v3B3AfjJnOzRB0HAOJjjH4GnPmH2bIhdduQ7JDkf_ADXVmgnHGa-OVeBtdSYZ3XRURRX0JAKokYiVVr1dC2PzCNacgqsetMS626JlYQLt20_6e2qJR7uGXelRG8tKI-IBl6ZCtNZGE_8gNlAlStEIcfG0jnOQZo6GTnyQQ7Bqc-n1AnF2M9i00vR3syQ_qHxOaLClDJrMtuXepOHN2X_W5h2HAlleWW9aS2DaCV80CRoa9cDZ0NVT-sPStDnVHS8TDUq1VZrHYP3Mbv8BsOGWu4ntID9_ZrCoS2lGJAMpSPoK5zAg0qz10p5bFNSMX5g",
+        "session_state": {
+            "extraQueryParams": {
+                "authuser": "0"
+            }
+        },
+        "first_issued_at": 1675908726284,
+        "expires_at": 1675912325284,
+        "idpId": "google"
+    },
+    "tokenId": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImI0OWM1MDYyZDg5MGY1Y2U0NDllODkwYzg4ZThkZDk4YzRmZWUwYWIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiNjA0OTEzMzcyNjU2LWd0aWRhMGQ5YTBnNDQxaDI1NzRtNGRibGdjbmg3dG12LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiNjA0OTEzMzcyNjU2LWd0aWRhMGQ5YTBnNDQxaDI1NzRtNGRibGdjbmg3dG12LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTAyMTY0MzEzMTk4NjU4Nzg5MTAzIiwiZW1haWwiOiJ4eHRyYW50aWVucGhhdHh4QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoicUpzdk9BLUFsNFZnS2hlQkM1WmsyQSIsIm5hbWUiOiJUcuG6p24gVGnhur9uIFBow6F0IiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FFZEZUcDYtR2F1VDJwcXhVYmNoSXNvQVJOcXVNM1FEU1otdi1VQ3hOY0U5PXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6IlRy4bqnbiBUaeG6v24gUGjDoXQiLCJsb2NhbGUiOiJ2aSIsImlhdCI6MTY3NTkwODcyNiwiZXhwIjoxNjc1OTEyMzI2LCJqdGkiOiJkNTlkYTFmYmQ5MTMzY2EwMDA5YjM5YmJhMmJlZGI2ODQ5ZGVmYmExIn0.ozWqygxYQWenRuRlJZlXQ7v3B3AfjJnOzRB0HAOJjjH4GnPmH2bIhdduQ7JDkf_ADXVmgnHGa-OVeBtdSYZ3XRURRX0JAKokYiVVr1dC2PzCNacgqsetMS626JlYQLt20_6e2qJR7uGXelRG8tKI-IBl6ZCtNZGE_8gNlAlStEIcfG0jnOQZo6GTnyQQ7Bqc-n1AnF2M9i00vR3syQ_qHxOaLClDJrMtuXepOHN2X_W5h2HAlleWW9aS2DaCV80CRoa9cDZ0NVT-sPStDnVHS8TDUq1VZrHYP3Mbv8BsOGWu4ntID9_ZrCoS2lGJAMpSPoK5zAg0qz10p5bFNSMX5g",
+    "accessToken": "ya29.a0AVvZVsooj3kE3MHbQpdgkfQlK9jkn2rWzL0c8napg0KAxUhh0Nz6RB2Ec7zx4MpDR3s36EXCXCuvan96tnjZR0l0B-hRl84O2Cb-ATfOI2Iktgb2S0-xr9TJk3AFoatrxXTxW1L15JnNJu0d8CicaZRU1VKM_gaCgYKAT4SARISFQGbdwaInKIXEwSnCZHZpwX7MvY-qg0165",
+    "profileObj": {
+        "googleId": "102164313198658789103",
+        "imageUrl": "https://lh3.googleusercontent.com/a/AEdFTp6-GauT2pqxUbchIsoARNquM3QDSZ-v-UCxNcE9=s96-c",
+        "email": "xxtrantienphatxx@gmail.com",
+        "name": "Trần Tiến Phát",
+        "givenName": "Trần Tiến Phát"
+    }
+}

@@ -70,12 +70,11 @@ app.post("/Signup", async (req, res) => {
     }
 });
 // server.js
-app.get("/login", async (req, res) => {
-    return res.send(req.body)
-    /*try {
+app.post("/login", async (req, res) => {
+    try {
         console.log("login here")
-        if (req.body.credential) {
-            const verificationResponse = await verifyGoogleToken(req.body.credential);
+        if (req.body.tokenId) {
+            const verificationResponse = await verifyGoogleToken(req.body.tokenId);
             if (verificationResponse.error) {
                 return res.status(400).json({
                     message: verificationResponse.error,
@@ -83,32 +82,39 @@ app.get("/login", async (req, res) => {
             }
 
             const profile = verificationResponse?.payload;
-
-            const existsInDB = await UserModal.findOne({ email: profile?.email });
+            console.log(profile)
+            let existsInDB = await UserModal.findOne({ email: profile?.email });
 
             if (!existsInDB) {
-                return res.status(400).json({
-                    message: "You are not registered. Please sign up",
+                const UserModalCreated = await UserModal.create({
+                    email: profile?.email, password: "", name: profile?.name, pin: "",
+                    isActive: true, isAdmin: false, fullName: profile?.given_name,
+                    avatar: profile?.picture
                 });
+                return res.status(201).json({ data: UserModalCreated });
             }
-
-            res.status(201).json({
-                message: "Login was successful",
-                user: {
-                    firstName: profile?.given_name,
-                    lastName: profile?.family_name,
-                    picture: profile?.picture,
-                    email: profile?.email,
-                    token: jwt.sign({ email: profile?.email }, process.env.JWT_SECRET, {
-                        expiresIn: "1d",
-                    }),
-                },
-            });
+            delete existsInDB._id
+            if (existsInDB.isActive == false)
+                return res.status(404).json({ data: null, message: "User is still block" });
+            if (existsInDB.isAdmin) { req.session.isAdmin = true; }
+            req.session.isAuth = true;
+            if (existsInDB & existsInDB.avatar == '') {
+                existsInDB = await UserModal.findOneAndUpdate({ _id: existsInDB._id }, { avatar: profile?.picture }, {
+                    new: true
+                })
+            }
+            if (existsInDB & existsInDB.fullName == '') {
+                existsInDB = await UserModal.findOneAndUpdate({ _id: existsInDB._id }, { fullName: profile?.given_name }, {
+                    new: true
+                })
+            }
+            return res.status(200).json({ data: existsInDB });
         }
+        return res.status(400).json({ data: null, message: "Not Found login token" })
     } catch (error) {
         res.status(500).json({
             message: error?.message || error,
         });
-    }*/
+    }
 });
 export default app;
