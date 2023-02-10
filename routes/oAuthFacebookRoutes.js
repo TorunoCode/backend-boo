@@ -6,9 +6,11 @@ const app = express.Router();
 app.post("/login", async (req, res) => {
     try {
         console.log("login here")
-        if (req.body.accessToken) {
+        console.log(req.body.accessToken)
+        console.log(req.body.id)
+        if (req.body.accessToken || req.body.id) {
             //"https://graph.facebook.com/v16.0/me?fields=id%2Cname%2Cemail&access_token="
-            const urlSendToFacebook = 'https://graph.facebook.com/v16.0/me?access_token=' + req.body.accessToken + '&fields=name,email,picture';
+            const urlSendToFacebook = 'https://graph.facebook.com/v16.0/' + req.body.id + '?access_token=' + req.body.accessToken + '&fields=name,email,picture';
             //https.globalAgent.options.secureProtocol = 'SSLv3_method';
             const options = {
                 hostname: 'backend-boo.vercel.app',
