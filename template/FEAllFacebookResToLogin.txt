@@ -1,0 +1,19 @@
+{
+    "name": "Trần Tiến Phát",
+    "email": "tunproxxxx@gmail.com",
+    "picture": {
+        "data": {
+            "height": 50,
+            "is_silhouette": true,
+            "url": "https://scontent.fhan4-3.fna.fbcdn.net/v/t1.30497-1/84628273_176159830277856_972693363922829312_n.jpg?stp=c15.0.50.50a_cp0_dst-jpg_p50x50&_nc_cat=1&ccb=1-7&_nc_sid=12b3be&_nc_ohc=zZn668PpBQQAX-3Jobt&_nc_ht=scontent.fhan4-3.fna&edm=AP4hL3IEAAAA&oh=00_AfAoEfombTKFq9yy9CB8ODogZn0iguaNqNulDeyVY5uYmA&oe=640D2819",
+            "width": 50
+        }
+    },
+    "id": "235110168866963",
+    "accessToken": "EAAXCMoaZB2nEBAGzNKWy0gjz6ij7ywy4wJJhZCAHv7nzGHmLNAya4g3WcKKRnVxDqOc8WrMZBSrwMiSIHPgDbGLUCfkQwoDHxypZBgifbJE1elFmBUZBlhBlb4MoQqXSoIOJ5F9Xx32qcZAnuMsAwhfpJ8H7Vvp5nYikmYZBFjkUhvxKuZATAScDzGl0CnpgtSDswEkPNswZCwVP4Ji0VoTth",
+    "userID": "235110168866963",
+    "expiresIn": 3943,
+    "signedRequest": "i6OJM2Rf8FxYScBrjuHPBuyPzgjQpE47kOR19VLhsM8.eyJ1c2VyX2lkIjoiMjM1MTEwMTY4ODY2OTYzIiwiY29kZSI6IkFRQXNTWmJQbUNURm0xUjdzM2JPUENNSmhGdVFxcDlGMXpleDZncllVUUdIQW9QLVlrbFNJanRKZUNLS29mTThGS2NWV19hUzM0V3VWUWhyTHgwbW45LW1nT2hWSlkzZS12SGtRZ1A3RF82ZlpQYXFlQXFGOE5jcXBWODBQLWFpVU5KOXpFQjk4N0MwaFg4S3FUNkpHVmN1VEk5MUtwVFZ5bmR1UmJNWThUYnMyMlcwSnE3WlZET0lYZzFma1ZOOVhNYzVVMzRyZ1Izc3BsT1FyeDREaXJzRmNrMldSN0pGWnlBUUdhdXktUUdjQkVrWWh2ZEU1NmViWHhLQWNHQWQtcnFXR0IzanhoZTlId1FjX05vWmZEb1FydkJlZGMtTUJITWE0elRmNFZIZi1LY0hPbVdfRHNyRGRtRHBoOEpKOEljTkM4OWg5UmstcmV0TGhnZTVFbnpfIiwiYWxnb3JpdGhtIjoiSE1BQy1TSEEyNTYiLCJpc3N1ZWRfYXQiOjE2NzU5OTc2NTd9",
+    "graphDomain": "facebook",
+    "data_access_expiration_time": 1683773657
+}

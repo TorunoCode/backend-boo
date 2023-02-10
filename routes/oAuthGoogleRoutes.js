@@ -2,7 +2,6 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import UserModal from '../models/userModel.js';
-import User from '../models/userModel.js';
 const app = express.Router();
 app.get("/", async (req, res) => {
     res.send({ message: "api/oAuthGoogleRoutes/Signup" })
@@ -93,7 +92,6 @@ app.post("/login", async (req, res) => {
                 });
                 return res.status(201).json({ data: UserModalCreated });
             }
-            delete existsInDB._id
             if (existsInDB.isActive == false)
                 return res.status(404).json({ data: null, message: "User is still block" });
             if (existsInDB.isAdmin) { req.session.isAdmin = true; }
