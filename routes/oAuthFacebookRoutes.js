@@ -61,12 +61,12 @@ app.post("/login", async (req, res) => {
                     return res.status(404).json({ data: null, message: "User is still block" });
                 if (existsInDB.isAdmin) { req.session.isAdmin = true; }
                 req.session.isAuth = true;
-                if (existsInDB & existsInDB.avatar == '') {
+                if (existsInDB && existsInDB.avatar == '') {
                     existsInDB = await UserModal.findOneAndUpdate({ _id: existsInDB._id }, { avatar: profile?.picture }, {
                         new: true
                     })
                 }
-                if (existsInDB & existsInDB.fullName == '') {
+                if (existsInDB && existsInDB.fullName == '') {
                     existsInDB = await UserModal.findOneAndUpdate({ _id: existsInDB._id }, { fullName: profile?.given_name }, {
                         new: true
                     })
