@@ -27,13 +27,14 @@ async function verifyGoogleToken(token) {
 }
 async function verifyGoogleAccessToken(token) {
     const options = {
-        host: 'www.googleapis.com',
-        path: '/oauth2/v3/userinfo',
-        method: 'GET'
+        hostname: 'www.googleapis.com',
+        port: 443,
+        path: '/oauth2/v3/userinfo?alt=json&access_token=' + token,
+        method: 'GET',
     };
     console.log(options)
     let dataToUse = await new Promise((resolve, reject) => {
-        https.get("https://www.googleapis.com/oauth2/v3/userinfo?alt=json&access_token=" + token, (resp) => {
+        https.get(options, (resp) => {
             let data = '';
 
             // A chunk of data has been received.
