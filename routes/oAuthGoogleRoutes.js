@@ -2,6 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import UserModal from '../models/userModel.js';
+import https from 'https';
 const app = express.Router();
 app.get("/", async (req, res) => {
     res.send({ message: "api/oAuthGoogleRoutes/Signup" })
@@ -23,6 +24,40 @@ async function verifyGoogleToken(token) {
         console.log(error)
         return { error: "Invalid user detected. Please try again" };
     }
+}
+async function verifyGoogleAccessToken(token) {
+    const options = {
+        host: 'www.googleapis.com',
+        path: '/oauth2/v3/userinfo',
+        method: 'GET',
+        headers: {
+            Authorization: 'Bearer ' + token
+        }
+    };
+    console.log(options)
+    let dataToUse = await new Promise((resolve, reject) => {
+        https.request(options, (resp) => {
+            let data = '';
+
+            // A chunk of data has been received.
+            resp.on('data', (chunk) => {
+                console.log(chunk)
+                data += chunk;
+            });
+
+            // The whole response has been received. Print out the result.
+            resp.on('end', () => {
+                console.log("i am here")
+                console.log(JSON.parse(data));
+                resolve(JSON.parse(data));
+            });
+
+        }).on("error", (err) => {
+            console.log("Error: " + err.message);
+            reject(err)
+        });
+    });
+    return dataToUse;
 }
 app.post("/Signup", async (req, res) => {
     try {
@@ -73,7 +108,7 @@ app.post("/login", async (req, res) => {
     try {
         console.log("login here")
         if (req.body.tokenId) {
-            const verificationResponse = await verifyGoogleToken(req.body.tokenId);
+            const verificationResponse = await verifyGoogleAccessToken(req.body.tokenId);
             if (verificationResponse.error) {
                 return res.status(400).json({
                     message: verificationResponse.error,
