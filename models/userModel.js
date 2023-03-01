@@ -38,6 +38,9 @@ const userSchema = new mongoose.Schema({
     isAdmin: {
         type: Boolean,
         require: true
+    },
+    checkChangePassword: {
+        type: String
     }
 },
     {
