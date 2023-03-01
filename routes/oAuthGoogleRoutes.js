@@ -17,11 +17,8 @@ async function verifyGoogleToken(token) {
             idToken: token,
             audience: GOOGLE_CLIENT_ID,
         });
-        console.log("done here")
         return { payload: ticket.getPayload() };
     } catch (error) {
-        console.log(GOOGLE_CLIENT_ID)
-        console.log(error)
         return { error: "Invalid user detected. Please try again" };
     }
 }
@@ -32,26 +29,21 @@ async function verifyGoogleAccessToken(token) {
         path: '/oauth2/v3/userinfo?alt=json&access_token=' + token,
         method: 'GET',
     };
-    console.log(options)
     let dataToUse = await new Promise((resolve, reject) => {
         https.get(options, (resp) => {
             let data = '';
 
             // A chunk of data has been received.
             resp.on('data', (chunk) => {
-                console.log(chunk)
                 data += chunk;
             });
 
             // The whole response has been received. Print out the result.
             resp.on('end', () => {
-                console.log("i am here")
-                console.log(JSON.parse(data));
                 resolve(JSON.parse(data));
             });
 
         }).on("error", (err) => {
-            console.log("Error: " + err.message);
             reject(err)
         });
     });
@@ -104,14 +96,11 @@ app.post("/Signup", async (req, res) => {
 // server.js
 app.post("/login", async (req, res) => {
     try {
-        console.log("login here")
         let profile, verificationResponse;
         if (req.body.tokenId) {
             verificationResponse = await verifyGoogleToken(req.body.tokenId);
-            console.log(verificationResponse)
             profile = verificationResponse?.payload;
         }
-        console.log(profile)
         if (profile == null) {
             verificationResponse = await verifyGoogleAccessToken(req.body.access_token);
             if (verificationResponse.error) {
@@ -141,12 +130,11 @@ app.post("/login", async (req, res) => {
             })
         }
         if (existsInDB && existsInDB.avatar == "")
-            console.log("avartar: " + existsInDB.avatar)
-        if (existsInDB && existsInDB.fullName == "") {
-            existsInDB = await UserModal.findOneAndUpdate({ _id: existsInDB._id }, { fullName: profile?.given_name }, {
-                new: true
-            })
-        }
+            if (existsInDB && existsInDB.fullName == "") {
+                existsInDB = await UserModal.findOneAndUpdate({ _id: existsInDB._id }, { fullName: profile?.given_name }, {
+                    new: true
+                })
+            }
         return res.status(200).json({ data: existsInDB });
         //return res.status(400).json({ data: null, message: "Not Found login token" })
     } catch (error) {
