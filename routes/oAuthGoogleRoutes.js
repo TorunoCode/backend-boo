@@ -29,14 +29,11 @@ async function verifyGoogleAccessToken(token) {
     const options = {
         host: 'www.googleapis.com',
         path: '/oauth2/v3/userinfo',
-        method: 'GET',
-        headers: {
-            Authorization: 'Bearer ' + token
-        }
+        method: 'GET'
     };
     console.log(options)
     let dataToUse = await new Promise((resolve, reject) => {
-        https.request(options, (resp) => {
+        https.get("https://www.googleapis.com/oauth2/v3/userinfo?alt=json&access_token=" + token, (resp) => {
             let data = '';
 
             // A chunk of data has been received.
@@ -107,43 +104,51 @@ app.post("/Signup", async (req, res) => {
 app.post("/login", async (req, res) => {
     try {
         console.log("login here")
+        let profile;
         if (req.body.tokenId) {
-            const verificationResponse = await verifyGoogleAccessToken(req.body.tokenId);
+            const verificationResponse = await verifyGoogleToken(req.body.tokenId);
             if (verificationResponse.error) {
                 return res.status(400).json({
                     message: verificationResponse.error,
                 });
             }
-
-            const profile = verificationResponse?.payload;
-            console.log(profile)
-            let existsInDB = await UserModal.findOne({ email: profile?.email });
-
-            if (!existsInDB) {
-                const UserModalCreated = await UserModal.create({
-                    email: profile?.email, password: "", name: profile?.name, pin: "",
-                    isActive: true, isAdmin: false, fullName: profile?.given_name,
-                    avatar: profile?.picture
-                });
-                return res.status(201).json({ data: UserModalCreated });
-            }
-            if (existsInDB.isActive == false)
-                return res.status(404).json({ data: null, message: "User is still block" });
-            if (existsInDB.isAdmin) { req.session.isAdmin = true; }
-            req.session.isAuth = true;
-            if (existsInDB & existsInDB.avatar == '') {
-                existsInDB = await UserModal.findOneAndUpdate({ _id: existsInDB._id }, { avatar: profile?.picture }, {
-                    new: true
-                })
-            }
-            if (existsInDB & existsInDB.fullName == '') {
-                existsInDB = await UserModal.findOneAndUpdate({ _id: existsInDB._id }, { fullName: profile?.given_name }, {
-                    new: true
-                })
-            }
-            return res.status(200).json({ data: existsInDB });
+            profile = verificationResponse?.payload;
         }
-        return res.status(400).json({ data: null, message: "Not Found login token" })
+        else if (req.body.access_token) {
+            const verificationResponse = await verifyGoogleAccessToken(req.body.access_token);
+            if (verificationResponse.error) {
+                return res.status(400).json({
+                    message: verificationResponse.error,
+                });
+            }
+            profile = verificationResponse
+        }
+        let existsInDB = await UserModal.findOne({ email: profile?.email });
+
+        if (!existsInDB) {
+            const UserModalCreated = await UserModal.create({
+                email: profile?.email, password: "", name: profile?.name, pin: "",
+                isActive: true, isAdmin: false, fullName: profile?.given_name,
+                avatar: profile?.picture
+            });
+            return res.status(201).json({ data: UserModalCreated });
+        }
+        if (existsInDB.isActive == false)
+            return res.status(404).json({ data: null, message: "User is still block" });
+        if (existsInDB.isAdmin) { req.session.isAdmin = true; }
+        req.session.isAuth = true;
+        if (existsInDB & existsInDB.avatar == '') {
+            existsInDB = await UserModal.findOneAndUpdate({ _id: existsInDB._id }, { avatar: profile?.picture }, {
+                new: true
+            })
+        }
+        if (existsInDB & existsInDB.fullName == '') {
+            existsInDB = await UserModal.findOneAndUpdate({ _id: existsInDB._id }, { fullName: profile?.given_name }, {
+                new: true
+            })
+        }
+        return res.status(200).json({ data: existsInDB });
+        //return res.status(400).json({ data: null, message: "Not Found login token" })
     } catch (error) {
         res.status(500).json({
             message: error?.message || error,
