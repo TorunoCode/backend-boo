@@ -105,13 +105,15 @@ app.post("/Signup", async (req, res) => {
 app.post("/login", async (req, res) => {
     try {
         console.log("login here")
-        let profile;
-        const verificationResponse = await verifyGoogleToken(req.body.tokenId);
-        console.log(verificationResponse)
-        profile = verificationResponse?.payload;
+        let profile, verificationResponse;
+        if (req.body.tokenId) {
+            verificationResponse = await verifyGoogleToken(req.body.tokenId);
+            console.log(verificationResponse)
+            profile = verificationResponse?.payload;
+        }
         console.log(profile)
         if (profile == null) {
-            const verificationResponse = await verifyGoogleAccessToken(req.body.access_token);
+            verificationResponse = await verifyGoogleAccessToken(req.body.access_token);
             if (verificationResponse.error) {
                 return res.status(400).json({
                     message: verificationResponse.error,
