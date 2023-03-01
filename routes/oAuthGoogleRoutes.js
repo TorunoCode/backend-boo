@@ -114,7 +114,7 @@ app.post("/login", async (req, res) => {
             const verificationResponse = await verifyGoogleAccessToken(req.body.access_token);
             if (verificationResponse.error) {
                 return res.status(400).json({
-                    message: verificationResponse.error_description,
+                    message: verificationResponse.error,
                 });
             }
             profile = verificationResponse
