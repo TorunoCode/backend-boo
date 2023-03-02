@@ -6,10 +6,10 @@ import emailHandle from '../commonFunction/emailHandle.js';
 import timeHandle from '../commonFunction/timeHandle.js';
 const app = express.Router();
 
-app.get("/forgotpassword/:email", async (req, res) => {
+app.post("/forgotpassword", async (req, res) => {
     let RandOTP = stringHandle.randomString();
     console.log(RandOTP)
-    let user = await UserModal.findOneAndUpdate({ email: req.params.email }, { OTP: RandOTP, timeCreatedOTP: Date.now() }, { new: true })
+    let user = await UserModal.findOneAndUpdate({ email: req.body.email }, { OTP: RandOTP, timeCreatedOTP: Date.now() }, { new: true })
     if (!user)
         return res.status(200).json({ message: "can't find your email" });
     timeHandle.checkTimeDifferenceMinute(user.timeCreatedOTP, Date.now())
@@ -24,8 +24,11 @@ app.post("/forgotpasswordchangepass", async (req, res) => {
     console.log(user)
     if (user[0] == null)
         return res.status(400).json({ message: "Error OTP" });
+    if (timeHandle.checkTimeDifferenceMinute(user[0].timeCreatedOTP, Date.now()) > 5)
+        return res.status(400).json({ message: "OTP time out" });
+
     console.log(req.body.newpassword)
-    user = await UserModal.findOneAndUpdate({ email: req.body.email }, { OTP: "", password: await bcrypt.hash(req.body.newpassword, 12) })
+    user = await UserModal.findOneAndUpdate({ email: req.body.email }, { OTP: "", password: await bcrypt.hash(req.body.newpassword, 12), timeCreatedOTP: null })
     if (!user)
         return res.status(400).json({ message: "Error updating your password" });
     return res.status(200).json({ message: "Change password success" });
