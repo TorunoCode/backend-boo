@@ -39,8 +39,11 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         require: true
     },
-    checkChangePassword: {
+    OTP: {
         type: String
+    },
+    timeCreatedOTP: {
+        type: Date
     }
 },
     {

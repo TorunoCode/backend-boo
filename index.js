@@ -21,6 +21,7 @@ import crypto from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
 import oAuthGoogleRoutes from './routes/oAuthGoogleRoutes.js';
 import oAuthFacebookRoutes from './routes/oAuthFacebookRoutes.js';
+import passwordRoutes from './routes/passwordRoutes.js';
 const MongoStore = MongoDBSession(session);
 paypal.configure({
   'mode': 'sandbox', //sandbox or live
@@ -65,6 +66,7 @@ app.use("/api/bill", billRoute);
 app.use("/api/summing", summingRoute);
 app.use("/api/oAuthGoogleRoutes", oAuthGoogleRoutes);
 app.use("/api/oAuthFacebookRoutes", oAuthFacebookRoutes);
+app.use("/api/password", passwordRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
