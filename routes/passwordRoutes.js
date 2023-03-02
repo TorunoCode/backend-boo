@@ -11,12 +11,12 @@ app.post("/forgotpassword", async (req, res) => {
     console.log(RandOTP)
     let user = await UserModal.findOneAndUpdate({ email: req.body.email }, { OTP: RandOTP, timeCreatedOTP: Date.now() }, { new: true })
     if (!user)
-        return res.status(400).json({ message: "can't find your email", status: false });
+        return res.status(400).json({ message: "Can't find your email" });
     timeHandle.checkTimeDifferenceMinute(user.timeCreatedOTP, Date.now())
     let result = await emailHandle.sendOTPMail(user.OTP, user.email);
     if (!result)
-        return res.status(400).json({ message: result.error, status: false });
-    return res.status(200).json({ message: "Sended OTP", status: true });
+        return res.status(400).json({ message: result.error });
+    return res.status(200).json({ message: "Sended OTP" });
 
 });
 app.post("/forgotpasswordchangepass", async (req, res) => {
