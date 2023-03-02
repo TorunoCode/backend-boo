@@ -16,7 +16,7 @@ app.post("/forgotpassword", async (req, res) => {
     let result = await emailHandle.sendOTPMail(user.OTP, user.email);
     if (!result)
         return res.status(400).json({ message: result.error });
-    return res.status(200).json({ message: "Sended OTP" });
+    return res.status(200).json({ message: "Sended OTP to your email!" });
 
 });
 app.post("/forgotpasswordchangepass", async (req, res) => {
