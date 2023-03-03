@@ -44,6 +44,10 @@ const userSchema = new mongoose.Schema({
     },
     timeCreatedOTP: {
         type: Date
+    },
+    money: {
+        type: String,
+        default: "0"
     }
 },
     {
