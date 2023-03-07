@@ -285,7 +285,7 @@ app.get('/pay/:id', async (req, res) => {
       },
       "redirect_urls": {
         "return_url": req.protocol + "://" + req.get('host') + "/api/paypal/success/" + req.params.id,
-        "cancel_url": req.protocol + "://" + req.get('host') + "/api/paypal/cancel"
+        "cancel_url": req.protocol + "://" + req.get('host') + "/api/paypal/cancel/"+req.params.id
       },
       "transactions": [{
         "item_list": {
@@ -601,5 +601,15 @@ app.post("/delete_allTransaction", async (request, response) => {
     response.status(500).send(error);
   }
 });
-app.get('/cancel', (req, res) => res.send({ message: 'Cancelled' }));
+app.get('/cancel/:user_id', async(req, res) => {
+  const check = await orderModel.findOne({ idCustomer: req.params.id, status: -1 });   //kiem tra da co bill chua   
+  for (let a of check) {
+    await showSeatModel.findById(a).updateOne({}, { $set: { isReserved: false } }); //cap nhat trang thai ve da co nguoi chon mua
+  }
+  await billModel.findByIdAndDelete({idCustomer:req.params.user_id});    //cap nhat totalbill       
+  await orderModel.findByIdAndDelete({idCustomer:req.params.user_id});    //cap nhat totalbill       
+
+  res.send({ message: 'Cancelled' })
+
+});
 export default app;
