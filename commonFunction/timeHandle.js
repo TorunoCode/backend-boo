@@ -47,8 +47,6 @@ function checkDateIsTodayOrNotYetOrPassedTime(time, timeCompared1, timeCompared2
     if (timeCompared1 <= time && time < timeCompared2) {
         return "Today";
     }
-    console.log(time)
-    console.log(timeCompared1)
     if (time < timeCompared1) {
         return "Not Yet";
     }

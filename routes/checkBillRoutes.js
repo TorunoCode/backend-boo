@@ -16,7 +16,8 @@ const app = express.Router();
 app.get('/bill/:id/:date', async (req, res) => {
     let billId = req.params.id;
     let billsOfUser = await orderModel.find({ idBill: billId, status: "1" });
-    if (!billsOfUser) {
+    console.log(billsOfUser)
+    if (billsOfUser[0] == null) {
         return res.status(400).send({ "message": "Bill not found" })
     }
     let date = req.params.date;
