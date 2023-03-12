@@ -43,8 +43,28 @@ function getFirstDayOfNextWeek(time) {
     let firstDayOfWeek = getFirstDayOfWeek(time)
     return new Date(firstDayOfWeek.setDate(firstDayOfWeek.getDate() + 7))
 }
+function checkDateIsTodayOrNotYetOrPassedTime(time, timeCompared1, timeCompared2) {
+    if (timeCompared1 <= time && time < timeCompared2) {
+        return "Today";
+    }
+    console.log(time)
+    console.log(timeCompared1)
+    if (time < timeCompared1) {
+        return "Not Yet";
+    }
+    if (time >= timeCompared2) {
+        return "Passed Time"
+    }
+}
+function formatDate_YearMonthDay(time) {
+    let month = ("0" + (time.getMonth() + 1)).slice(-2),
+        day = ("0" + time.getDate()).slice(-2),
+        year = time.getFullYear();
+    return year + "-" + month + "-" + day;
+}
 export default {
     checkTimeDifferenceMinute, getYesterdayAt0, getFirstDayOfMonth, getFirstDayOfLastMonth,
     getFirstDayOfNextYear, getFirstDayOfThisYear, getTodayAt0, getTomorrorAt0,
-    getFirstDayOfNextMonth, getFirstDayOfWeek, getFirstDayOfNextWeek
+    getFirstDayOfNextMonth, getFirstDayOfWeek, getFirstDayOfNextWeek, checkDateIsTodayOrNotYetOrPassedTime,
+    formatDate_YearMonthDay
 }
