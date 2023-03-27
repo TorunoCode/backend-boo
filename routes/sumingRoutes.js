@@ -10,6 +10,7 @@ import ShowingModel from '../models/showingModel.js';
 import MovieModel from '../models/movieModel.js';
 import CinemaHallModel from '../models/cinemaHallModel.js';
 import cinemaModel from '../models/cinemaModel.js';
+import timeHandle from '../commonFunction/timeHandle.js';
 const app = express.Router();
 app.get("/test", function (req, res) {
     res.send("Summing Routes");
@@ -290,30 +291,14 @@ app.get("/top10recent", async (req, res) => {
 app.get("/summary/:date", async (req, res) => {
     let date = req.params.date;
     let day_finding = new Date(date);
-    let day_finding1 = new Date(day_finding.getFullYear(), (day_finding.getMonth() + 1))
-    let first_day_of_next_month = new Date(day_finding1);
-    first_day_of_next_month.setDate(day_finding1.getDate());
-    let last_day_of_last_month = new Date(day_finding1);
-    last_day_of_last_month.setMonth(day_finding1.getMonth() - 1);
-    let first_day_of_month_find = new Date(last_day_of_last_month);
-    first_day_of_month_find.setDate(last_day_of_last_month.getDate());
-    let day_to_find = first_day_of_month_find.getFullYear() + "-" + (first_day_of_month_find.getMonth() + 1) + "-" + first_day_of_month_find.getDate();
-
-    let next_day_finding = new Date(day_finding);
-    next_day_finding.setDate(day_finding.getDate() + 1);
-
     let result = {};
     let smallResult = [];
     let oneResult = {};
-    let next_day = next_day_finding.getDate();
-    let next_month = next_day_finding.getMonth() + 1;
-    let next_year = next_day_finding.getFullYear();
-    let next_day_to_find = next_year + "-" + next_month + "-" + next_day;
     let sum_money = await billsModel.aggregate([{
         $match: {
             createdAt: {
-                $gte: new Date(day_finding),
-                $lt: new Date(next_day_to_find)
+                $gte: timeHandle.getTodayAt0(day_finding),
+                $lt: timeHandle.getTomorrorAt0(day_finding)
             }
         }
     }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }]);
@@ -321,8 +306,8 @@ app.get("/summary/:date", async (req, res) => {
     let sum_money3 = await billsModel.aggregate([{
         $match: {
             createdAt: {
-                $gte: new Date(day_finding),
-                $lt: new Date(next_day_to_find)
+                $gte: timeHandle.getTodayAt0(day_finding),
+                $lt: timeHandle.getTomorrorAt0(day_finding)
             }
         }
     }, { $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
@@ -359,15 +344,11 @@ app.get("/summary/:date", async (req, res) => {
     result["day"] = smallResult;
 
 
-    next_day_to_find = first_day_of_next_month.getFullYear() + "-" + (first_day_of_next_month.getMonth() + 1) + "-" + first_day_of_next_month.getDate();
-    console.log("this month")
-    console.log(day_to_find)
-    console.log(next_day_to_find);
     sum_money = await billsModel.aggregate([{
         $match: {
             createdAt: {
-                $gte: new Date(day_to_find),
-                $lt: new Date(next_day_to_find)
+                $gte: timeHandle.getFirstDayOfMonth(day_finding),
+                $lt: timeHandle.getFirstDayOfNextMonth(day_finding)
             }
         }
     }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
@@ -375,16 +356,14 @@ app.get("/summary/:date", async (req, res) => {
     sum_money3 = await billsModel.aggregate([{
         $match: {
             createdAt: {
-                $gte: new Date(day_to_find),
-                $lt: new Date(next_day_to_find)
+                $gte: timeHandle.getFirstDayOfMonth(day_finding),
+                $lt: timeHandle.getFirstDayOfNextMonth(day_finding)
             }
         }
     }, { $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
     sum_money4 = await MovieModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    console.log(oneResult)
     oneResult = {};
     smallResult = [];
-    console.log(oneResult)
     try {
         oneResult["Revenue"] = sum_money[0].Revenue
     } catch (error) {
@@ -446,19 +425,11 @@ app.get("/summary/:date", async (req, res) => {
     smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
     result["total"] = smallResult;
 
-    first_day_of_next_month.setMonth(first_day_of_next_month.getMonth() - 1);
-    first_day_of_month_find.setMonth(first_day_of_month_find.getMonth() - 1);
-    console.log(first_day_of_next_month)
-    next_day_to_find = first_day_of_next_month.getFullYear() + "-" + (first_day_of_next_month.getMonth() + 1) + "-" + first_day_of_next_month.getDate();
-    day_to_find = first_day_of_month_find.getFullYear() + "-" + (first_day_of_month_find.getMonth() + 1) + "-" + first_day_of_month_find.getDate();
-    console.log("last month")
-    console.log(day_to_find)
-    console.log(next_day_to_find);
     sum_money = await billsModel.aggregate([{
         $match: {
             createdAt: {
-                $gte: new Date(day_to_find),
-                $lt: new Date(next_day_to_find)
+                $gte: timeHandle.getFirstDayOfLastMonth(day_finding),
+                $lt: timeHandle.getFirstDayOfMonth(day_finding)
             }
         }
     }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
@@ -466,16 +437,14 @@ app.get("/summary/:date", async (req, res) => {
     sum_money3 = await billsModel.aggregate([{
         $match: {
             createdAt: {
-                $gte: new Date(day_to_find),
-                $lt: new Date(next_day_to_find)
+                $gte: timeHandle.getFirstDayOfLastMonth(day_finding),
+                $lt: timeHandle.getFirstDayOfMonth(day_finding)
             }
         }
     }, { $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
     sum_money4 = await MovieModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    console.log(oneResult)
     oneResult = {};
     smallResult = [];
-    console.log(oneResult)
     try {
         oneResult["Revenue"] = sum_money[0].Revenue
     } catch (error) {
@@ -502,19 +471,11 @@ app.get("/summary/:date", async (req, res) => {
     smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
     result["onemounthago"] = smallResult;
 
-    let day_of_week = (new Date(date)).getDay();
-    let diff = (new Date(date)).getDate() - day_of_week + (day_of_week == 0 ? -6 : 1);
-    let first_day_of_week = new Date((new Date(date)).setDate(diff));
-    let last_day_of_week = new Date(first_day_of_week);
-    last_day_of_week.setDate(last_day_of_week.getDate() + 6);
-    console.log("week")
-    console.log(first_day_of_week)
-    console.log(last_day_of_week)
     sum_money = await billsModel.aggregate([{
         $match: {
             createdAt: {
-                $gte: new Date(first_day_of_week),
-                $lt: new Date(last_day_of_week)
+                $gte: timeHandle.getFirstDayOfWeek(day_finding),
+                $lt: timeHandle.getFirstDayOfNextWeek(day_finding)
             }
         }
     }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
@@ -522,16 +483,14 @@ app.get("/summary/:date", async (req, res) => {
     sum_money3 = await billsModel.aggregate([{
         $match: {
             createdAt: {
-                $gte: new Date(first_day_of_week),
-                $lt: new Date(last_day_of_week)
+                $gte: timeHandle.getFirstDayOfWeek(day_finding),
+                $lt: timeHandle.getFirstDayOfNextWeek(day_finding)
             }
         }
     }, { $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
     sum_money4 = await MovieModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    console.log(oneResult)
     oneResult = {};
     smallResult = [];
-    console.log(oneResult)
     try {
         oneResult["Revenue"] = sum_money[0].Revenue
     } catch (error) {

@@ -23,6 +23,7 @@ import oAuthGoogleRoutes from './routes/oAuthGoogleRoutes.js';
 import oAuthFacebookRoutes from './routes/oAuthFacebookRoutes.js';
 import passwordRoutes from './routes/passwordRoutes.js';
 import userMoneyRoutes from './routes/userMoneyRoutes.js';
+import checkBillRoutes from './routes/checkBillRoutes.js';
 const MongoStore = MongoDBSession(session);
 paypal.configure({
   'mode': 'sandbox', //sandbox or live
@@ -69,6 +70,7 @@ app.use("/api/oAuthGoogleRoutes", oAuthGoogleRoutes);
 app.use("/api/oAuthFacebookRoutes", oAuthFacebookRoutes);
 app.use("/api/password", passwordRoutes);
 app.use("/api/userMoney", userMoneyRoutes);
+app.use("/api/checkBill", checkBillRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
