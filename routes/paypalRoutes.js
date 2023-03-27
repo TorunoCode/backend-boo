@@ -602,10 +602,10 @@ app.post("/delete_allTransaction", async (request, response) => {
   }
 });
 app.get('/cancel/:user_id', async(req, res) => {
+  console.log('to delete all transactions');
+
   const check = await orderModel.findOne({ idCustomer: req.params.id, status: -1 });   //lay bill hien tai 
-  for (let a of check) {
-    await showSeatModel.findById(a).updateOne({}, { $set: { isReserved: false } }); //cap nhat trang thai ve tro lai trang thai ban dau
-  }
+    await showSeatModel.findById(check.idShowing).updateOne({}, { $set: { isReserved: false } }); //cap nhat trang thai ve tro lai trang thai ban dau
   await billsModel.findByIdAndDelete({idCustomer:req.params.user_id, status:-1});    //xoa  totalbill       
   await orderModel.findByIdAndDelete({idCustomer:req.params.user_id,status:-1});    //xoa order       
 
