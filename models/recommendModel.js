@@ -10,8 +10,7 @@ const recommendSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        require: true,
-        unique: true
+        require: true
 
     },
     count: {
@@ -22,5 +21,5 @@ const recommendSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
-const Recommend = mongoose.model('recommend', recommendSchema);
+const Recommend = mongoose.model('Recom', recommendSchema);
 export default Recommend;
