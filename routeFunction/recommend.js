@@ -6,20 +6,28 @@ import fileHandle from "../commonFunction/fileHandle.js";
 import { file } from "googleapis/build/src/apis/file/index.js";
 async function addUserRecentBuyMovieGenre(idUser, idMovie) {
     var movieGerne = await movieModel.findById(idMovie)
-    var userEmail = await userModel.findById(idUser)
-    var query = { idCustomer: idUser },
-        update = { genre: movieGerne.genre, email: userEmail.email },
-        options = { upsert: true, new: true, setDefaultsOnInsert: true };
-    var result = await recommendModel.findOneAndUpdate(query, update, options);
-    console.log(result)
-    if (result) {
+    var userEmail = await userModel.findById(idUser);
+    let recommendTest = await recommendModel.findOne({ idCustomer: idUser, genre: movieGerne.genre });
+    console.log(recommendTest)
+    if (!recommendTest) {
+        console.log("here")
+        recommendTest = await recommendModel.create({ idCustomer: idUser, genre: movieGerne.genre, email: userEmail.email, count: 1 })
+    }
+    else {
+        console.log("else")
+        let count = recommendTest.count
+        count = count + 1
+        console.log(count)
+        recommendTest = await recommendModel.findOneAndUpdate({ idCustomer: idUser, genre: movieGerne.genre }, { count: count })
+    }
+    if (recommendTest) {
         return true
     }
     return false
 }
 async function sendRecommentMovie(idMovie) {
     var movie = await movieModel.findById(idMovie)
-    var users = await recommendModel.find({ genre: movie.genre }).select('email -_id')
+    var users = await recommendModel.find({ genre: movie.genre, count: { $gte: 2 } }).select('email -_id')
     console.log(users);
     if (users[0] == null) {
         var users = await recommendModel.find({})

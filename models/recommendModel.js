@@ -13,6 +13,11 @@ const recommendSchema = new mongoose.Schema({
         require: true,
         unique: true
 
+    },
+    count: {
+        type: Number,
+        require: false,
+        default: 0
     }
 }, {
     timestamps: true
