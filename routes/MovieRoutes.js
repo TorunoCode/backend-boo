@@ -13,6 +13,7 @@ import orderModel from '../models/orderModel.js';
 import listModel from '../models/listModel.js';
 import UserModal from '../models/userModel.js';
 import feedbackModel from '../models/feedbacksModel.js';
+import recommend from '../routeFunction/recommend.js';
 import mongoose from 'mongoose';
 const isAuth = (req, res, next) => {
     console.log(req.session.isAuth);
@@ -205,6 +206,7 @@ movieRoute.post(
         if (checkShowing == null) res.status(500).json({ message: "Something went wrong" });
         console.log("check" + check)
         if (!check) {
+            recommend.addUserRecentBuyMovieGenre(req.params.idUser, check.idMovie);
             const bill = await billModel({ totalMoney: 0, idCustomer: req.params.id, status: -1 }); //tao ma bill moi
             await bill.save();
             for (let a of body) {
