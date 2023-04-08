@@ -206,7 +206,7 @@ movieRoute.post(
         if (checkShowing == null) res.status(500).json({ message: "Something went wrong" });
         console.log("check" + check)
         if (!check) {
-            recommend.addUserRecentBuyMovieGenre(req.params.idUser, check.idMovie);
+            recommend.addUserRecentBuyMovieGenre(req.params.idUser, checkShowing.idMovie);
             const bill = await billModel({ totalMoney: 0, idCustomer: req.params.id, status: -1 }); //tao ma bill moi
             await bill.save();
             for (let a of body) {

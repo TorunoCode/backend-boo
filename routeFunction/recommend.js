@@ -21,10 +21,15 @@ async function sendRecommentMovie(idMovie) {
     var movie = await movieModel.findById(idMovie)
     var users = await recommendModel.find({ genre: movie.genre }).select('email -_id')
     console.log(users);
+    if (users[0] == null) {
+        var users = await recommendModel.find({})
+        console.log(users)
+        return
+    }
     var emails = users.map(item => item.email)
     console.log(emails);
     let emailBody = fileHandle.RecommendHtml(movie.image, movie.name)
-    emailHandle.sendHttpMailBcc(emailBody, emails)
-
+    let test = emailHandle.sendHttpMailBcc(emailBody, emails)
+    return
 }
 export default { addUserRecentBuyMovieGenre, sendRecommentMovie }

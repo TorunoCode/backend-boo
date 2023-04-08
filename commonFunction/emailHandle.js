@@ -11,7 +11,6 @@ async function sendOTPMail(OTP, mail) {
     const result = await new Promise((resolve, reject) => {
         emailProvider.sendMail(mailOptions, function (error, info) {
             if (error) {
-                res.status(400).send(error);
                 reject(error);
             } else {
                 resolve(info);
@@ -31,7 +30,6 @@ async function sendHttpMailBcc(emailBody, mail) {
     const result = await new Promise((resolve, reject) => {
         emailProvider.sendMail(mailOptions, function (error, info) {
             if (error) {
-                res.status(400).send(error);
                 reject(error);
             } else {
                 resolve(info);
