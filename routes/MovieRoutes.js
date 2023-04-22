@@ -157,6 +157,7 @@ movieRoute.post(
                 }
             }
         }
+        else
         {
             res.status(404)
             throw new Error("Add movie not successfull");
@@ -205,7 +206,13 @@ movieRoute.post(
         const checkShowing = await ShowingModel.findById(req.body.idShowing);
         if (checkShowing == null) res.status(500).json({ message: "Something went wrong" });
         console.log("check" + check)
-        if (!check) {
+        if (check) {
+            const removeBill = await orderModel.find({ idBill: check._id.toString() });
+            for (let x of removeBill) {
+                await showSeatModel.findById(x.idShowSeat).updateOne({}, { $set: { isReserved: false } });
+                await orderModel.findOneAndRemove({ idShowSeat: x.idShowSeat, idShowing: x.idShowing });
+            }
+        }
             recommend.addUserRecentBuyMovieGenre(req.params.id, checkShowing.idMovie);
             const bill = await billModel({ totalMoney: 0, idCustomer: req.params.id, status: -1 }); //tao ma bill moi
             await bill.save();
@@ -222,29 +229,28 @@ movieRoute.post(
                 await showSeatModel.findById(a).updateOne({}, { $set: { isReserved: true } }); //cap nhat trang thai ve da co nguoi chon mua
                 await billModel.findByIdAndUpdate(bill._id.toString(), { $set: { totalMoney: total.totalMoney + data.price } });    //cap nhat totalbill       
                 console.log("sum: " + (total.totalMoney + data.price))
-            }
             return res.status(400).json({ message: "add successfully" });
         }
-        else {
-            console.log("here")
-            for (let a of body) {
-                console.log("now")
-                console.log(a)
-                const bookingTicket = await orderModel({ idBill: check._id.toString(), idShowSeat: a, idCustomer: req.params.id, idShowing: req.body.idShowing, status: -1 })
-                await bookingTicket.save();
-                console.log("wher")
-                //const data = await showSeatModel.findById(mongoose.Types.ObjectId(a.idShowSeat));
-                const data = await showSeatModel.findById(a);
-                console.log(data)
-                const total = await billModel.findById(check._id.toString());
-                console.log("total: " + total.totalMoney)
-                console.log("price: " + data.price)
-                await billModel.findByIdAndUpdate(check._id.toString(), { $set: { totalMoney: total.totalMoney + data.price } });
-                await showSeatModel.findById(a).updateOne({}, { $set: { isReserved: true } });
-                console.log("sum: " + (total.totalMoney + data.price))
-            }
-            return res.status(400).json({ message: "add successfully" });
-        }
+        // else {
+        //     console.log("here")
+        //     for (let a of body) {
+        //         console.log("now")
+        //         console.log(a)
+        //         const bookingTicket = await orderModel({ idBill: check._id.toString(), idShowSeat: a, idCustomer: req.params.id, idShowing: req.body.idShowing, status: -1 })
+        //         await bookingTicket.save();
+        //         console.log("wher")
+        //         //const data = await showSeatModel.findById(mongoose.Types.ObjectId(a.idShowSeat));
+        //         const data = await showSeatModel.findById(a);
+        //         console.log(data)
+        //         const total = await billModel.findById(check._id.toString());
+        //         console.log("total: " + total.totalMoney)
+        //         console.log("price: " + data.price)
+        //         await billModel.findByIdAndUpdate(check._id.toString(), { $set: { totalMoney: total.totalMoney + data.price } });
+        //         await showSeatModel.findById(a).updateOne({}, { $set: { isReserved: true } });
+        //         console.log("sum: " + (total.totalMoney + data.price))
+        //     }
+        //     return res.status(400).json({ message: "add successfully" });
+        // }
     })
 
 );
