@@ -18,7 +18,7 @@ app.get('/bill/:id/:date', async (req, res) => {
     let billsOfUser = await orderModel.find({ idBill: billId, status: "1" });
     console.log(billsOfUser)
     if (billsOfUser[0] == null) {
-        return res.status(400).send({ "message": "Bill not found" })
+        return res.status(400).send([])
     }
     let date = req.params.date;
     let day_finding = new Date(date)
@@ -49,7 +49,7 @@ app.get('/billToday/:id', async (req, res) => {
     let billsOfUser = await orderModel.find({ idBill: billId, status: "1" });
     console.log(billsOfUser)
     if (billsOfUser[0] == null) {
-        return res.status(400).send({ "message": "Bill not found" })
+        return res.status(400).send([])
     }
     let day_finding = new Date()
     console.log(new Date())
