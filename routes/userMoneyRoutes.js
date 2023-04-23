@@ -7,6 +7,7 @@ import billsModel from "../models/billsModel.js"
 import orderModel from "../models/orderModel.js";
 import showSeatModel from '../models/showSeatModel.js';
 import paypalHandle from '../commonFunction/paypalHandle.js';
+import moneyHandle from '../commonFunction/moneyHandle.js';
 const app = express.Router();
 app.get("/add/:email/:money", async function (req, res) {
     let user = await UserModal.findOne({ email: req.params.email })
@@ -111,7 +112,7 @@ app.get('/success/:email', async (req, res) => {
             if (user.money == null)
                 userMoney = parseFloat(0)
             else userMoney = parseFloat(user.money)
-            userMoney = userMoney + total_for_execute;
+            userMoney = moneyHandle.addMoney(userMoney, total_for_execute);
             userMoney = userMoney.toString();
             user = await UserModal.findOneAndUpdate({ email: req.params.email }, { money: userMoney }, { new: true });
             subHtml = fileHandle.template4Notification("Success payment")
@@ -133,7 +134,10 @@ app.get('/cancel', (req, res) => {
 app.get('/money/:email', async (req, res) => {
     let user = await UserModal.findOne({ email: req.params.email }).select('money');
     console.log(user)
-    return res.status(200).send({ money: user.money })
+    if (user)
+        return res.status(200).send({ money: user.money })
+    else
+        return res.status(400).send({ money: 0 })
 });
 app.post('/pay', async (req, res) => {
     let user = await UserModal.findOne({ email: req.body.email })
@@ -150,7 +154,7 @@ app.post('/pay', async (req, res) => {
     let userMoney = parseFloat(user.money)
     console.log(total)
     console.log(userMoney)
-    userMoney = userMoney - total
+    userMoney = moneyHandle.subtractionMoney(userMoney, total)
     if (userMoney < 0) {
         return res.status(400).send({ message: "Not enough money in balance" })
     }
@@ -171,5 +175,10 @@ app.get('/testpaypalpayout/:email/:money', async (req, res) => {
         return res.status(400).send({ message: result })
     return res.status(200).send({ message: result.error })
 
+})
+app.get('/test/addMoney/:money1/:money2', async (req, res) => {
+    let addResult = moneyHandle.addMoney(req.params.money1, req.params.money2)
+    let subtractResult = moneyHandle.subtractionMoney(req.params.money1, req.params.money2)
+    return res.send({ "add": addResult, "sub": subtractResult })
 })
 export default app;

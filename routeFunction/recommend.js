@@ -16,7 +16,8 @@ async function addUserRecentBuyMovieGenre(idUser, idMovie) {
     else {
         console.log("else")
         let count = recommendTest.count
-        count = count + 1
+        //count = count + 1
+        count = 2
         console.log(count)
         recommendTest = await recommendModel.findOneAndUpdate({ idCustomer: idUser, genre: movieGerne.genre }, { count: count })
     }
