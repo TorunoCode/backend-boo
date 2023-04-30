@@ -237,8 +237,11 @@ app.get('/pay/:id', async (req, res) => {
       return res.status(400).send("no bills to pay");
     }
     let bill = await billsModel.find({ idCustomer: req.params.id, status: "-1" });
+    console.log(bill[0])
     //luc chua thanh toan moi nguoi chi co 1 bill
     let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
+    console.log("check orders")
+    console.log(billsOfUser)
     for (let i = 0; i < billsOfUser.length; i++) {
       let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
       let CinemaHallSeat = await CinemaHallSeatModel.find({ _id: showSeat.idCinemaHallSeat });
@@ -285,7 +288,7 @@ app.get('/pay/:id', async (req, res) => {
       },
       "redirect_urls": {
         "return_url": req.protocol + "://" + req.get('host') + "/api/paypal/success/" + req.params.id,
-        "cancel_url": req.protocol + "://" + req.get('host') + "/api/paypal/cancel/"+req.params.id
+        "cancel_url": req.protocol + "://" + req.get('host') + "/api/paypal/cancel/" + req.params.id
       },
       "transactions": [{
         "item_list": {
@@ -417,6 +420,8 @@ app.get('/success/:buyer_id', async (req, res) => {
               let Price_items = [];
               let Quantity_items = [];
               try {
+                console.log(paymentInfo.transactions[0].item_list.items)
+                console.log(paymentInfo.transactions[0].item_list)
                 for (let i = 0; i < paymentInfo.transactions[0].item_list.items.length; i++) {
                   Name_items[i] = paymentInfo.transactions[0].item_list.items[i].name;
                   Sku_items[i] = paymentInfo.transactions[0].item_list.items[i].sku;
@@ -424,17 +429,21 @@ app.get('/success/:buyer_id', async (req, res) => {
                   Currency_items[i] = paymentInfo.transactions[0].item_list.items[i].currency;
                   Price_items[i] = paymentInfo.transactions[0].item_list.items[i].price;
                 }
+                console.log(paymentInfo.transactions[0].item_list.items.length)
                 subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt2.html'), 'utf8')
                 subHtml = subHtml.replace('OrderNumber', paymentId)
                 subHtml = subHtml.replace('DateOrder', paymentInfo.transactions[0].related_resources[0].sale.update_time.substring(0, 10))
                 let bill = await billsModel.find({ idCustomer: payment.transactions[0].description, status: "-1" });
                 //luc chua thanh toan moi nguoi chi co 1 bill
+                console.log(bill)
                 let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
                 let movie = '';
                 let Cinema = '';
                 let date = '';
                 let session = '';
                 let seat = '';
+                console.log(billsOfUser)
+                console.log("done check")
                 for (let i = 0; i < billsOfUser.length; i++) {
                   let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
                   let CinemaHallSeat = await CinemaHallSeatModel.find({ _id: showSeat.idCinemaHallSeat });
@@ -601,13 +610,13 @@ app.post("/delete_allTransaction", async (request, response) => {
     response.status(500).send(error);
   }
 });
-app.get('/cancel/:user_id', async(req, res) => {
+app.get('/cancel/:user_id', async (req, res) => {
   console.log('to delete all transactions');
 
   const check = await orderModel.findOne({ idCustomer: req.params.id, status: -1 });   //lay bill hien tai 
-    await showSeatModel.findById(check.idShowing).updateOne({}, { $set: { isReserved: false } }); //cap nhat trang thai ve tro lai trang thai ban dau
-  await billsModel.findByIdAndDelete({idCustomer:req.params.user_id, status:-1});    //xoa  totalbill       
-  await orderModel.findByIdAndDelete({idCustomer:req.params.user_id,status:-1});    //xoa order       
+  await showSeatModel.findById(check.idShowing).updateOne({}, { $set: { isReserved: false } }); //cap nhat trang thai ve tro lai trang thai ban dau
+  await billsModel.findByIdAndDelete({ idCustomer: req.params.user_id, status: -1 });    //xoa  totalbill       
+  await orderModel.findByIdAndDelete({ idCustomer: req.params.user_id, status: -1 });    //xoa order       
 
   res.send({ message: 'Cancelled' })
 
