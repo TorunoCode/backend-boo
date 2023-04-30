@@ -5,6 +5,7 @@ import UserModal from '../models/userModel.js';
 import https from 'https';
 import stringHandle from '../commonFunction/stringHandle.js';
 import emailHandle from '../commonFunction/emailHandle.js';
+import bcrypt from 'bcryptjs';
 const app = express.Router();
 app.get("/", async (req, res) => {
     res.send({ message: "api/oAuthGoogleRoutes/Signup" })

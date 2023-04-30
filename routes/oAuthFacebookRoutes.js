@@ -4,6 +4,7 @@ import express from 'express';
 import UserModal from '../models/userModel.js';
 import stringHandle from '../commonFunction/stringHandle.js';
 import emailHandle from '../commonFunction/emailHandle.js';
+import bcrypt from 'bcryptjs';
 const app = express.Router();
 app.post("/login", async (req, res) => {
     try {
