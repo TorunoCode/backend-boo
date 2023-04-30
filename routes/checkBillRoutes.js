@@ -13,7 +13,7 @@ import movieModel from '../models/movieModel.js';
 import cinemaHallModel from '../models/cinemaHallModel.js';
 import cinemaModel from '../models/cinemaModel.js';
 const app = express.Router();
-app.get('/bill/:id/:date', async (req, res) => {
+/*app.get('/bill/:id/:date', async (req, res) => {
     let billId = req.params.id;
     let billsOfUser = await orderModel.find({ idBill: billId, status: "1" });
     console.log(billsOfUser)
@@ -43,7 +43,7 @@ app.get('/bill/:id/:date', async (req, res) => {
         });
     }
     return res.status(200).send(result)
-});
+});*/
 app.get('/billToday/:id', async (req, res) => {
     let billId = req.params.id;
     let billsOfUser = await orderModel.find({ idBill: billId, status: "1" });

@@ -1,21 +1,17 @@
 import mongoose from 'mongoose';
 const recommendSchema = new mongoose.Schema({
     idCustomer: {
-        type: String,
-        require: true
+        type: String
     },
     genre: {
-        type: String,
-        require: true
+        type: String
     },
     email: {
-        type: String,
-        require: true
+        type: String
 
     },
     count: {
         type: Number,
-        require: false,
         default: 0
     }
 }, {

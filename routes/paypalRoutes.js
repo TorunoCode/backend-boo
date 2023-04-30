@@ -15,7 +15,7 @@ import sgMail from '@sendgrid/mail';
 import fs from 'fs';
 import path from 'path';
 const app = express.Router();
-app.get("/test/:id", function (req, res) {
+/*app.get("/test/:id", function (req, res) {
   res.send("paypal Routes");
 });
 app.get("/testssssu/:id", function (req, res) {
@@ -62,7 +62,7 @@ app.get("/test2/mail", async function (req, res) {
       })
       .catch((error) => {
         console.error(error)
-      })*/
+      })
     console.log("test here")
     res.write(subHtml);
     res.end();
@@ -199,8 +199,8 @@ app.get("/test3", async function (req, res) {
                   Quantity_items: Quantity_items,
                   Currency_items: Currency_items,
                   Price_items: Price_items
-                });*/
-});
+                });
+});*/
 //"payment_method": "pay_upon_invoice"
 //"payment_method": "carrier"
 //"payment_method": "alternate_payment"
@@ -563,7 +563,7 @@ app.get('/success/:buyer_id', async (req, res) => {
   });
 });
 
-app.post("/delete_transactions", async (request, response) => {
+/*app.post("/delete_transactions", async (request, response) => {
   const transaction = new transactionsModel(request.body);
 
   try {
@@ -609,7 +609,7 @@ app.post("/delete_allTransaction", async (request, response) => {
   } catch (error) {
     response.status(500).send(error);
   }
-});
+});*/
 app.get('/cancel/:user_id', async (req, res) => {
   console.log('to delete all transactions');
 

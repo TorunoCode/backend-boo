@@ -12,7 +12,7 @@ import CinemaHallModel from '../models/cinemaHallModel.js';
 import cinemaModel from '../models/cinemaModel.js';
 import timeHandle from '../commonFunction/timeHandle.js';
 const app = express.Router();
-app.get("/test", function (req, res) {
+/*app.get("/test", function (req, res) {
     res.send("Summing Routes");
 });
 app.get("/movieInDay/:day/:month/:year/:page", async (req, res) => {
@@ -143,13 +143,13 @@ app.get("/movieInMonth/:month/:year/:page", async (req, res) => {
         movieName = await MovieModel.find({ _id: { $in: testthings2 } });
         movieNames = movieName.map(a => a.name);
         movieGenres = movieName.map(a => a.genre);
-        /*for (let j = 0; j < idShowings.length; j++) {
+        for (let j = 0; j < idShowings.length; j++) {
             showing = await ShowingModel.findById(idShowings[j]._id);
             movieName = await MovieModel.findById(showing.idMovie);
             movieNames.push(movieName.name);
             movieGenres.push(movieName.genre);
             console.log("inside j: " + j + " idShowing length " + idShowings.length);
-        }*/
+        }
         console.log("inside i: " + i + " bill length " + bill.length);
         //console.log(userName);
         //console.log(movieNames);
@@ -242,7 +242,7 @@ app.get("/moneyInYear/:year", async (req, res) => {
         }
     }
     res.status(200).send(result);
-})
+})*/
 app.get("/top10user", async (req, res) => {
     let result = []
     const sum_money = await billsModel.aggregate([{

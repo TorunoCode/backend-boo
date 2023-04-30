@@ -165,7 +165,7 @@ app.post('/pay', async (req, res) => {
     await orderModel.updateMany({ idCustomer: user.id }, { "$set": { status: "1" } })
     res.status(200).send({ message: "Payed orders" })
 })
-app.get('/testpaypalpayout/:email/:money', async (req, res) => {
+/*app.get('/testpaypalpayout/:email/:money', async (req, res) => {
     let user = UserModal.findOne({ email: req.params.email })
     if (!user) {
         return res.status(400).send({ message: "Can't find email" })
@@ -175,7 +175,7 @@ app.get('/testpaypalpayout/:email/:money', async (req, res) => {
         return res.status(400).send({ message: result })
     return res.status(200).send({ message: result.error })
 
-})
+})*/
 app.get('/test/addMoney/:money1/:money2', async (req, res) => {
     let addResult = moneyHandle.addMoney(req.params.money1, req.params.money2)
     let subtractResult = moneyHandle.subtractionMoney(req.params.money1, req.params.money2)

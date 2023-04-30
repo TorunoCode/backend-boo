@@ -10,7 +10,7 @@ const app = express.Router();
 app.get("/", function (req, res) {
     res.send("comment feedback post");
 });
-app.post("/add_comments", async (request, response) => {
+/*app.post("/add_comments", async (request, response) => {
     const comments = new commentsModel(request.body);
 
     try {
@@ -19,7 +19,7 @@ app.post("/add_comments", async (request, response) => {
     } catch (error) {
         response.status(500).send(error);
     }
-});
+});*/
 app.post("/delete_allfeedback", async (request, response) => {
 
     try {
@@ -30,7 +30,7 @@ app.post("/delete_allfeedback", async (request, response) => {
         response.status(500).send(error);
     }
 });
-app.post("/delete_comments", async (request, response) => {
+/*app.post("/delete_comments", async (request, response) => {
     const comments = new commentsModel(request.body);
 
     try {
@@ -39,7 +39,7 @@ app.post("/delete_comments", async (request, response) => {
     } catch (error) {
         response.status(500).send(error);
     }
-});
+});*/
 app.post("/add_feedback", async (request, response) => {
     const feedback = new feedbacksModel(request.body);
     try {
@@ -69,6 +69,7 @@ app.post("/delete_feedback", async (request, response) => {
         response.status(500).send(error);
     }
 });
+/*
 app.post("/delete_responseToCommentsModel", async (request, response) => {
     const feedbacks = new responseToCommentsModel(request.body);
 
@@ -111,7 +112,7 @@ app.get("/comments/:movieId/:page", async (request, response) => {
     } catch (error) {
         response.status(500).send(error);
     }
-});
+});*/
 app.get("/feedbacks/:movieId/:page", async (request, response) => {
     const movieId = request.params.movieId;
     const page = request.params.page;
@@ -173,6 +174,7 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
         }*/
     response.status(200).send(result);
 });
+/*
 app.get("/sum_feedbacks/:movieId", async (request, response) => {
     const movieId = request.params.movieId;
     const count = await feedbacksModel.count({ movieId: movieId });
@@ -241,5 +243,5 @@ app.get("/getUserNamePic/:userId", async (request, response) => {
         response.status(500).send(error);
     }
 });
-
+*/
 export default app;
