@@ -19,61 +19,62 @@ import mongoose from 'mongoose';
 //         ref:"User"
 //     }
 // });
-const movieSchema =  new mongoose.Schema({
-    name:{
+const movieSchema = new mongoose.Schema({
+    name: {
         type: String,
-        required:true
+        required: true
     },
-    describe:{
-        type:String,
-        require:true
-    },
-    genre:{
-        type:String,
-        require:true
-    },
-    runningTime:{
-        type:Number,
-        require:true
-    },
-    language:{
-        type:String,
-        require:true
-    },
-    image:{
+    describe: {
         type: String,
-        require:true
+        require: true
     },
-    linkReview:{
-        type:String,
-        require:true
+    genre: {
+        type: String,
+        require: true
     },
-    rate:{
+    runningTime: {
         type: Number,
-        require:true
+        require: true
     },
-    cast:{
+    language: {
         type: String,
-        require:true
+        require: true
     },
-    director:{
+    image: {
         type: String,
-        require:true
+        require: true
     },
-    price:{
+    linkReview: {
+        type: String,
+        require: true
+    },
+    rate: {
         type: Number,
-        require:true
+        require: true,
+        default: 0
     },
-    releaseTime:{
-        type:Date
+    cast: {
+        type: String,
+        require: true
     },
-    isActive:{
-        type:Number,
-        require:1
+    director: {
+        type: String,
+        require: true
+    },
+    price: {
+        type: Number,
+        require: true
+    },
+    releaseTime: {
+        type: Date
+    },
+    isActive: {
+        type: Number,
+        require: 1
     }
 
-},{
-    timestamps:true
+}, {
+    timestamps: true
 });
-const Movie =  mongoose.model('Movie',movieSchema);
+const Movie = mongoose.model('Movie', movieSchema);
 export default Movie;

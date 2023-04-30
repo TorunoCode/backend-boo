@@ -5,8 +5,6 @@ import feedbacksModel from "../models/feedbacksModel.js";
 import UserModal from '../models/userModel.js';
 import MovieModel from '../models/movieModel.js';
 
-import RatingModel from '../models/feedbacksModel.js';
-import feedbackModel from '../models/feedbacksModel.js';
 
 const app = express.Router();
 app.get("/", function (req, res) {
@@ -44,14 +42,18 @@ app.post("/delete_comments", async (request, response) => {
 });
 app.post("/add_feedback", async (request, response) => {
     const feedback = new feedbacksModel(request.body);
-    const { userId, title, detail, movieId, rate } = request.body;
     try {
-        const count = await feedbacksModel.count({ userId: userId, movieId: movieId });
+        const count = await feedbacksModel.count({ userId: feedback.userId, movieId: feedback.movieId });
         var numAdd = parseInt(count) + 1;
         if (false) {
             return response.status(400).json({ data: null, message: "User already feedback " + numAdd });
         }
         await feedback.save();
+        var data = await feedbacksModel.aggregate([{
+            $match: { movieId: feedback.movieId }
+        }, { $group: { _id: "$movieId", avg_val: { $avg: "$rate" } } }]);
+        console.log(data)
+        await MovieModel.findByIdAndUpdate(data[0]._id, { $set: { rate: Math.round(data[0].avg_val * 10) / 10 } });
         response.send({ message: 'done add feedback, user have feedback ' + numAdd });
     } catch (error) {
         response.status(500).send(error);
@@ -161,24 +163,15 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
         result.push(eachUser);
     }
     result.push(allCommentsOfMovie);
-    /*
-    var data = await RatingModel.aggregate([{ $group: { _id: "$movieId", avg_val: { $avg: "$rate" } } }]);
-    data.map(async (a) => {
-        await MovieModel.findByIdAndUpdate(a._id, { $set: { rate: Math.round(a.avg_val * 10) / 10 } });
-        a.avg_val = Math.round(a.avg_val * 10) / 10;
-    });
-    const movie = await MovieModel.find({});
-    //const rating = await feedbackModel.distinct('movieId',{});
 
-    for (let item of movie) {
-        const data = await feedbackModel.findOne({ movieId: item._id.toString() });
-        if (data == null) { await MovieModel.findById(item._id.toString()).updateOne({ $set: { rate: 0 } }); }
-    }*/
-    try {
-        response.send(result);
-    } catch (error) {
-        response.status(500).send(error);
-    }
+    /*const movie = await MovieModel.find({});
+    const rating = await feedbackModel.distinct('movieId',{});
+    
+        for (let item of movie) {
+            const data = await feedbackModel.findOne({ movieId: item._id.toString() });
+            if (data == null) { await MovieModel.findById(item._id.toString()).updateOne({ $set: { rate: 0 } }); }
+        }*/
+    response.status(200).send(result);
 });
 app.get("/sum_feedbacks/:movieId", async (request, response) => {
     const movieId = request.params.movieId;
