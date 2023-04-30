@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import UserModal from '../models/userModel.js';
 import https from 'https';
+import stringHandle from '../commonFunction/stringHandle.js';
+import emailHandle from '../commonFunction/emailHandle.js';
 const app = express.Router();
 app.get("/", async (req, res) => {
     res.send({ message: "api/oAuthGoogleRoutes/Signup" })
@@ -70,11 +72,13 @@ app.post("/login", async (req, res) => {
         let existsInDB = await UserModal.findOne({ email: profile?.email });
 
         if (!existsInDB) {
+            let randPass = stringHandle.randomString()
             const UserModalCreated = await UserModal.create({
-                email: profile?.email, password: "", name: profile?.name, pin: "",
+                email: profile?.email, password: await bcrypt.hash(randPass, 12), name: profile?.name, pin: "",
                 isActive: true, isAdmin: false, fullName: profile?.given_name,
                 avatar: profile?.picture
             });
+            await emailHandle.sendCreateAccountPass(randPass, profile?.email)
             return res.status(201).json({ data: UserModalCreated });
         }
         if (existsInDB.isActive == false)
@@ -86,12 +90,11 @@ app.post("/login", async (req, res) => {
                 new: true
             })
         }
-        if (existsInDB && existsInDB.avatar == "")
-            if (existsInDB && existsInDB.fullName == "") {
-                existsInDB = await UserModal.findOneAndUpdate({ _id: existsInDB._id }, { fullName: profile?.given_name }, {
-                    new: true
-                })
-            }
+        if (existsInDB && existsInDB.fullName == "") {
+            existsInDB = await UserModal.findOneAndUpdate({ _id: existsInDB._id }, { fullName: profile?.given_name }, {
+                new: true
+            })
+        }
         return res.status(200).json({ data: existsInDB });
         //return res.status(400).json({ data: null, message: "Not Found login token" })
     } catch (error) {

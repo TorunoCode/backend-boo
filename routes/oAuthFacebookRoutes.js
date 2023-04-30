@@ -2,6 +2,8 @@ import queryString from 'query-string';
 import https from 'https';
 import express from 'express';
 import UserModal from '../models/userModel.js';
+import stringHandle from '../commonFunction/stringHandle.js';
+import emailHandle from '../commonFunction/emailHandle.js';
 const app = express.Router();
 app.post("/login", async (req, res) => {
     try {
@@ -50,11 +52,13 @@ app.post("/login", async (req, res) => {
                 let existsInDB = await UserModal.findOne({ email: profile?.email });
 
                 if (!existsInDB) {
+                    let randPass = stringHandle.randomString()
                     const UserModalCreated = await UserModal.create({
-                        email: profile?.email, password: "", name: profile?.name, pin: "",
+                        email: profile?.email, password: await bcrypt.hash(randPass, 12), name: profile?.name, pin: "",
                         isActive: true, isAdmin: false, fullName: profile?.name,
                         avatar: profile?.picture
                     });
+                    await emailHandle.sendCreateAccountPass(randPass, profile?.email)
                     return res.status(201).json({ data: UserModalCreated });
                 }
                 if (existsInDB.isActive == false)
