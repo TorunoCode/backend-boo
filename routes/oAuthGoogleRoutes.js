@@ -5,7 +5,9 @@ import UserModal from '../models/userModel.js';
 import https from 'https';
 import stringHandle from '../commonFunction/stringHandle.js';
 import emailHandle from '../commonFunction/emailHandle.js';
+import getDataHandle from '../commonFunction/getDataHandle.js';
 import bcrypt from 'bcryptjs';
+import user from '../routeFunction/user.js';
 const app = express.Router();
 app.get("/", async (req, res) => {
     res.send({ message: "api/oAuthGoogleRoutes/Signup" })
@@ -26,30 +28,10 @@ async function verifyGoogleToken(token) {
     }
 }
 async function verifyGoogleAccessToken(token) {
-    const options = {
-        hostname: 'www.googleapis.com',
-        port: 443,
-        path: '/oauth2/v3/userinfo?alt=json&access_token=' + token,
-        method: 'GET',
-    };
-    let dataToUse = await new Promise((resolve, reject) => {
-        https.get(options, (resp) => {
-            let data = '';
-
-            // A chunk of data has been received.
-            resp.on('data', (chunk) => {
-                data += chunk;
-            });
-
-            // The whole response has been received. Print out the result.
-            resp.on('end', () => {
-                resolve(JSON.parse(data));
-            });
-
-        }).on("error", (err) => {
-            reject(err)
-        });
-    });
+    let dataToUse =
+        getDataHandle.getJsonData
+            ('www.googleapis.com', 443,
+                '/oauth2/v3/userinfo?alt=json&access_token=' + token, 'GET')
     return dataToUse;
 }
 
@@ -70,7 +52,7 @@ app.post("/login", async (req, res) => {
             }
             profile = verificationResponse
         }
-        let existsInDB = await UserModal.findOne({ email: profile?.email });
+        /*let existsInDB = await UserModal.findOne({ email: profile?.email });
 
         if (!existsInDB) {
             let randPass = stringHandle.randomString()
@@ -95,7 +77,13 @@ app.post("/login", async (req, res) => {
             existsInDB = await UserModal.findOneAndUpdate({ _id: existsInDB._id }, { fullName: profile?.given_name }, {
                 new: true
             })
+        }*/
+        let existsInDB = user.updateUserInfoAfterVerifyLogin(profile?.email, profile?.name, profile?.given_name, profile?.picture)
+        if (!existsInDB.isArray()) {
+            return res.status(404).send({ data: null, message: existsInDB.message })
         }
+        if (existsInDB.isAdmin) { req.session.isAdmin = true; }
+        req.session.isAuth = true;
         return res.status(200).json({ data: existsInDB });
         //return res.status(400).json({ data: null, message: "Not Found login token" })
     } catch (error) {

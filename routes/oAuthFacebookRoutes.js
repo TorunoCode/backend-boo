@@ -4,8 +4,12 @@ import express from 'express';
 import UserModal from '../models/userModel.js';
 import stringHandle from '../commonFunction/stringHandle.js';
 import emailHandle from '../commonFunction/emailHandle.js';
+import getDataHandle from '../commonFunction/getDataHandle.js';
 import bcrypt from 'bcryptjs';
 const app = express.Router();
+//https://graph.facebook.com/debug_token?
+//input_token = EAAIpHBi8doYBAPqZCZCAJCgNKEgoVRBbSghsusagJZCZA5D9y0k95aguLkLHfWtjV7QcVJSeJzIYn2IhpajRfrfaaVbMPCinLHCEjyyI4XTZAZBwlKDlyL16BvKs4SyAUC5CEvRS4KRWGCRaGuiFuB6n7cAXLm6CjBbA6csQuj3ZBBxqYtcXSAyeHv8zwrBoj7GYslaDQfOZC1t0dLLMhxezpS49lGrC4KJcwom8MyxyrZB1zCGHTUZCFm 
+//& access_token=608150604248710 | oJo9VAaZ1vktIKbWNS0epeLeEyg
 app.post("/login", async (req, res) => {
     try {
         console.log("login here")
@@ -15,6 +19,7 @@ app.post("/login", async (req, res) => {
             //"https://graph.facebook.com/v16.0/me?fields=id%2Cname%2Cemail&access_token="
             const urlSendToFacebook = 'https://graph.facebook.com/v16.0/' + req.body.id + '?access_token=' + req.body.accessToken + '&fields=name,email,picture';
             //https.globalAgent.options.secureProtocol = 'SSLv3_method';
+            // let dataToUse = getDataHandle.getJsonData('backend-boo.vercel.app', null, '/api/paypal/test2/mail', 'GET')
             const options = {
                 hostname: 'backend-boo.vercel.app',
                 path: '/api/paypal/test2/mail',
