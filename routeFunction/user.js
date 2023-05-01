@@ -1,3 +1,4 @@
+import UserModal from '../models/userModel.js';
 async function updateUserInfoAfterVerifyLogin(email, name, given_name, picture) {
     let existsInDB = await UserModal.findOne({ email: email });
     if (!existsInDB) {
