@@ -373,7 +373,7 @@ app.get('/success/:buyer_id', async (req, res) => {
   new Promise(() => {
     paypal.payment.get(paymentId, function (error, payment) {
       if (error) {
-        subHtml = subHtml.replace('responseBody', "Co loi lay hoa don thanh toan")
+        subHtml = subHtml.replace('responseBody', "Can't get bill")
         res.status(400);
         res.write(subHtml);
         res.end();
@@ -395,7 +395,7 @@ app.get('/success/:buyer_id', async (req, res) => {
             }]
           };
           if (payment.state == "approved") {
-            subHtml = subHtml.replace('responseBody', "Ban da tra cho hoa don nay")
+            subHtml = subHtml.replace('responseBody', "Bill payed before")
             res.status(400);
             res.write(subHtml);
             res.end();
@@ -406,7 +406,7 @@ app.get('/success/:buyer_id', async (req, res) => {
           paypal.payment.execute(paymentId, execute_payment_json, async function (error, payment) {
             //When error occurs when due to non-existent transaction, throw an error else log the transaction details in the console then send a Success string reposponse to the user.
             if (error) {
-              subHtml = subHtml.replace('responseBody', "co loi giao dich")
+              subHtml = subHtml.replace('responseBody', "Error paypal server")
               res.status(400);
               res.write(subHtml);
               res.end();
@@ -521,7 +521,7 @@ app.get('/success/:buyer_id', async (req, res) => {
                 await showSeatModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
                 await orderModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
                 subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt3.html'), 'utf8')
-                subHtml = subHtml.replace('responseBody', "Da Thanh toan va gui xac nhan qua mail xong")
+                subHtml = subHtml.replace('responseBody', "Done paying and sended invoice to email")
                 res.status(400);
                 res.write(subHtml);
                 res.end();

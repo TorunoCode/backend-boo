@@ -1,7 +1,7 @@
 import emailProvider from '../config/nodeMailer.js';
 import fileHandle from './fileHandle.js';
 async function sendOTPMail(OTP, mail) {
-    var subHtml = fileHandle.template4Notification("Ma OTP cua ban la: " + OTP)
+    var subHtml = fileHandle.template4Notification("Your OTP: " + OTP)
     var mailOptions = {
         from: 'backendtlcn@gmail.com',
         to: mail,
@@ -20,7 +20,7 @@ async function sendOTPMail(OTP, mail) {
     return result
 }
 async function sendCreateAccountPass(password, mail) {
-    var subHtml = fileHandle.template4Notification("Tai khoan duoc tao voi mat khau: " + password)
+    var subHtml = fileHandle.template4Notification("Account created with password: " + password)
     var mailOptions = {
         from: 'backendtlcn@gmail.com',
         to: mail,
