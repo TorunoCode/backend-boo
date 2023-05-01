@@ -140,8 +140,7 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
             userAvartar = null
         }
         else {
-            if (nameUser['fullName'] == null) userFullName = ""
-            else userFullName = nameUser['fullName']
+            userFullName = nameUser['fullName']
             userName = nameUser['name']
             userAvartar = nameUser['avatar']
         }
