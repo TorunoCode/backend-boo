@@ -2,6 +2,7 @@ import express from 'express';
 import commentsModel from "../models/commentsModel.js";
 import responseToCommentsModel from "../models/responseToCommentsModel.js";
 import feedbacksModel from "../models/feedbacksModel.js";
+import timeHandle from '../commonFunction/timeHandle.js';
 import UserModal from '../models/userModel.js';
 import MovieModel from '../models/movieModel.js';
 
@@ -125,14 +126,12 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
         let nameUser = await UserModal.findById(element['userId']);
         console.log(nameUser)
         const eachUser = {}
-        var updatedAt = +element.updatedAt.getHours() + ':' + element.updatedAt.getMinutes() + ':' + element.updatedAt.getSeconds() + ' - ' + element.updatedAt.getDate() + '/' + (element.updatedAt.getMonth() + 1) + '/' + element.updatedAt.getFullYear()
-        var createdAt = +element.createdAt.getHours() + ':' + element.createdAt.getMinutes() + ':' + element.createdAt.getSeconds() + ' - ' + element.createdAt.getDate() + '/' + (element.createdAt.getMonth() + 1) + '/' + element.createdAt.getFullYear()
-        let updatedAtTimeElapsed = (Date.now() - element.updatedAt);
-        let createdAtTimeElapsed = Date.now() - element.createdAt;
-        updatedAtTimeElapsed = updatedAtTimeElapsed / 1000;
-        createdAtTimeElapsed = createdAtTimeElapsed / 1000;
-        let updatedAtTimeElapsedModded = Math.floor(Number(updatedAtTimeElapsed) / 3600 / 24) + 'day(s) ' + Math.floor(Number(updatedAtTimeElapsed) / 3600 % 24) + 'h ' + Math.floor(Number(updatedAtTimeElapsed) % 3600 / 60) + 'm ' + Math.floor(Number(updatedAtTimeElapsed) % 3600 % 60) + 's';
-        let createdAtTimeElapsedModded = Math.floor(Number(createdAtTimeElapsed) / 3600 / 24) + 'day(s) ' + Math.floor(Number(createdAtTimeElapsed) / 3600 % 24) + 'h ' + Math.floor(Number(createdAtTimeElapsed) % 3600 / 60) + 'm ' + Math.floor(Number(createdAtTimeElapsed) % 3600 % 60) + 's';
+        var updatedAt = timeHandle.formatTime(element.updatedAt)
+        var createdAt = timeHandle.formatTime(element.createdAt)
+        let updatedAtTimeElapsed = timeHandle.timeElapsedSecond(element.updatedAt)
+        let createdAtTimeElapsed = timeHandle.timeElapsedSecond(element.createdAt)
+        let updatedAtTimeElapsedModded = timeHandle.timeElapsedDayRemand(element.updatedAt) + 'day(s) ' + timeHandle.timeElapsedHourRemand(element.updatedAt) + 'h ' + timeHandle.timeElapsedMinuteRemand(element.updatedAt) + 'm ' + timeHandle.timeElapsedSecondRemand(element.updatedAt) + 's';
+        let createdAtTimeElapsedModded = timeHandle.timeElapsedDayRemand(element.createdAt) + 'day(s) ' + timeHandle.timeElapsedHourRemand(element.createdAt) + 'h ' + timeHandle.timeElapsedMinuteRemand(element.createdAt) + 'm ' + timeHandle.timeElapsedSecondRemand(element.createdAt) + 's';
         console.log(updatedAt + '///' + element.updatedAt.getMonth() + '///' + element.updatedAt);
         let userName, userFullName, userAvartar;
         if (!nameUser) {
@@ -146,19 +145,18 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
             userName = nameUser['name']
             userAvartar = nameUser['avatar']
         }
-        if (nameUser['fullName'] == null) nameUser['fullName'] = "";
         Object.assign(eachUser, {
             '_id': element.id, 'userId': element.userId, 'title': element.title,
             'detail': element.detail, 'movieId': element.movieId, 'rate': element.rate,
             'createdAt': createdAt, 'updatedAt': updatedAt, '__v': element.__v,
-            'userName': nameUser['name'],
+            'userName': userName,
             'orgirnUpdatedAt': element.updatedAt, 'orgirnCreatedAt': element.createdAt,
             'updatedAtTimeElapsed': updatedAtTimeElapsed,
             'createdAtTimeElapsed': createdAtTimeElapsed,
             'updatedAtTimeElapsedModded': updatedAtTimeElapsedModded,
             'createdAtTimeElapsedModded': createdAtTimeElapsedModded,
-            'fullName': nameUser['fullName'],
-            'avatar': nameUser['avatar']
+            'fullName': userFullName,
+            'avatar': userAvartar
         })
         console.log(nameUser['avatar'] + '/' + nameUser['fullName'])
         result.push(eachUser);

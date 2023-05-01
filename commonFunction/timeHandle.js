@@ -60,9 +60,39 @@ function formatDate_YearMonthDay(time) {
         year = time.getFullYear();
     return year + "-" + month + "-" + day;
 }
+function formatTime(time) {
+    let result = time.getHours() + ':' + time.getMinutes() + ':' + time.getSeconds() + ' - ' + time.getDate() + '/' + (time.getMonth() + 1) + '/' + time.getFullYear()
+    return result;
+}
+function timeElapsedSecond(time) {
+    //số giây đã qua
+    let result = (Date.now() - time) / 1000
+    return Math.floor(result);
+}
+function timeElapsedSecondRemand(time) {
+    //số giây lẻ còn lại sau khi đếm số phút đã qua( dưới 1 phút)
+    let result = (timeElapsedSecond(time)) % 3600 % 60
+    return Math.floor(result);
+}
+function timeElapsedMinuteRemand(time) {
+    //số phút lẻ còn lại sau khi đếm số giờ đã qua( dưới 1 giờ)
+    let result = (timeElapsedSecond(time)) % 3600 / 60
+    return Math.floor(result);
+}
+function timeElapsedHourRemand(time) {
+    //số giờ lẻ còn lại sau khi đếm số ngày đã qua(dưới 1 ngày)
+    let result = (timeElapsedSecond(time)) / 3600 % 24
+    return Math.floor(result);
+}
+function timeElapsedDayRemand(time) {
+    //số ngày đã qua
+    let result = (timeElapsedSecond(time)) / 3600 / 24
+    return Math.floor(result);
+}
 export default {
     checkTimeDifferenceMinute, getYesterdayAt0, getFirstDayOfMonth, getFirstDayOfLastMonth,
     getFirstDayOfNextYear, getFirstDayOfThisYear, getTodayAt0, getTomorrorAt0,
     getFirstDayOfNextMonth, getFirstDayOfWeek, getFirstDayOfNextWeek, checkDateIsTodayOrNotYetOrPassedTime,
-    formatDate_YearMonthDay
+    formatDate_YearMonthDay, formatTime, timeElapsedSecond,
+    timeElapsedDayRemand, timeElapsedHourRemand, timeElapsedMinuteRemand, timeElapsedSecondRemand
 }
