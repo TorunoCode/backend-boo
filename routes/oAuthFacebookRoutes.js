@@ -65,10 +65,10 @@ app.post("/login", async (req, res) => {
                         avatar: profile?.picture
                     });
                     await emailHandle.sendCreateAccountPass(randPass, profile?.email)
-                    return res.status(201).json({ data: UserModalCreated });
+                    return res.status(201).send({ data: UserModalCreated });
                 }
                 if (existsInDB.isActive == false)
-                    return res.status(404).json({ data: null, message: "User is still block" });
+                    return res.status(404).send({ data: null, message: "User is still block" });
                 if (existsInDB.isAdmin) { req.session.isAdmin = true; }
                 req.session.isAuth = true;
                 if (existsInDB && existsInDB.avatar == '') {
@@ -81,18 +81,18 @@ app.post("/login", async (req, res) => {
                         new: true
                     })
                 }
-                return res.status(200).json({ data: existsInDB });
+                return res.status(200).send({ data: existsInDB });
             }
             else {
                 console.log(dataToUse.name)
                 console.log(dataToUse.picture.data.url)
                 console.log(dataToUse)
-                return res.status(400).json({ data: null, message: "your token incorrect or you don't public your email" })
+                return res.status(400).send({ data: null, message: "your token incorrect or you don't public your email" })
             }
         }
-        return res.status(400).json({ data: null, message: "Not Found login token" })
+        return res.status(400).send({ data: null, message: "Not Found login token" })
     } catch (error) {
-        res.status(500).json({
+        res.status(500).send({
             message: error?.message || error,
         });
     }

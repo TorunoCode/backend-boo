@@ -149,6 +149,9 @@ app.post('/pay', async (req, res) => {
         return res.status(400).send({ message: "Wrong password" })
     }
     let bill = await billsModel.find({ idCustomer: user.id, status: "-1" });
+    if (!bill) {
+        return res.status(400).send({ message: "No bill to pay" })
+    }
     let total = bill[0].totalMoney
     total = parseFloat(total)
     let userMoney = parseFloat(user.money)

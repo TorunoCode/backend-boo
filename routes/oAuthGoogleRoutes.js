@@ -52,32 +52,6 @@ app.post("/login", async (req, res) => {
             }
             profile = verificationResponse
         }
-        /*let existsInDB = await UserModal.findOne({ email: profile?.email });
-
-        if (!existsInDB) {
-            let randPass = stringHandle.randomString()
-            const UserModalCreated = await UserModal.create({
-                email: profile?.email, password: await bcrypt.hash(randPass, 12), name: profile?.name, pin: "",
-                isActive: true, isAdmin: false, fullName: profile?.given_name,
-                avatar: profile?.picture
-            });
-            await emailHandle.sendCreateAccountPass(randPass, profile?.email)
-            return res.status(201).json({ data: UserModalCreated });
-        }
-        if (existsInDB.isActive == false)
-            return res.status(404).json({ data: null, message: "User is still block" });
-        if (existsInDB.isAdmin) { req.session.isAdmin = true; }
-        req.session.isAuth = true;
-        if (existsInDB && existsInDB.avatar == "") {
-            existsInDB = await UserModal.findOneAndUpdate({ _id: existsInDB._id }, { avatar: profile?.picture }, {
-                new: true
-            })
-        }
-        if (existsInDB && existsInDB.fullName == "") {
-            existsInDB = await UserModal.findOneAndUpdate({ _id: existsInDB._id }, { fullName: profile?.given_name }, {
-                new: true
-            })
-        }*/
         let existsInDB = await user.updateUserInfoAfterVerifyLogin(profile?.email, profile?.name, profile?.given_name, profile?.picture)
         if (existsInDB.message) {
             return res.status(404).send({ data: null, message: existsInDB.message })
