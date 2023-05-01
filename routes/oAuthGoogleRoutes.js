@@ -78,8 +78,8 @@ app.post("/login", async (req, res) => {
                 new: true
             })
         }*/
-        let existsInDB = user.updateUserInfoAfterVerifyLogin(profile?.email, profile?.name, profile?.given_name, profile?.picture)
-        if (!existsInDB.isArray()) {
+        let existsInDB = await user.updateUserInfoAfterVerifyLogin(profile?.email, profile?.name, profile?.given_name, profile?.picture)
+        if (existsInDB.message) {
             return res.status(404).send({ data: null, message: existsInDB.message })
         }
         if (existsInDB.isAdmin) { req.session.isAdmin = true; }

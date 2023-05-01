@@ -3,6 +3,7 @@ import stringHandle from '../commonFunction/stringHandle.js';
 import bcrypt from 'bcryptjs'
 async function updateUserInfoAfterVerifyLogin(email, name, given_name, picture) {
     let existsInDB = await UserModal.findOne({ email: email });
+    console.log(existsInDB)
     if (!existsInDB) {
         let randPass = stringHandle.randomString()
         const UserModalCreated = await UserModal.create({
@@ -26,6 +27,8 @@ async function updateUserInfoAfterVerifyLogin(email, name, given_name, picture) 
             new: true
         })
     }
+    console.log("here")
+    console.log(existsInDB)
     return existsInDB;
 }
 export default { updateUserInfoAfterVerifyLogin }
