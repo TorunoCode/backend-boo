@@ -135,14 +135,19 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
         console.log(updatedAt + '///' + element.updatedAt.getMonth() + '///' + element.updatedAt);
         let userName, userFullName, userAvartar;
         if (!nameUser) {
-            userName = 'User delted, delete user id:' + element['userId']
-            userFullName = 'User delted, delete user id:' + element['userId']
+            userName = 'Not found user, id:' + element['userId']
+            userFullName = 'Not found user, id:' + element['userId']
             userAvartar = null
         }
         else {
             userFullName = nameUser['fullName']
             userName = nameUser['name']
-            userAvartar = nameUser['avatar']
+            try {
+                new URL(nameUser['avatar'])
+                userAvartar = nameUser['avatar']
+            } catch {
+                userAvartar = null
+            }
         }
         Object.assign(eachUser, {
             '_id': element.id, 'userId': element.userId, 'title': element.title,
