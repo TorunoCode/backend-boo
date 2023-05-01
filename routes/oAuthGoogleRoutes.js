@@ -40,11 +40,11 @@ app.post("/login", async (req, res) => {
     try {
         let profile, verificationResponse;
         if (req.body.tokenId) {
-            verificationResponse = await verifyGoogleToken(req.body.tokenId);
+            verificationResponse = verifyGoogleToken(req.body.tokenId);
             profile = verificationResponse?.payload;
         }
         if (profile == null) {
-            verificationResponse = await verifyGoogleAccessToken(req.body.access_token);
+            verificationResponse = verifyGoogleAccessToken(req.body.access_token);
             if (verificationResponse.error) {
                 return res.status(400).json({
                     message: verificationResponse.error,
@@ -52,7 +52,7 @@ app.post("/login", async (req, res) => {
             }
             profile = verificationResponse
         }
-        let existsInDB = await user.updateUserInfoAfterVerifyLogin(profile?.email, profile?.name, profile?.given_name, profile?.picture)
+        let existsInDB = user.updateUserInfoAfterVerifyLogin(profile?.email, profile?.name, profile?.given_name, profile?.picture)
         if (existsInDB.message) {
             return res.status(404).send({ data: null, message: existsInDB.message })
         }
