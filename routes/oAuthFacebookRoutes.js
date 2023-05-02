@@ -38,7 +38,7 @@ app.post("/login", async (req, res) => {
             return res.status(400).send({ data: null, message: "Not Found login token" })
         let verifyFacebookToken = await verifyFacebookAccessToken(req.body.accessToken)
         if (verifyFacebookToken.error) {
-            verifyFacebookToken = await verifyFacebookAccessToken(req.body.accessToken)
+            verifyFacebookToken = await verifyFacebookAccessToken2(req.body.accessToken)
             if (verifyFacebookToken.error)
                 return res.status(400).json({
                     message: verifyFacebookToken.error.message,
