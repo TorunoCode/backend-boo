@@ -30,7 +30,7 @@ async function getJsonData(hostname, port, path, method) {
 }
 async function getJsonDataUrl(url) {
     let dataToUse = await new Promise((resolve, reject) => {
-        https.get(urlSendToFacebook, (resp) => {
+        https.get(url, (resp) => {
             let data = '';
 
             // A chunk of data has been received.
