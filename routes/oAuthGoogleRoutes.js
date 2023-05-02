@@ -18,16 +18,10 @@ const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 let DB = [];
 
 async function verifyGoogleToken(token) {
-    try {
-        console.log(GOOGLE_CLIENT_ID)
-        const ticket = await client.verifyIdToken({
-            idToken: token,
-            audience: GOOGLE_CLIENT_ID,
-        });
-        return { payload: ticket.getPayload() };
-    } catch (error) {
-        return { error: "Invalid user detected. Please try again" };
-    }
+    let dataToUse =
+        getDataHandle.getJsonDataUrl
+            ('www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + token)
+    return dataToUse;
 }
 async function verifyGoogleAccessToken(token) {
     let dataToUse =
@@ -42,12 +36,15 @@ app.post("/login", async (req, res) => {
     try {
         console.log("loginRoute")
         let profile, verificationResponse;
-        // if (req.body.access_token) {
-        //     verificationResponse = await verifyGoogleToken('106362936784225036147');
-        //     profile = verificationResponse?.payload;
-        //     console.log(verificationResponse)
-        // }
-        // console.log(req.body.access_token)
+        if (req.body.access_token) {
+            verificationResponse = await verifyGoogleToken(req.body.access_token);
+            if (verificationResponse.error) {
+                return res.status(400).json({
+                    message: verificationResponse.error,
+                });
+            }
+        }
+        console.log(req.body.access_token)
         if (req.body.access_token) {
             verificationResponse = await verifyGoogleAccessToken(req.body.access_token);
             if (verificationResponse.error) {
