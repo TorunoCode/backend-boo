@@ -11,6 +11,11 @@ const app = express.Router();
 app.get("/", function (req, res) {
     res.send("comment feedback post");
 });
+app.get("/testDeleteUser/:id", async function (req, res) {
+    await UserModal.findByIdAndDelete(req.params.id)
+    res.send("done")
+    return
+});
 /*app.post("/add_comments", async (request, response) => {
     const comments = new commentsModel(request.body);
 
