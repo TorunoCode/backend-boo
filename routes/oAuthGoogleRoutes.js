@@ -35,7 +35,7 @@ async function verifyGoogleToken(token) {
   "access_type": "online"
 }
 */
-async function verifyGoogleAccessToken(token) {
+async function userInfoFromGoogleAccessToken(token) {
     let dataToUse =
         getDataHandle.getJsonData
             ('www.googleapis.com', 443,
@@ -66,16 +66,14 @@ app.post("/login", async (req, res) => {
             });
         }
         console.log(req.body.access_token)
-        if (req.body.access_token) {
-            verificationResponse = await verifyGoogleAccessToken(req.body.access_token);
-            if (verificationResponse.error) {
-                return res.status(400).json({
-                    message: verificationResponse.error,
-                });
-            }
-            profile = verificationResponse
-            console.log(profile)
+        verificationResponse = await userInfoFromGoogleAccessToken(req.body.access_token);
+        if (verificationResponse.error) {
+            return res.status(400).json({
+                message: verificationResponse.error,
+            });
         }
+        profile = verificationResponse
+        console.log(profile)
         let existsInDB = await user.updateUserInfoAfterVerifyLogin(profile?.email, profile?.name, profile?.given_name, profile?.picture)
         if (existsInDB.message) {
             return res.status(404).send({ data: null, message: existsInDB.message })
