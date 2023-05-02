@@ -12,12 +12,14 @@ const app = express.Router();
 app.get("/", async (req, res) => {
     res.send({ message: "api/oAuthGoogleRoutes/Signup" })
 })
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+//const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
+const GOOGLE_CLIENT_ID = '1049176429942-4243i6lqlhfu6cdcbu4lk9aitn2tijj6.apps.googleusercontent.com'
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 let DB = [];
 
 async function verifyGoogleToken(token) {
     try {
+        console.log(GOOGLE_CLIENT_ID)
         const ticket = await client.verifyIdToken({
             idToken: token,
             audience: GOOGLE_CLIENT_ID,
@@ -38,12 +40,15 @@ async function verifyGoogleAccessToken(token) {
 // server.js
 app.post("/login", async (req, res) => {
     try {
+        console.log("loginRoute")
         let profile, verificationResponse;
-        if (req.body.tokenId) {
-            verificationResponse = await verifyGoogleToken(req.body.tokenId);
-            profile = verificationResponse?.payload;
-        }
-        /*if (profile == null) {
+        // if (req.body.access_token) {
+        //     verificationResponse = await verifyGoogleToken(req.body.tokenId);
+        //     profile = verificationResponse?.payload;
+        //     console.log(verificationResponse)
+        // }
+        console.log(req.body.access_token)
+        if (req.body.access_token) {
             verificationResponse = await verifyGoogleAccessToken(req.body.access_token);
             if (verificationResponse.error) {
                 return res.status(400).json({
@@ -51,7 +56,7 @@ app.post("/login", async (req, res) => {
                 });
             }
             profile = verificationResponse
-        }*/
+        }
         let existsInDB = await user.updateUserInfoAfterVerifyLogin(profile?.email, profile?.name, profile?.given_name, profile?.picture)
         if (existsInDB.message) {
             return res.status(404).send({ data: null, message: existsInDB.message })
