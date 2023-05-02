@@ -5,6 +5,7 @@ import UserModal from '../models/userModel.js';
 import stringHandle from '../commonFunction/stringHandle.js';
 import emailHandle from '../commonFunction/emailHandle.js';
 import getDataHandle from '../commonFunction/getDataHandle.js';
+import user from '../routeFunction/user.js';
 import bcrypt from 'bcryptjs';
 const app = express.Router();
 const FACEBOOK_APP_TOKEN = process.env.FACEBOOK_APP_TOKEN;
