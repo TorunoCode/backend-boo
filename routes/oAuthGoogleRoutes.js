@@ -23,6 +23,18 @@ async function verifyGoogleToken(token) {
             ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + token)
     return dataToUse;
 }
+/*expected response
+{
+  "issued_to": "1049176429942-4243i6lqlhfu6cdcbu4lk9aitn2tijj6.apps.googleusercontent.com",
+  "audience": "1049176429942-4243i6lqlhfu6cdcbu4lk9aitn2tijj6.apps.googleusercontent.com",
+  "user_id": "106362936784225036147",
+  "scope": "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid",
+  "expires_in": 2675,
+  "email": "19110026@student.hcmute.edu.vn",
+  "verified_email": true,
+  "access_type": "online"
+}
+*/
 async function verifyGoogleAccessToken(token) {
     let dataToUse =
         getDataHandle.getJsonData
