@@ -43,11 +43,11 @@ app.post("/login", async (req, res) => {
         console.log("loginRoute")
         let profile, verificationResponse;
         // if (req.body.access_token) {
-        //     verificationResponse = await verifyGoogleToken(req.body.tokenId);
+        //     verificationResponse = await verifyGoogleToken('106362936784225036147');
         //     profile = verificationResponse?.payload;
         //     console.log(verificationResponse)
         // }
-        console.log(req.body.access_token)
+        // console.log(req.body.access_token)
         if (req.body.access_token) {
             verificationResponse = await verifyGoogleAccessToken(req.body.access_token);
             if (verificationResponse.error) {
@@ -56,6 +56,7 @@ app.post("/login", async (req, res) => {
                 });
             }
             profile = verificationResponse
+            console.log(profile)
         }
         let existsInDB = await user.updateUserInfoAfterVerifyLogin(profile?.email, profile?.name, profile?.given_name, profile?.picture)
         if (existsInDB.message) {

@@ -21,10 +21,10 @@ app.post("/login", async (req, res) => {
         console.log(req.body.accessToken)
         console.log(req.body.id)
         if (req.body.accessToken || req.body.id) {
-            let checkToken = await verifyFacebookToken(req.body.accessToken)
-            if (checkToken.error) {
-                return res.status(400).send({ data: null, message: "Error token" + checkToken.error.message })
-            }
+            // let checkToken = await verifyFacebookToken(req.body.accessToken)
+            // if (checkToken.error) {
+            //     return res.status(400).send({ data: null, message: "Error token" + checkToken.error.message })
+            // }
             //"https://graph.facebook.com/v16.0/me?fields=id%2Cname%2Cemail&access_token="
             const urlSendToFacebook = 'https://graph.facebook.com/v16.0/' + req.body.id + '?access_token=' + req.body.accessToken + '&fields=name,email,picture';
             //https.globalAgent.options.secureProtocol = 'SSLv3_method';
