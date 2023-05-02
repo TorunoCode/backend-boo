@@ -48,23 +48,22 @@ app.post("/login", async (req, res) => {
     try {
         console.log("loginRoute")
         let profile, verificationResponse;
-        if (req.body.access_token) {
-            verificationResponse = await verifyGoogleToken(req.body.access_token);
-            if (verificationResponse.error) {
-                return res.status(400).json({
-                    message: verificationResponse.error,
-                });
-            }
-            else {
-                if (verificationResponse.issued_to != GOOGLE_CLIENT_ID)
-                    return res.status(400).send({ message: "Access token not from fixgo" })
-            }
-        }
-        else {
+        if (!req.body.access_token) {
             return res.status(400).json({
                 message: "Access token not found",
             });
         }
+        verificationResponse = await verifyGoogleToken(req.body.access_token);
+        if (verificationResponse.error) {
+            return res.status(400).json({
+                message: verificationResponse.error,
+            });
+        }
+        else {
+            if (verificationResponse.issued_to != GOOGLE_CLIENT_ID)
+                return res.status(400).send({ message: "Access token not from fixgo" })
+        }
+
         console.log(req.body.access_token)
         GoogleUserInfo = await userInfoFromGoogleAccessToken(req.body.access_token);
         if (GoogleUserInfo.error) {
