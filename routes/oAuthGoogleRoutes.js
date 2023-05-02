@@ -43,7 +43,7 @@ app.post("/login", async (req, res) => {
             verificationResponse = await verifyGoogleToken(req.body.tokenId);
             profile = verificationResponse?.payload;
         }
-        if (profile == null) {
+        /*if (profile == null) {
             verificationResponse = await verifyGoogleAccessToken(req.body.access_token);
             if (verificationResponse.error) {
                 return res.status(400).json({
@@ -51,7 +51,7 @@ app.post("/login", async (req, res) => {
                 });
             }
             profile = verificationResponse
-        }
+        }*/
         let existsInDB = await user.updateUserInfoAfterVerifyLogin(profile?.email, profile?.name, profile?.given_name, profile?.picture)
         if (existsInDB.message) {
             return res.status(404).send({ data: null, message: existsInDB.message })
