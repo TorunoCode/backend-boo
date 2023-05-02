@@ -36,14 +36,11 @@ app.post("/login", async (req, res) => {
         console.log(req.body.id)
         if (!req.body.accessToken || !req.body.id)
             return res.status(400).send({ data: null, message: "Not Found login token" })
-        let verifyFacebookToken = await verifyFacebookAccessToken(req.body.accessToken)
-        if (verifyFacebookToken.error) {
-            verifyFacebookToken = await verifyFacebookAccessToken2(req.body.accessToken)
-            if (verifyFacebookToken.error)
-                return res.status(400).json({
-                    message: verifyFacebookToken.error.message,
-                });
-        }
+        let verifyFacebookToken = await verifyFacebookAccessToken2(req.body.accessToken)
+        if (verifyFacebookToken.error)
+            return res.status(400).json({
+                message: verifyFacebookToken.error.message,
+            });
         const urlSendToFacebook = 'https://graph.facebook.com/v16.0/' + req.body.id + '?access_token=' + req.body.accessToken + '&fields=name,email,picture';
         let dataToUse = await getDataHandle.getJsonDataUrl(urlSendToFacebook)
         if (dataToUse.error) {
