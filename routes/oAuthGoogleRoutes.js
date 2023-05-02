@@ -43,6 +43,15 @@ app.post("/login", async (req, res) => {
                     message: verificationResponse.error,
                 });
             }
+            else {
+                if (verificationResponse.issued_to != GOOGLE_CLIENT_ID)
+                    return res.status(400).send({ message: "Access token not from fixgo" })
+            }
+        }
+        else {
+            return res.status(400).json({
+                message: "Access token not found",
+            });
         }
         console.log(req.body.access_token)
         if (req.body.access_token) {
