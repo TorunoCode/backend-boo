@@ -11,27 +11,6 @@ const app = express.Router();
 app.get("/", function (req, res) {
     res.send("comment feedback post");
 });
-function wait(millisec) {
-    var now = new Date;
-    while (new Date - now <= millisec);
-}
-app.get("/testParallel/:id", async (req, res) => {
-    console.log(req.params.id + " " + Date.now())
-    if (req.params.id == 3)
-        await new Promise((resolve) => {
-            wait(10000)
-            resolve()
-        })
-    res.send(req.params.id);
-    return
-});
-app.get("/testParallel2/:id", (req, res) => {
-    console.log(req.params.id + " " + Date.now())
-    if (req.params.id == 3)
-        wait(5000)
-    res.send(req.params.id);
-    wait(1000)
-});
 /*app.post("/add_comments", async (request, response) => {
     const comments = new commentsModel(request.body);
 

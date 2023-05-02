@@ -28,12 +28,12 @@ app.post("/login", async (req, res) => {
             //"https://graph.facebook.com/v16.0/me?fields=id%2Cname%2Cemail&access_token="
             const urlSendToFacebook = 'https://graph.facebook.com/v16.0/' + req.body.id + '?access_token=' + req.body.accessToken + '&fields=name,email,picture';
             //https.globalAgent.options.secureProtocol = 'SSLv3_method';
-            let dataToUse = getDataHandle.getJsonData('graph.facebook.com', null, '/v16.0/' + req.body.id + '?access_token=' + req.body.accessToken + '&fields=name,email,picture', 'GET')
+            //let dataToUse = getDataHandle.getJsonData('graph.facebook.com', null, '/v16.0/' + req.body.id + '?access_token=' + req.body.accessToken + '&fields=name,email,picture', 'GET')
             /*const options = {
                 hostname: 'backend-boo.vercel.app',
                 path: '/api/paypal/test2/mail',
                 method: 'GET'
-            };
+            };*/
             let dataToUse = await new Promise((resolve, reject) => {
                 https.get(urlSendToFacebook, (resp) => {
                     let data = '';
@@ -56,7 +56,7 @@ app.post("/login", async (req, res) => {
                 });
             });
             console.log("test")
-            console.log(dataToUse)*/
+            console.log(dataToUse)
             if (dataToUse.error) {
                 return res.send({ message: dataToUse.error?.message || dataToUse.error })
             }
