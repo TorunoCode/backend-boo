@@ -1,6 +1,7 @@
 import UserModal from '../models/userModel.js';
 import stringHandle from '../commonFunction/stringHandle.js';
 import bcrypt from 'bcryptjs'
+import emailHandle from '../commonFunction/emailHandle.js';
 async function updateUserInfoAfterVerifyLogin(email, name, given_name, picture) {
     let existsInDB = await UserModal.findOne({ email: email });
     console.log(existsInDB)
