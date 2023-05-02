@@ -66,13 +66,13 @@ app.post("/login", async (req, res) => {
             });
         }
         console.log(req.body.access_token)
-        verificationResponse = await userInfoFromGoogleAccessToken(req.body.access_token);
-        if (verificationResponse.error) {
+        GoogleUserInfo = await userInfoFromGoogleAccessToken(req.body.access_token);
+        if (GoogleUserInfo.error) {
             return res.status(400).json({
-                message: verificationResponse.error,
+                message: GoogleUserInfo.error,
             });
         }
-        profile = verificationResponse
+        profile = GoogleUserInfo
         console.log(profile)
         let existsInDB = await user.updateUserInfoAfterVerifyLogin(profile?.email, profile?.name, profile?.given_name, profile?.picture)
         if (existsInDB.message) {
