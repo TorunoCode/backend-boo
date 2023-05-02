@@ -9,7 +9,8 @@ import user from '../routeFunction/user.js';
 import bcrypt from 'bcryptjs';
 const app = express.Router();
 const FACEBOOK_APP_TOKEN = "743911623614504|2OaFMKHCocRdCywhmY8Ha9vzPV8";
-//608150604248710 | oJo9VAaZ1vktIKbWNS0epeLeEyg
+const facebook_app_token2 = "1620897148361329|Q78S4BaMN5TPM3HRrLlk2iCq5j4"
+//608150604248710|oJo9VAaZ1vktIKbWNS0epeLeEyg
 app.get("/", async (req, res) => {
     res.send({ message: "api/oAuthFacebookRoutes/Signup" })
 })
@@ -22,6 +23,12 @@ async function verifyFacebookAccessToken(input_token) {
             + input_token + '&access_token=' + FACEBOOK_APP_TOKEN)
     return dataToUse
 }
+async function verifyFacebookAccessToken2(input_token) {
+    let dataToUse = getDataHandle.getJsonDataUrl
+        ('https://graph.facebook.com/debug_token?input_token='
+            + input_token + '&access_token=' + facebook_app_token2)
+    return dataToUse
+}
 app.post("/login", async (req, res) => {
     try {
         console.log("login here")
@@ -31,9 +38,11 @@ app.post("/login", async (req, res) => {
             return res.status(400).send({ data: null, message: "Not Found login token" })
         let verifyFacebookToken = await verifyFacebookAccessToken(req.body.accessToken)
         if (verifyFacebookToken.error) {
-            return res.status(400).json({
-                message: verifyFacebookToken.error.message,
-            });
+            verifyFacebookToken = await verifyFacebookAccessToken(req.body.accessToken)
+            if (verifyFacebookToken.error)
+                return res.status(400).json({
+                    message: verifyFacebookToken.error.message,
+                });
         }
         const urlSendToFacebook = 'https://graph.facebook.com/v16.0/' + req.body.id + '?access_token=' + req.body.accessToken + '&fields=name,email,picture';
         let dataToUse = await getDataHandle.getJsonDataUrl(urlSendToFacebook)
