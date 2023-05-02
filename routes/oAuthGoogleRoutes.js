@@ -65,7 +65,7 @@ app.post("/login", async (req, res) => {
         }
 
         console.log(req.body.access_token)
-        GoogleUserInfo = await userInfoFromGoogleAccessToken(req.body.access_token);
+        let GoogleUserInfo = await userInfoFromGoogleAccessToken(req.body.access_token);
         if (GoogleUserInfo.error) {
             return res.status(400).json({
                 message: GoogleUserInfo.error,
