@@ -35,6 +35,7 @@ const store = new MongoStore({
 app.use(
   session({
     secret: "key that will sign cookie",
+    name: 'UserCookie',
     cookie: {
       httpOnly: true,
       secure: true,
