@@ -27,6 +27,7 @@ import userMoneyRoutes from './routes/userMoneyRoutes.js';
 import checkBillRoutes from './routes/checkBillRoutes.js';
 import recommendRoutes from './routes/recommendRoutes.js';
 const app = express();
+app.enable('trust proxy');
 const MongoStore = MongoDBSession(session);
 const store = new MongoStore({
   uri: process.env.CONNECTION_URL,
@@ -37,9 +38,8 @@ app.use(
     secret: "key that will sign cookie",
     cookie: {
       maxAge: 1000 * 60 * 12 * 24, // 1 week
-      sameSite: 'none',
-      secure: true,
-      httpOnly: true,
+      // sameSite: 'none',
+      // secure: false,
     },
     store: store,
     resave: true,
