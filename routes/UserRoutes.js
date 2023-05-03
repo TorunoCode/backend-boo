@@ -104,7 +104,7 @@ userRoute.post(
       // res.status(200).json({ data: oldUser ,accessToken:accessToken});
       res.status(200).json({ data: oldUser });
     } catch (error) {
-      res.status(500).json({ message: "Something went wrong" });
+      res.status(500).json({ message: error.message });
       console.log(error);
     }
   }
