@@ -38,7 +38,7 @@ app.use(
     cookie: {
       secure: true,
       maxAge: 1000 * 60 * 12 * 24, // 1 week
-      sameSite: 'none', // in order to response to both first-party and cross-site requests
+      sameSite: false, // in order to response to both first-party and cross-site requests
       domain: 'backend-boo.vercel.app'
     },
     store: store,
