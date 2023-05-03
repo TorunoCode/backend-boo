@@ -27,7 +27,11 @@ import userMoneyRoutes from './routes/userMoneyRoutes.js';
 import checkBillRoutes from './routes/checkBillRoutes.js';
 import recommendRoutes from './routes/recommendRoutes.js';
 const app = express();
-
+const MongoStore = MongoDBSession(session);
+const store = new MongoStore({
+  uri: process.env.CONNECTION_URL,
+  collection: "mySessions"
+});
 app.use(
   session({
     secret: "key that will sign cookie",
@@ -36,11 +40,11 @@ app.use(
       sameSite: 'none', // in order to response to both first-party and cross-site requests
       secure: 'auto', // it should set automatically to secure if is https.
     },
+    store: store,
     resave: true,
     saveUninitialized: true
   })
 )
-const MongoStore = MongoDBSession(session);
 paypal.configure({
   'mode': 'sandbox', //sandbox or live
   'client_id': process.env.PAYPAL_CLIENT_ID,
@@ -48,10 +52,6 @@ paypal.configure({
 });
 console.log('done set up paypal');
 connectDatabase();
-const store = new MongoStore({
-  uri: process.env.CONNECTION_URL,
-  collection: "mySessions",
-});
 app.use(express.json());
 
 
