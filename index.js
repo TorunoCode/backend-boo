@@ -36,6 +36,8 @@ app.use(
   session({
     secret: "key that will sign cookie",
     cookie: {
+      httpOnly: true,
+      secure: true,
       maxAge: 1000 * 60 * 12 * 24, // 1 week
       sameSite: 'none', // in order to response to both first-party and cross-site requests
     },
