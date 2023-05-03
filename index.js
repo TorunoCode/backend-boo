@@ -61,7 +61,8 @@ app.use(express.json());
 process.env.TZ = "Asia/Ho_Chi_Minh";
 app.use(cors({
   origin: ['https://web-fixgo.vercel.app', 'https://admin-fixgo.vercel.app', 'http://localhost:3000',
-    'https://backend-boo.vercel.app', 'http://localhost:5000']
+    'https://backend-boo.vercel.app', 'http://localhost:5000'],
+  credentials: true,
 }));
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
