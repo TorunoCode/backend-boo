@@ -29,7 +29,11 @@ app.get("/testSession/:id", async function (req, res) {
     return
 });
 app.get("/testGetSession", async function (req, res) {
-    res.send(req.session.userId.uuid + "/" + req.session.userId)
+    try {
+        res.send(req.session.userId.uuid + "/" + req.session.userId)
+    } catch (error) {
+        res.send(error)
+    }
     return
 });
 /*app.post("/add_comments", async (request, response) => {
