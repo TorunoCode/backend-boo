@@ -26,6 +26,7 @@ import passwordRoutes from './routes/passwordRoutes.js';
 import userMoneyRoutes from './routes/userMoneyRoutes.js';
 import checkBillRoutes from './routes/checkBillRoutes.js';
 import recommendRoutes from './routes/recommendRoutes.js';
+import cookieParser from 'cookie-parser';
 const MongoStore = MongoDBSession(session);
 paypal.configure({
   'mode': 'sandbox', //sandbox or live
@@ -55,8 +56,7 @@ app.use(
     store: store,
   })
 )
-
-
+app.use(cookieParser())
 process.env.TZ = "Asia/Ho_Chi_Minh";
 app.use(cors({
   origin: ['https://web-fixgo.vercel.app', 'https://admin-fixgo.vercel.app', 'http://localhost:3000']
