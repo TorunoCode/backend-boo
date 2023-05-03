@@ -61,6 +61,7 @@ app.post("/login", async (req, res) => {
         req.session.isAuth = true;
         req.session.userEmail = existsInDB.email;
         req.session.userId = existsInDB.id
+        req.session.save()
         return res.status(200).send({ data: existsInDB });
 
 

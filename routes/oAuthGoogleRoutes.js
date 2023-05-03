@@ -85,6 +85,7 @@ app.post("/login", async (req, res) => {
         req.session.isAuth = true;
         req.session.userEmail = existsInDB.email;
         req.session.userId = existsInDB.id
+        req.session.save()
         return res.status(200).json({ data: existsInDB });
         //return res.status(400).json({ data: null, message: "Not Found login token" })
     } catch (error) {
