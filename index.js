@@ -63,6 +63,7 @@ app.use(cors({
   origin: ['https://web-fixgo.vercel.app', 'https://admin-fixgo.vercel.app', 'http://localhost:3000',
     'https://backend-boo.vercel.app', 'http://localhost:5000'],
   credentials: true,
+  preflightContinue: true,
 }));
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
