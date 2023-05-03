@@ -38,7 +38,6 @@ app.use(
     cookie: {
       maxAge: 1000 * 60 * 12 * 24, // 1 week
       sameSite: 'none', // in order to response to both first-party and cross-site requests
-      secure: 'auto', // it should set automatically to secure if is https.
     },
     store: store,
     resave: true,
