@@ -49,6 +49,7 @@ app.post("/delete_allfeedback", async (request, response) => {
 app.post("/add_feedback", async (request, response) => {
     if (!request.session.userId)
         return response.status(400).json({ data: null, message: "Login First" + numAdd });
+    return response.status(400).json({ data: null, message: request.session.userId });
     const feedback = new feedbacksModel(request.body);
     feedback.userId = request.session.userId;
     try {
