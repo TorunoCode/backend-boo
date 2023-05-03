@@ -38,8 +38,8 @@ app.use(
     secret: "key that will sign cookie",
     cookie: {
       maxAge: 1000 * 60 * 12 * 24, // 1 week
-      // sameSite: 'none',
-      // secure: false,
+      sameSite: 'none',
+      secure: true,
     },
     store: store,
     resave: true,
