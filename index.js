@@ -26,20 +26,7 @@ import passwordRoutes from './routes/passwordRoutes.js';
 import userMoneyRoutes from './routes/userMoneyRoutes.js';
 import checkBillRoutes from './routes/checkBillRoutes.js';
 import recommendRoutes from './routes/recommendRoutes.js';
-const MongoStore = MongoDBSession(session);
-paypal.configure({
-  'mode': 'sandbox', //sandbox or live
-  'client_id': process.env.PAYPAL_CLIENT_ID,
-  'client_secret': process.env.PAYPAL_CLIENT_SECRET
-});
-console.log('done set up paypal');
-connectDatabase();
 const app = express();
-const store = new MongoStore({
-  uri: process.env.CONNECTION_URL,
-  collection: "mySessions",
-});
-app.use(express.json());
 
 app.use(
   session({
@@ -50,10 +37,23 @@ app.use(
       secure: 'auto', // it should set automatically to secure if is https.
     },
     resave: true,
-    saveUninitialized: true,
-    store: store,
+    saveUninitialized: true
   })
 )
+const MongoStore = MongoDBSession(session);
+paypal.configure({
+  'mode': 'sandbox', //sandbox or live
+  'client_id': process.env.PAYPAL_CLIENT_ID,
+  'client_secret': process.env.PAYPAL_CLIENT_SECRET
+});
+console.log('done set up paypal');
+connectDatabase();
+const store = new MongoStore({
+  uri: process.env.CONNECTION_URL,
+  collection: "mySessions",
+});
+app.use(express.json());
+
 
 
 process.env.TZ = "Asia/Ho_Chi_Minh";
