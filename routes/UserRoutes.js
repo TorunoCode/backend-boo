@@ -99,8 +99,8 @@ userRoute.post(
       //  const accessToken = jwt.sign(oldUser,process.env.ACCESS_TOKEN_SECRET)
       if (oldUser.isAdmin) { req.session.isAdmin = true; }
       req.session.isAuth = true;
-      req.session.userEmail = existsInDB.email;
-      req.session.userId = existsInDB.id
+      req.session.userEmail = oldUser.email;
+      req.session.userId = oldUser.id
       // res.status(200).json({ data: oldUser ,accessToken:accessToken});
       res.status(200).json({ data: oldUser });
     } catch (error) {
