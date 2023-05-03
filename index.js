@@ -32,15 +32,15 @@ const store = new MongoStore({
   uri: process.env.CONNECTION_URL,
   collection: "mySessions"
 });
+app.enable('trust proxy');
 app.use(
   session({
     secret: "key that will sign cookie",
     cookie: {
       maxAge: 1000 * 60 * 12 * 24, // 1 week
-      //sameSite: "none", // in order to response to both first-party and cross-site requests
-      //  domain: ["backend-boo.vercel.app", "localhost:5000"],
-      //secure: false,
-      //sameSite: "None",
+      sameSite: 'none',
+      secure: true,
+      httpOnly: true,
     },
     store: store,
     resave: true,
@@ -60,10 +60,9 @@ app.use(express.json());
 
 process.env.TZ = "Asia/Ho_Chi_Minh";
 app.use(cors({
-  origin: ['https://web-fixgo.vercel.app', 'https://admin-fixgo.vercel.app', 'http://localhost:3000',
-    'https://backend-boo.vercel.app', 'http://localhost:5000'],
   credentials: true,
-  preflightContinue: true,
+  origin: ['https://web-fixgo.vercel.app', 'https://admin-fixgo.vercel.app', 'http://localhost:3000',
+    'https://backend-boo.vercel.app', 'http://localhost:5000']
 }));
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
