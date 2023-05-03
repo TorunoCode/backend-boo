@@ -32,7 +32,6 @@ const store = new MongoStore({
   uri: process.env.CONNECTION_URL,
   collection: "mySessions"
 });
-app.enable('trust proxy');
 app.use(
   session({
     secret: "key that will sign cookie",

@@ -101,13 +101,7 @@ userRoute.post(
       req.session.isAuth = true;
       req.session.userEmail = oldUser.email;
       req.session.userId = oldUser.id
-      req.session.save((err => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log("done")
-        }
-      }));
+      req.session.save();
       // res.status(200).json({ data: oldUser ,accessToken:accessToken});
       res.status(200).json({ data: oldUser });
     } catch (error) {

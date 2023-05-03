@@ -67,11 +67,11 @@ app.post("/delete_allfeedback", async (request, response) => {
     }
 });*/
 app.post("/add_feedback", async (request, response) => {
-    if (!request.session.userId)
-        return response.status(400).json({ data: null, message: "Login First " + request.session.userId });
-    // return response.status(400).json({ data: null, message: request.session });
+    // if (!request.session.userId)
+    //     return response.status(400).json({ data: null, message: "Login First " + request.session.userId });
+    // // return response.status(400).json({ data: null, message: request.session });
     const feedback = new feedbacksModel(request.body);
-    feedback.userId = request.session.userId;
+    //feedback.userId = request.session.userId;
     try {
         const count = await feedbacksModel.count({ userId: feedback.userId, movieId: feedback.movieId });
         var numAdd = parseInt(count) + 1;
