@@ -1,9 +1,10 @@
+import dotenv from 'dotenv'
+dotenv.config();
 import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import { movies } from './data/movies.js';
-import dotenv from 'dotenv'
 import connectDatabase from './config/MongoDb.js';
 import ImportData from './DataImport.js';
 import movieRoute from './routes/MovieRoutes.js';
@@ -28,11 +29,10 @@ import recommendRoutes from './routes/recommendRoutes.js';
 const MongoStore = MongoDBSession(session);
 paypal.configure({
   'mode': 'sandbox', //sandbox or live
-  'client_id': 'AYQgAnSGvQmxgRu3DPGAqhi8bQar2z6B9B9QHDPAdVoUbxOQHi81qbffwJLnlkUuKuHz2eOP_mHyMZBK',
-  'client_secret': 'EO_1MPZ3huDwSDTa_eX5yYCdEYyTTFdO38LBiqLFGfE2H5TaoY7m4Q0Xpt9H0N7uy7iXzy0AqjkiZB11'
+  'client_id': process.env.PAYPAL_CLIENT_ID,
+  'client_secret': process.env.PAYPAL_CLIENT_SECRET
 });
 console.log('done set up paypal');
-dotenv.config();
 connectDatabase();
 const app = express();
 const store = new MongoStore({
