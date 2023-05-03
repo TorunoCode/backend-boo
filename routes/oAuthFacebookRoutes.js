@@ -1,3 +1,5 @@
+import dotenv from 'dotenv'
+dotenv.config();
 import queryString from 'query-string';
 import https from 'https';
 import express from 'express';
@@ -8,8 +10,9 @@ import getDataHandle from '../commonFunction/getDataHandle.js';
 import user from '../routeFunction/user.js';
 import bcrypt from 'bcryptjs';
 const app = express.Router();
-const FACEBOOK_APP_TOKEN = "743911623614504|2OaFMKHCocRdCywhmY8Ha9vzPV8";
-const facebook_app_token2 = "1620897148361329|Q78S4BaMN5TPM3HRrLlk2iCq5j4"
+//const FACEBOOK_APP_TOKEN = "743911623614504|2OaFMKHCocRdCywhmY8Ha9vzPV8";
+//const FACEBOOK_APP_TOKEN2 = "1620897148361329|Q78S4BaMN5TPM3HRrLlk2iCq5j4"
+const FACEBOOK_APP_TOKEN = process.env.FACEBOOK_APP_TOKEN
 //608150604248710|oJo9VAaZ1vktIKbWNS0epeLeEyg
 app.get("/", async (req, res) => {
     res.send({ message: "api/oAuthFacebookRoutes/Signup" })
@@ -23,12 +26,6 @@ async function verifyFacebookAccessToken(input_token) {
             + input_token + '&access_token=' + FACEBOOK_APP_TOKEN)
     return dataToUse
 }
-async function verifyFacebookAccessToken2(input_token) {
-    let dataToUse = getDataHandle.getJsonDataUrl
-        ('https://graph.facebook.com/debug_token?input_token='
-            + input_token + '&access_token=' + facebook_app_token2)
-    return dataToUse
-}
 app.post("/login", async (req, res) => {
     try {
         console.log("login here")
@@ -36,7 +33,7 @@ app.post("/login", async (req, res) => {
         console.log(req.body.id)
         if (!req.body.accessToken || !req.body.id)
             return res.status(400).send({ data: null, message: "Not Found login token" })
-        let verifyFacebookToken = await verifyFacebookAccessToken2(req.body.accessToken)
+        let verifyFacebookToken = await verifyFacebookAccessToken(req.body.accessToken)
         if (verifyFacebookToken.error)
             return res.status(400).json({
                 message: verifyFacebookToken.error.message,
@@ -59,8 +56,11 @@ app.post("/login", async (req, res) => {
         if (existsInDB.message) {
             return res.status(400).send({ data: null, message: existsInDB.message })
         }
-        if (existsInDB.isAdmin) { req.session.isAdmin = true; }
+        if (existsInDB.isAdmin)
+            req.session.isAdmin = true;
         req.session.isAuth = true;
+        req.session.userEmail = existsInDB.email;
+        req.session.userId = existsInDB.id
         return res.status(200).send({ data: existsInDB });
 
 

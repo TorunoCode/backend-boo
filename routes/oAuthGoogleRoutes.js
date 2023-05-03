@@ -80,8 +80,11 @@ app.post("/login", async (req, res) => {
         if (existsInDB.message) {
             return res.status(404).send({ data: null, message: existsInDB.message })
         }
-        if (existsInDB.isAdmin) { req.session.isAdmin = true; }
+        if (existsInDB.isAdmin)
+            req.session.isAdmin = true;
         req.session.isAuth = true;
+        req.session.userEmail = existsInDB.email;
+        req.session.userId = existsInDB.id
         return res.status(200).json({ data: existsInDB });
         //return res.status(400).json({ data: null, message: "Not Found login token" })
     } catch (error) {
