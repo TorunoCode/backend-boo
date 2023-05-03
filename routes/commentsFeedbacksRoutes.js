@@ -18,18 +18,18 @@ app.get("/testDeleteUser/:id", async function (req, res) {
 });
 app.get("/testSession/:id", async function (req, res) {
     console.log(req.params.id)
-    req.session.userId = req.params.id
+    req.session.userId = { uuid: req.params.id }
     req.session.save((err => {
         if (err) {
             console.log(err);
         } else {
-            res.send("done: " + req.session.userId)
+            res.send("done: " + req.session.userId.uuid)
         }
     }));
     return
 });
 app.get("/testGetSession", async function (req, res) {
-    res.send(req.session.userId + "/" + req.session)
+    res.send(req.session.userId.uuid + "/" + req.session.userId)
     return
 });
 /*app.post("/add_comments", async (request, response) => {
