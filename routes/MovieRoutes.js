@@ -209,13 +209,14 @@ movieRoute.post(
         const checkShowing = await ShowingModel.findById(req.body.idShowing);
         if (checkShowing == null) res.status(500).json({ message: "Something went wrong" });
         console.log("check" + check)
-        // if (check) {
-        //     const removeBill = await orderModel.find({ idBill: check._id.toString() });
-        //     for (let x of removeBill) {
-        //         await showSeatModel.findById(x.idShowSeat).updateOne({}, { $set: { isReserved: false } });
-        //         await orderModel.findOneAndRemove({ idShowSeat: x.idShowSeat, idShowing: x.idShowing });
-        //     }
-        // }
+        if (check) {
+        const listCheck = await orderModel.distinct('idShowSeat',{ idBill: check._id.toString() });
+        for (let a of listCheck) {
+            await showSeatModel.findByIdAndUpdate(a,{ $set: { isReserved: false }});
+        }        
+        await orderModel.deleteMany({idBill:check._id.toString()});
+        await billModel.findByIdAndRemove(check._id.toString());
+        }
             recommend.addUserRecentBuyMovieGenre(req.params.id, checkShowing.idMovie);
             const bill = await billModel({ totalMoney: 0, idCustomer: req.params.id, status: -1 }); //tao ma bill moi
             await bill.save();
@@ -988,6 +989,9 @@ movieRoute.get(
     asyncHandler(async (req, res) => {
         const order = await orderModel.distinct('idShowSeat',{ idBill: req.params.id });
         if (order) {
+            for (let a of order) {
+                console.log(a);
+            }
             res.json(order);
         } else {
             res.status(404)
