@@ -262,9 +262,9 @@ app.get("/top10user", async (req, res) => {
         }
         if (typeof userName.fullName == 'undefined') userName.fullName = userName.name
         result.push({
+            "stt": i + 1,
             "username": userName.fullName, "totalOrders": sum_money[i].totalOrders,
-            "totalSpending": sum_money[i].totalSpending,
-            "stt": i + 1
+            "totalSpending": sum_money[i].totalSpending
         })
         console.log(userName.fullName + "/" + userName.name);
     }
@@ -283,10 +283,10 @@ app.get("/top10recent", async (req, res) => {
         if (typeof userName.fullName == 'undefined') userName.fullName = userName.name
 
         result.push({
-            "idorder": sum_money[i]._id, "username": userName.fullName,
-            "totalSPrice": sum_money[i].totalMoney, "date": sum_money[i].createdAt, "status": "paid",
+            "stt": i + 1,
             "date": timeHandle.formatDate_YearMonthDay(sum_money[i].createdAt),
-            "stt": i + 1
+            "idorder": sum_money[i]._id, "username": userName.fullName,
+            "totalSPrice": sum_money[i].totalMoney, "date": sum_money[i].createdAt, "status": "paid"
         })
     }
     res.status(200).send(result);
