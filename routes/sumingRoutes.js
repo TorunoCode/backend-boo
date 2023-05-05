@@ -253,39 +253,37 @@ app.get("/top10user", async (req, res) => {
         }
     }
         , { $sort: { totalSpending: -1 } }, { $limit: 10 }])
-    let userName;
+    let user, nameUser;
     for (let i = 0; i < sum_money.length; i++) {
-        userName = await userModel.findById(sum_money[i]._id)
-        if (userName == null) {
-            result.push({ "idorder": sum_money[i]._id, "username": "Deleted user", "totalSPrice": sum_money[i].totalMoney, "date": sum_money[i].createdAt, "status": "paid" })
-            continue;
+        user = await userModel.findById(sum_money[i]._id)
+        if (user == null) {
+            nameUser = "Deleted user"
         }
-        if (typeof userName.fullName == 'undefined') userName.fullName = userName.name
+        else if (typeof user.fullName == 'undefined') nameUser = user.name
+        else nameUser = user.fullName
         result.push({
             "stt": i + 1,
-            "username": userName.fullName, "totalOrders": sum_money[i].totalOrders,
+            "username": nameUser, "totalOrders": sum_money[i].totalOrders,
             "totalSpending": sum_money[i].totalSpending
         })
-        console.log(userName.fullName + "/" + userName.name);
     }
     res.status(200).send(result);
 })
 app.get("/top10recent", async (req, res) => {
     let result = []
     const sum_money = await billsModel.find({}).sort({ "createdAt": -1 }).limit(10)
-    let userName;
+    let user, nameUser;
     for (let i = 0; i < sum_money.length; i++) {
-        userName = await userModel.findById(sum_money[i].idCustomer)
-        if (userName == null) {
-            result.push({ "idorder": sum_money[i]._id, "username": "Deleted user", "totalSPrice": sum_money[i].totalMoney, "date": sum_money[i].createdAt, "status": "paid" })
-            continue;
+        user = await userModel.findById(sum_money[i]._id)
+        if (user == null) {
+            nameUser = "Deleted user"
         }
-        if (typeof userName.fullName == 'undefined') userName.fullName = userName.name
-
+        else if (typeof user.fullName == 'undefined') nameUser = user.name
+        else nameUser = user.fullName
         result.push({
             "stt": i + 1,
             "date": timeHandle.formatDate_YearMonthDay(sum_money[i].createdAt),
-            "idorder": sum_money[i]._id, "username": userName.fullName,
+            "idorder": sum_money[i]._id, "username": nameUser,
             "totalSPrice": sum_money[i].totalMoney, "date": sum_money[i].createdAt, "status": "paid"
         })
     }
