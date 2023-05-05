@@ -16,7 +16,7 @@ function getTomorrorAt0(time) {
     return new Date(todayAt0.setDate(todayAt0.getDate() + 1));
 }
 function getFirstDayOfMonth(time) {
-    return new Date(time.getFullYear(), time.getMonth(), 1);
+    return new Date(time.getFullYear(), time.getMonth() + 1, 1);
 }
 function getFirstDayOfLastMonth(time) {
     let firstDayOfMonth = getFirstDayOfMonth(time);
