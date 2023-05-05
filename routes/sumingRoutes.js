@@ -296,32 +296,33 @@ app.get("/summary/:date", async (req, res) => {
     let day_finding = new Date(date);
     let result = {};
     let Revenue = await summing.countRevenue(timeHandle.getTodayAt0(day_finding), timeHandle.getTomorrorAt0(day_finding))
+    console.log(Revenue)
     let sumUser = await userModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
     let sumOrders = await summing.sumOrders(timeHandle.getTodayAt0(day_finding), timeHandle.getTomorrorAt0(day_finding))
     let sumMovie = await MovieModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
 
-    result["day"] = summing.convertValue(Revenue[0].Revenue, sumMovie[0].count, sumOrders[0].count, sumUser[0].count);
+    result["day"] = summing.convertValue(Revenue, sumMovie, sumOrders, sumUser);
 
     Revenue = await summing.countRevenue(timeHandle.getFirstDayOfMonth(day_finding), timeHandle.getFirstDayOfNextMonth(day_finding))
 
     sumOrders = await summing.sumOrders(timeHandle.getFirstDayOfMonth(day_finding), timeHandle.getFirstDayOfNextMonth(day_finding))
 
-    result["mounth"] = summing.convertValue(Revenue[0].Revenue, sumMovie[0].count, sumOrders[0].count, sumUser[0].count);;
+    result["mounth"] = summing.convertValue(Revenue, sumMovie, sumOrders, sumUser);;
 
     Revenue = await billsModel.aggregate([{ $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
     sumOrders = await billsModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
 
-    result["total"] = summing.convertValue(Revenue.Revenue, sum_money4[0].count, sumOrders.count, sumUser.count);;
+    result["total"] = summing.convertValue(Revenue, sumMovie, sumOrders, sumUser);;
 
     Revenue = await summing.countRevenue(timeHandle.getFirstDayOfLastMonth(day_finding), timeHandle.getFirstDayOfMonth(day_finding))
     sumOrders = await summing.sumOrders(timeHandle.getFirstDayOfLastMonth(day_finding), timeHandle.getFirstDayOfMonth(day_finding))
 
-    result["onemounthago"] = summing.convertValue(Revenue[0].Revenue, sumMovie[0].count, sumOrders[0].count, sumUser[0].count);;
+    result["onemounthago"] = summing.convertValue(Revenue, sumMovie, sumOrders, sumUser);;
 
     Revenue = await summing.countRevenue(timeHandle.getFirstDayOfWeek(day_finding), timeHandle.getFirstDayOfNextWeek(day_finding))
     sumOrders = await summing.sumOrders(timeHandle.getFirstDayOfWeek(day_finding), timeHandle.getFirstDayOfNextWeek(day_finding))
 
-    result["currentweek"] = summing.convertValue(Revenue[0].Revenue, sumMovie[0].count, sumOrders[0].count, sumUser[0].count);;
+    result["currentweek"] = summing.convertValue(Revenue, sumMovie, sumOrders, sumUser);;
 
     res.status(200).send(result);
 })

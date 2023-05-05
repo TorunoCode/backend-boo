@@ -1,24 +1,24 @@
 import billsModel from '../models/billsModel.js';
 function convertValue(Revenue, Movies, sumOrders, sumUser) {
-    oneResult = {};
-    smallResult = [];
+    let oneResult = {};
+    let smallResult = [];
     try {
-        oneResult["Revenue"] = Revenue
+        oneResult["Revenue"] = Revenue[0].Revenue
     } catch (error) {
         oneResult["Revenue"] = 0
     }
     try {
-        oneResult["Movies"] = Movies
+        oneResult["Movies"] = Movies[0].count
     } catch (error) {
         oneResult["Movies"] = 0
     }
     try {
-        oneResult["sumOrders"] = sumOrders
+        oneResult["sumOrders"] = sumOrders[0].count
     } catch (error) {
         oneResult["sumOrders"] = 0
     }
     try {
-        oneResult["sumUser"] = sumUser
+        oneResult["sumUser"] = sumUser[0].count
     } catch (error) {
         oneResult["sumUser"] = 0
     }
