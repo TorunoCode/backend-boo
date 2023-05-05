@@ -290,8 +290,7 @@ app.get("/top10recent", async (req, res) => {
     res.status(200).send(result);
 })
 app.get("/summary/:date", async (req, res) => {
-    let date = req.params.date;
-    let day_finding = new Date(date);
+    let day_finding = new Date(req.params.date);
     let result = {};
     let Revenue = await summing.countRevenue(timeHandle.getTodayAt0(day_finding), timeHandle.getTomorrorAt0(day_finding))
     console.log(Revenue)
