@@ -11,6 +11,7 @@ import MovieModel from '../models/movieModel.js';
 import CinemaHallModel from '../models/cinemaHallModel.js';
 import cinemaModel from '../models/cinemaModel.js';
 import timeHandle from '../commonFunction/timeHandle.js';
+import summing from '../routeFunction/summing.js';
 const app = express.Router();
 /*app.get("/test", function (req, res) {
     res.send("Summing Routes");
@@ -260,13 +261,13 @@ app.get("/top10user", async (req, res) => {
             continue;
         }
         if (typeof userName.fullName == 'undefined') userName.fullName = userName.name
-        result.push({ "username": userName.fullName, "totalOrders": sum_money[i].totalOrders, "totalSpending": sum_money[i].totalSpending })
+        result.push({
+            "username": userName.fullName, "totalOrders": sum_money[i].totalOrders,
+            "totalSpending": sum_money[i].totalSpending,
+            "stt": i + 1
+        })
         console.log(userName.fullName + "/" + userName.name);
     }
-    for (let [index, value] of result.entries()) {
-        value["stt"] = index + 1;
-    };
-
     res.status(200).send(result);
 })
 app.get("/top10recent", async (req, res) => {
@@ -280,242 +281,48 @@ app.get("/top10recent", async (req, res) => {
             continue;
         }
         if (typeof userName.fullName == 'undefined') userName.fullName = userName.name
-        result.push({ "idorder": sum_money[i]._id, "username": userName.fullName, "totalSPrice": sum_money[i].totalMoney, "date": sum_money[i].createdAt, "status": "paid" })
+
+        result.push({
+            "idorder": sum_money[i]._id, "username": userName.fullName,
+            "totalSPrice": sum_money[i].totalMoney, "date": sum_money[i].createdAt, "status": "paid",
+            "date": timeHandle.formatDate_YearMonthDay(sum_money[i].createdAt),
+            "stt": i + 1
+        })
     }
-    for (let [index, value] of result.entries()) {
-        value["date"] = value["date"].getDate() + "-" + (value["date"].getMonth() + 1) + "-" + value["date"].getFullYear();
-        value["stt"] = index + 1;
-    };
     res.status(200).send(result);
 })
 app.get("/summary/:date", async (req, res) => {
     let date = req.params.date;
     let day_finding = new Date(date);
     let result = {};
-    let smallResult = [];
-    let oneResult = {};
-    let sum_money = await billsModel.aggregate([{
-        $match: {
-            createdAt: {
-                $gte: timeHandle.getTodayAt0(day_finding),
-                $lt: timeHandle.getTomorrorAt0(day_finding)
-            }
-        }
-    }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }]);
-    let sum_money2 = await userModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    let sum_money3 = await billsModel.aggregate([{
-        $match: {
-            createdAt: {
-                $gte: timeHandle.getTodayAt0(day_finding),
-                $lt: timeHandle.getTomorrorAt0(day_finding)
-            }
-        }
-    }, { $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    let sum_money4 = await MovieModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
+    let Revenue = await summing.countRevenue(timeHandle.getTodayAt0(day_finding), timeHandle.getTomorrorAt0(day_finding))
+    let sumUser = await userModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
+    let sumOrders = await summing.sumOrders(timeHandle.getTodayAt0(day_finding), timeHandle.getTomorrorAt0(day_finding))
+    let sumMovie = await MovieModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
 
-    oneResult = {};
-    smallResult = [];
+    result["day"] = summing.convertValue(Revenue[0].Revenue, sumMovie[0].count, sumOrders[0].count, sumUser[0].count);
 
+    Revenue = await summing.countRevenue(timeHandle.getFirstDayOfMonth(day_finding), timeHandle.getFirstDayOfNextMonth(day_finding))
 
-    try {
-        oneResult["Revenue"] = sum_money[0].Revenue
-    } catch (error) {
-        oneResult["Revenue"] = 0
-    }
-    try {
-        oneResult["Movies"] = sum_money4[0].count
-    } catch (error) {
-        oneResult["Movies"] = 0
-    }
-    try {
-        oneResult["sumOrders"] = sum_money3[0].count
-    } catch (error) {
-        oneResult["sumOrders"] = 0
-    }
-    try {
-        oneResult["sumUser"] = sum_money2[0].count
-    } catch (error) {
-        oneResult["sumUser"] = 0
-    }
-    smallResult.push({ "icon": "bx bx-dollar-circle", "count": oneResult.Revenue + "$", "title": "Revenue" });
-    smallResult.push({ "icon": "bx bx-receipt", "count": oneResult.sumOrders + "", "title": "orders" });
-    smallResult.push({ "icon": "bx bx-user", "count": oneResult.sumUser + "", "title": "users" });
-    smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
-    result["day"] = smallResult;
+    sumOrders = await summing.sumOrders(timeHandle.getFirstDayOfMonth(day_finding), timeHandle.getFirstDayOfNextMonth(day_finding))
 
+    result["mounth"] = summing.convertValue(Revenue[0].Revenue, sumMovie[0].count, sumOrders[0].count, sumUser[0].count);;
 
-    sum_money = await billsModel.aggregate([{
-        $match: {
-            createdAt: {
-                $gte: timeHandle.getFirstDayOfMonth(day_finding),
-                $lt: timeHandle.getFirstDayOfNextMonth(day_finding)
-            }
-        }
-    }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
-    sum_money2 = await userModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    sum_money3 = await billsModel.aggregate([{
-        $match: {
-            createdAt: {
-                $gte: timeHandle.getFirstDayOfMonth(day_finding),
-                $lt: timeHandle.getFirstDayOfNextMonth(day_finding)
-            }
-        }
-    }, { $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    sum_money4 = await MovieModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    oneResult = {};
-    smallResult = [];
-    try {
-        oneResult["Revenue"] = sum_money[0].Revenue
-    } catch (error) {
-        oneResult["Revenue"] = 0
-    }
-    try {
-        oneResult["Movies"] = sum_money4[0].count
-    } catch (error) {
-        oneResult["Movies"] = 0
-    }
-    try {
-        oneResult["sumOrders"] = sum_money3[0].count
-    } catch (error) {
-        oneResult["sumOrders"] = 0
-    }
-    try {
-        oneResult["sumUser"] = sum_money2[0].count
-    } catch (error) {
-        oneResult["sumUser"] = 0
-    }
-    smallResult.push({ "icon": "bx bx-dollar-circle", "count": oneResult.Revenue + "$", "title": "Revenue" });
-    smallResult.push({ "icon": "bx bx-receipt", "count": oneResult.sumOrders + "", "title": "orders" });
-    smallResult.push({ "icon": "bx bx-user", "count": oneResult.sumUser + "", "title": "users" });
-    smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
-    result["mounth"] = smallResult;
+    Revenue = await billsModel.aggregate([{ $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
+    sumOrders = await billsModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
 
+    result["total"] = summing.convertValue(Revenue.Revenue, sum_money4[0].count, sumOrders.count, sumUser.count);;
 
+    Revenue = await summing.countRevenue(timeHandle.getFirstDayOfLastMonth(day_finding), timeHandle.getFirstDayOfMonth(day_finding))
+    sumOrders = await summing.sumOrders(timeHandle.getFirstDayOfLastMonth(day_finding), timeHandle.getFirstDayOfMonth(day_finding))
 
+    result["onemounthago"] = summing.convertValue(Revenue[0].Revenue, sumMovie[0].count, sumOrders[0].count, sumUser[0].count);;
 
-    sum_money = await billsModel.aggregate([{ $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
-    sum_money2 = await userModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    sum_money3 = await billsModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    sum_money4 = await MovieModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    oneResult = {};
-    smallResult = [];
-    try {
-        oneResult["Revenue"] = sum_money[0].Revenue
-    } catch (error) {
-        oneResult["Revenue"] = 0
-    }
-    try {
-        oneResult["Movies"] = sum_money4[0].count
-    } catch (error) {
-        oneResult["Movies"] = 0
-    }
-    try {
-        oneResult["sumOrders"] = sum_money3[0].count
-    } catch (error) {
-        oneResult["sumOrders"] = 0
-    }
-    try {
-        oneResult["sumUser"] = sum_money2[0].count
-    } catch (error) {
-        oneResult["sumUser"] = 0
-    }
-    smallResult.push({ "icon": "bx bx-dollar-circle", "count": oneResult.Revenue + "$", "title": "Revenue" });
-    smallResult.push({ "icon": "bx bx-receipt", "count": oneResult.sumOrders + "", "title": "orders" });
-    smallResult.push({ "icon": "bx bx-user", "count": oneResult.sumUser + "", "title": "users" });
-    smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
-    result["total"] = smallResult;
+    Revenue = await summing.countRevenue(timeHandle.getFirstDayOfWeek(day_finding), timeHandle.getFirstDayOfNextWeek(day_finding))
+    sumOrders = await summing.sumOrders(timeHandle.getFirstDayOfWeek(day_finding), timeHandle.getFirstDayOfNextWeek(day_finding))
 
-    sum_money = await billsModel.aggregate([{
-        $match: {
-            createdAt: {
-                $gte: timeHandle.getFirstDayOfLastMonth(day_finding),
-                $lt: timeHandle.getFirstDayOfMonth(day_finding)
-            }
-        }
-    }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
-    sum_money2 = await userModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    sum_money3 = await billsModel.aggregate([{
-        $match: {
-            createdAt: {
-                $gte: timeHandle.getFirstDayOfLastMonth(day_finding),
-                $lt: timeHandle.getFirstDayOfMonth(day_finding)
-            }
-        }
-    }, { $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    sum_money4 = await MovieModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    oneResult = {};
-    smallResult = [];
-    try {
-        oneResult["Revenue"] = sum_money[0].Revenue
-    } catch (error) {
-        oneResult["Revenue"] = 0
-    }
-    try {
-        oneResult["Movies"] = sum_money4[0].count
-    } catch (error) {
-        oneResult["Movies"] = 0
-    }
-    try {
-        oneResult["sumOrders"] = sum_money3[0].count
-    } catch (error) {
-        oneResult["sumOrders"] = 0
-    }
-    try {
-        oneResult["sumUser"] = sum_money2[0].count
-    } catch (error) {
-        oneResult["sumUser"] = 0
-    }
-    smallResult.push({ "icon": "bx bx-dollar-circle", "count": oneResult.Revenue + "$", "title": "Revenue" });
-    smallResult.push({ "icon": "bx bx-receipt", "count": oneResult.sumOrders + "", "title": "orders" });
-    smallResult.push({ "icon": "bx bx-user", "count": oneResult.sumUser + "", "title": "users" });
-    smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
-    result["onemounthago"] = smallResult;
+    result["currentweek"] = summing.convertValue(Revenue[0].Revenue, sumMovie[0].count, sumOrders[0].count, sumUser[0].count);;
 
-    sum_money = await billsModel.aggregate([{
-        $match: {
-            createdAt: {
-                $gte: timeHandle.getFirstDayOfWeek(day_finding),
-                $lt: timeHandle.getFirstDayOfNextWeek(day_finding)
-            }
-        }
-    }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
-    sum_money2 = await userModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    sum_money3 = await billsModel.aggregate([{
-        $match: {
-            createdAt: {
-                $gte: timeHandle.getFirstDayOfWeek(day_finding),
-                $lt: timeHandle.getFirstDayOfNextWeek(day_finding)
-            }
-        }
-    }, { $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    sum_money4 = await MovieModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
-    oneResult = {};
-    smallResult = [];
-    try {
-        oneResult["Revenue"] = sum_money[0].Revenue
-    } catch (error) {
-        oneResult["Revenue"] = 0
-    }
-    try {
-        oneResult["Movies"] = sum_money4[0].count
-    } catch (error) {
-        oneResult["Movies"] = 0
-    }
-    try {
-        oneResult["sumOrders"] = sum_money3[0].count
-    } catch (error) {
-        oneResult["sumOrders"] = 0
-    }
-    try {
-        oneResult["sumUser"] = sum_money2[0].count
-    } catch (error) {
-        oneResult["sumUser"] = 0
-    }
-    smallResult.push({ "icon": "bx bx-dollar-circle", "count": oneResult.Revenue + "$", "title": "Revenue" });
-    smallResult.push({ "icon": "bx bx-receipt", "count": oneResult.sumOrders + "", "title": "orders" });
-    smallResult.push({ "icon": "bx bx-user", "count": oneResult.sumUser + "", "title": "users" });
-    smallResult.push({ "icon": "bx bx-film", "count": "8", "title": "Movies" });
-    result["currentweek"] = smallResult;
     res.status(200).send(result);
 })
 app.get("/summaryMoneyInThisYearAndLastYear", async (req, res) => {
@@ -527,20 +334,13 @@ app.get("/summaryMoneyInThisYearAndLastYear", async (req, res) => {
     let months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     for (let month of months) {
         console.log(month)
-        let last_day_of_month = new Date(year, month);
-        let first_day_of_next_month = new Date(last_day_of_month);
-        first_day_of_next_month.setDate(last_day_of_month.getDate() + 1);
-        let last_day_of_last_month = new Date(last_day_of_month);
-        last_day_of_last_month.setMonth(last_day_of_month.getMonth() - 1);
-        let first_day_of_month_find = new Date(last_day_of_last_month);
-        first_day_of_month_find.setDate(last_day_of_last_month.getDate() + 1);
-        let day_to_find = first_day_of_month_find.getFullYear() + "-" + (first_day_of_month_find.getMonth() + 1) + "-" + first_day_of_month_find.getDate();
-        let next_day_to_find = first_day_of_next_month.getFullYear() + "-" + (first_day_of_next_month.getMonth() + 1) + "-" + first_day_of_next_month.getDate();
+        let firstDayOfMonth = new Date(year, month, 1)
+        let firstDayOfNextMonth = timeHandle.getFirstDayOfNextMonth(firstDayOfMonth)
         let sum_money = await billsModel.aggregate([{
             $match: {
                 createdAt: {
-                    $gte: new Date(day_to_find),
-                    $lt: new Date(next_day_to_find)
+                    $gte: firstDayOfMonth,
+                    $lt: firstDayOfNextMonth
                 }
             }
         }, { $group: { _id: null, sum_money: { $sum: "$totalMoney" } } }])
@@ -551,15 +351,14 @@ app.get("/summaryMoneyInThisYearAndLastYear", async (req, res) => {
         catch (error) {
             currentYear.push(0);
         }
-        first_day_of_month_find.setFullYear(first_day_of_month_find.getFullYear() - 1);
-        first_day_of_next_month.setFullYear(first_day_of_next_month.getFullYear() - 1);
-        day_to_find = first_day_of_month_find.getFullYear() + "-" + (first_day_of_month_find.getMonth() + 1) + "-" + first_day_of_month_find.getDate();
-        next_day_to_find = first_day_of_next_month.getFullYear() + "-" + (first_day_of_next_month.getMonth() + 1) + "-" + first_day_of_next_month.getDate();
+        // xét trong tháng này năm trước
+        firstDayOfMonth.setFullYear(firstDayOfMonth.getFullYear() - 1);
+        firstDayOfNextMonth.setFullYear(firstDayOfNextMonth.getFullYear() - 1);
         sum_money = await billsModel.aggregate([{
             $match: {
                 createdAt: {
-                    $gte: new Date(day_to_find),
-                    $lt: new Date(next_day_to_find)
+                    $gte: firstDayOfMonth,
+                    $lt: firstDayOfNextMonth
                 }
             }
         }, { $group: { _id: null, sum_money: { $sum: "$totalMoney" } } }])
