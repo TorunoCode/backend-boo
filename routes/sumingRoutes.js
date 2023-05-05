@@ -282,9 +282,9 @@ app.get("/top10recent", async (req, res) => {
         else nameUser = user.fullName
         result.push({
             "stt": i + 1,
-            "date": timeHandle.formatDate_YearMonthDay(sum_money[i].createdAt),
             "idorder": sum_money[i]._id, "username": nameUser,
-            "totalSPrice": sum_money[i].totalMoney, "date": sum_money[i].createdAt, "status": "paid"
+            "totalSPrice": sum_money[i].totalMoney, "date": timeHandle.formatDate_YearMonthDay(sum_money[i].createdAt),
+            "status": "paid"
         })
     }
     res.status(200).send(result);
