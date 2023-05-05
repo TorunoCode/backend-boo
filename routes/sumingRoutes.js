@@ -332,8 +332,9 @@ app.get("/summaryMoneyInThisYearAndLastYear", async (req, res) => {
     let months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     for (let month of months) {
         console.log(month)
-        let firstDayOfMonth = new Date(year, month, 1)
+        let firstDayOfMonth = new Date(year, month - 1, 1)
         let firstDayOfNextMonth = timeHandle.getFirstDayOfNextMonth(firstDayOfMonth)
+        console.log(firstDayOfMonth + "/" + firstDayOfNextMonth)
         let sum_money = await billsModel.aggregate([{
             $match: {
                 createdAt: {
