@@ -274,7 +274,7 @@ app.get("/top10recent", async (req, res) => {
     const sum_money = await billsModel.find({}).sort({ "createdAt": -1 }).limit(10)
     let user, nameUser;
     for (let i = 0; i < sum_money.length; i++) {
-        user = await userModel.findById(sum_money[i]._id)
+        user = await userModel.findById(sum_money[i].idCustomer)
         if (user == null) {
             nameUser = "Deleted user"
         }
