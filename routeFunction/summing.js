@@ -25,7 +25,7 @@ function convertValue(Revenue, Movies, sumOrders, sumUser) {
     smallResult.push({ "icon": "bx bx-dollar-circle", "count": oneResult.Revenue + "$", "title": "Revenue" });
     smallResult.push({ "icon": "bx bx-receipt", "count": oneResult.sumOrders + "", "title": "orders" });
     smallResult.push({ "icon": "bx bx-user", "count": oneResult.sumUser + "", "title": "users" });
-    smallResult.push({ "icon": "bx bx-film", "count": Movies, "title": "Movies" });
+    smallResult.push({ "icon": "bx bx-film", "count": oneResult.Movies, "title": "Movies" });
     return smallResult;
 }
 async function countRevenue(dayBegin, dayEnd) {
