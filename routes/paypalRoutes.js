@@ -259,6 +259,7 @@ app.get('/pay/:id', async function (req, res) {
       showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat)
       showing = await ShowingModel.findById(showSeat.idShowing);
       movie = await MovieModel.findById(showing.idMovie);
+      CinemaHall = await CinemaHallModel.findById(showing.idHall)
       Cinema = await cinemaModel.findById(showing.idCinema);
     }
     catch (error) {
@@ -270,10 +271,13 @@ app.get('/pay/:id', async function (req, res) {
     let name = ""
     try {
       var date = timeHandle.formatDate_YearMonthDay(showing.startTime)
+      console.log(showing)
+      console.log(movie)
       let hourMin = showing.time + "";
       name = showSeat.number + " movie: " + movie.name + " at " + date + " " + hourMin + ", " + CinemaHall.name + ", " + Cinema.name;
     }
     catch (error) {
+      console.log(error)
       let subHtml = fileHandle.template3Notification("Your seat booked not exist")
       res.status(400).write(subHtml)
       res.end()
