@@ -8,6 +8,7 @@ import orderModel from "../models/orderModel.js";
 import showSeatModel from '../models/showSeatModel.js';
 import paypalHandle from '../commonFunction/paypalHandle.js';
 import moneyHandle from '../commonFunction/moneyHandle.js';
+import user from '../routeFunction/user.js';
 import payment from '../routeFunction/payment.js';
 const app = express.Router();
 app.get("/add/:email/:money", async function (req, res) {
@@ -189,6 +190,8 @@ app.get('/test/addMoney/:money1/:money2', async function (req, res) {
     let addResult = moneyHandle.addMoney(req.params.money1, req.params.money2)
     let subtractResult = moneyHandle.subtractionMoney(req.params.money1, req.params.money2)
     let compareReuslt;
+    console.log(await
+        user.addMoneyToUser("testEmailAccccc1234@gmail.com", 100))
     if (subtractResult < 0)
         compareReuslt = req.params.money1 + " < " + req.params.money2
     else
