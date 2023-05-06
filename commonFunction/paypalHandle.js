@@ -32,4 +32,43 @@ function paypalPayout(email, money) {
         });
     });
 }
-export default { paypalPayout }
+async function paypalCreate(returnUrl, cancelUrl, items, total, description) {
+    const create_payment_json = {
+        "intent": "sale",
+        "payer": {
+            "payment_method": "paypal"
+        },
+        "redirect_urls": {
+            "return_url": returnUrl,
+            "cancel_url": cancelUrl
+        },
+        "transactions": [{
+            "item_list": {
+                //tra mot luc nhieu ve
+                //sku lay theo id
+                //status = 0: trong qua trinh tra; status = 1: thanh toan roi; status=-1: chua tra
+                // lay status = -1 xu ly roi gan = 0
+                "items": items
+            },
+            "amount": {
+                "currency": "USD",
+                "total": total
+            },
+            "description": description
+        }]
+    };
+    paypal.payment.create(create_payment_json, function (error, payment) {
+        if (error) {
+            console.log(error)
+            return error
+        } else {
+            for (let i = 0; i < payment.links.length; i++) {
+                if (payment.links[i].rel === 'approval_url') {
+                    console.log(payment.links[i].href)
+                    return payment.links[i].href
+                }
+            }
+        }
+    });
+}
+export default { paypalPayout, paypalCreate }

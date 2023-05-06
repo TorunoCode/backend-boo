@@ -11,9 +11,14 @@ import ShowingModel from '../models/showingModel.js';
 import MovieModel from '../models/movieModel.js';
 import CinemaHallModel from '../models/cinemaHallModel.js';
 import cinemaModel from '../models/cinemaModel.js';
+import paypalHandle from '../commonFunction/paypalHandle.js';
+import fileHandle from '../commonFunction/fileHandle.js';
+import timeHandle from '../commonFunction/timeHandle.js';
 import sgMail from '@sendgrid/mail';
 import fs from 'fs';
 import path from 'path';
+import { time } from 'console';
+import emailHandle from '../commonFunction/emailHandle.js';
 const app = express.Router();
 /*app.get("/test/:id", function (req, res) {
   res.send("paypal Routes");
@@ -230,94 +235,67 @@ app.get('/pay/:id', async (req, res) => {
     console.log(rand);*/
   let total = 0;
   let itemsToAdd = []
-  let countStatusChecking
-  {
-    let countStatusChecking2 = await billsModel.count({ idCustomer: req.params.id, status: "-1" });
-    if (countStatusChecking2 == 0) {
-      return res.status(400).send("no bills to pay");
-    }
-    let bill = await billsModel.find({ idCustomer: req.params.id, status: "-1" });
-    console.log(bill[0])
-    //luc chua thanh toan moi nguoi chi co 1 bill
-    let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
-    console.log("check orders")
-    console.log(billsOfUser)
-    for (let i = 0; i < billsOfUser.length; i++) {
-      let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
-      let CinemaHallSeat = await CinemaHallSeatModel.find({ _id: showSeat.idCinemaHallSeat });
-      let showing;
-      let movie;
-      let CinemaHall;
-      let Cinema;
-      try {
-        showing = await ShowingModel.findById(showSeat.idShowing);
-        movie = await MovieModel.findById(showing.idMovie);
-        CinemaHall = await CinemaHallModel.findById(showing.idHall);
-        Cinema = await cinemaModel.findById(CinemaHall.idCinema);
-      }
-      catch (error) { return res.status(500).send({ message: "Your movie booked not exist" }) }
-      let name = ""
-      let descriptionItems = ""
-      console.log()
-      try {
-        var date = new Date(showing.startTime),
-          mnth = ("0" + (date.getMonth() + 1)).slice(-2),
-          day = ("0" + date.getDate()).slice(-2);
-        let hourMin = "";
-        console.log(showing.time)
-        hourMin = showing.time;
-        name = showSeat.number + " movie: " + movie.name + " at " + [date.getFullYear(), mnth, day].join("-") + " " + hourMin + ", " + CinemaHall.name + ", " + Cinema.name;
-        descriptionItems = "start at: " + showing.startTime + ", Cinemal Hall name: " + CinemaHall.name + ", Cinema name: " + Cinema.name + ", Location: " + Cinema.location
-      }
-      catch (error) { return res.status(500).send({ message: "Your seat booked not exist" }) }
-      console.log(name)
-      itemsToAdd.push({
-        "name": name,
-        "sku": billsOfUser[i]._id,
-        "price": showSeat.price,
-        "currency": "USD",
-        "quantity": 1,
-        "description": descriptionItems
-      })
-    }
-    total = bill[0].totalMoney;
-    const create_payment_json = {
-      "intent": "sale",
-      "payer": {
-        "payment_method": "paypal"
-      },
-      "redirect_urls": {
-        "return_url": req.protocol + "://" + req.get('host') + "/api/paypal/success/" + req.params.id,
-        "cancel_url": req.protocol + "://" + req.get('host') + "/api/paypal/cancel/" + req.params.id
-      },
-      "transactions": [{
-        "item_list": {
-          //tra mot luc nhieu ve
-          //sku lay theo id
-          //status = 0: trong qua trinh tra; status = 1: thanh toan roi; status=-1: chua tra
-          // lay status = -1 xu ly roi gan = 0
-          "items": itemsToAdd
-        },
-        "amount": {
-          "currency": "USD",
-          "total": total
-        },
-        "description": req.params.id
-      }]
-    };
-    paypal.payment.create(create_payment_json, function (error, payment) {
-      if (error) {
-        res.status(400).send(error);
-      } else {
-        for (let i = 0; i < payment.links.length; i++) {
-          if (payment.links[i].rel === 'approval_url') {
-            console.log(payment.links[i].href)
-            res.redirect(payment.links[i].href);
-          }
-        }
-      }
-    });
+  let bill = await billsModel.find({ idCustomer: req.params.id, status: "-1" });
+  console.log(bill[0])
+  if (!bill[0]._id) {
+    let subHtml = fileHandle.template3Notification("No bills to pay")
+    return res.status(400).write(subHtml)
   }
+  //luc chua thanh toan moi nguoi chi co 1 bill
+  let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
+  console.log("check orders")
+  console.log(billsOfUser)
+  for (let i = 0; i < billsOfUser.length; i++) {
+    let showSeat;
+    let showing;
+    let movie;
+    let CinemaHall;
+    let Cinema;
+    try {
+      showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat)
+      showing = await ShowingModel.findById(showSeat.idShowing);
+      movie = await MovieModel.findById(showing.idMovie);
+      CinemaHall = await CinemaHallModel.findById(showing.idHall);
+      Cinema = await cinemaModel.findById(CinemaHall.idCinema);
+    }
+    catch (error) {
+      let subHtml = fileHandle.template3Notification("Your movie booked not exist")
+      return res.status(400).write(subHtml)
+    }
+    let name = ""
+    console.log()
+    try {
+      var date = timeHandle.formatDate_YearMonthDay(showing.startTime)
+      let hourMin = showing.time + "";
+      name = showSeat.number + " movie: " + movie.name + " at " + date + " " + hourMin + ", " + CinemaHall.name + ", " + Cinema.name;
+    }
+    catch (error) {
+      let subHtml = fileHandle.template3Notification("Your seat booked not exist")
+      return res.status(400).write(subHtml)
+    }
+    console.log(name)
+    itemsToAdd.push({
+      "name": name,
+      "sku": billsOfUser[i]._id,
+      "price": showSeat.price,
+      "currency": "USD",
+      "quantity": 1,
+    })
+  }
+  total = bill[0].totalMoney;
+  let result = await paypalHandle.paypalCreate(
+    req.protocol + "://" + req.get('host') + "/api/paypal/success/" + req.params.id,
+    req.protocol + "://" + req.get('host') + "/api/paypal/cancel/" + req.params.id,
+    itemsToAdd, total, req.params.id)
+  try {
+    res.redirect(result)
+    return;
+  }
+  catch (error) {
+    let subHtml = fileHandle.template3Notification("Can't create payment")
+    return res.status(400).write(subHtml)
+  }
+
 });
 /*
 app.get('/send_verify/:userId/:rand', async (req, res) => {
@@ -368,18 +346,18 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
   res.end();
 });*/
 app.get('/success/:buyer_id', async (req, res) => {
-  var subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt3.html'), 'utf8')
   const paymentId = req.query.paymentId;
   new Promise(() => {
     paypal.payment.get(paymentId, function (error, payment) {
       if (error) {
-        subHtml = subHtml.replace('responseBody', "Can't get bill")
-        res.status(400);
-        res.write(subHtml);
-        res.end();
-        return;
+        let subHtml = fileHandle.template3Notification("Can't get bill")
+        return res.status(400).write(subHtml)
       } else {
         console.log("Get Payment Response");
+        if (payment.state == "approved") {
+          let subHtml = fileHandle.template3Notification("Bill payed before")
+          return res.status(400).write(subHtml)
+        }
         {
           const payerId = req.query.PayerID;
           const currency_for_execute = payment.transactions[0].amount.currency;
@@ -394,46 +372,15 @@ app.get('/success/:buyer_id', async (req, res) => {
               }
             }]
           };
-          if (payment.state == "approved") {
-            subHtml = subHtml.replace('responseBody', "Bill payed before")
-            res.status(400);
-            res.write(subHtml);
-            res.end();
-            return;
-          }
-          let paymentInfo;
           // Obtains the transaction details from paypal
           paypal.payment.execute(paymentId, execute_payment_json, async function (error, payment) {
             //When error occurs when due to non-existent transaction, throw an error else log the transaction details in the console then send a Success string reposponse to the user.
             if (error) {
-              subHtml = subHtml.replace('responseBody', "Error paypal server")
-              res.status(400);
-              res.write(subHtml);
-              res.end();
-              return;
+              let subHtml = fileHandle.template3Notification("Error paypal server")
+              return res.status(400).write(subHtml)
             } else {
-              paymentInfo = payment;
-              let buyer_id = req.params.buyer_id;
-              let Name_items = [];
-              let Sku_items = [];
-              let Currency_items = [];
-              let Price_items = [];
-              let Quantity_items = [];
+
               try {
-                console.log(paymentInfo.transactions[0].item_list.items)
-                console.log(paymentInfo.transactions[0].item_list)
-                for (let i = 0; i < paymentInfo.transactions[0].item_list.items.length; i++) {
-                  Name_items[i] = paymentInfo.transactions[0].item_list.items[i].name;
-                  Sku_items[i] = paymentInfo.transactions[0].item_list.items[i].sku;
-                  Quantity_items[i] = paymentInfo.transactions[0].item_list.items[i].quantity;
-                  Currency_items[i] = paymentInfo.transactions[0].item_list.items[i].currency;
-                  Price_items[i] = paymentInfo.transactions[0].item_list.items[i].price;
-                }
-                console.log(paymentInfo.transactions[0].item_list.items.length)
-                subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt2.html'), 'utf8')
-                subHtml = subHtml.replace('OrderNumber', paymentId)
-                subHtml = subHtml.replace('DateOrder', paymentInfo.transactions[0].related_resources[0].sale.update_time.substring(0, 10))
-                let bill = await billsModel.find({ idCustomer: payment.transactions[0].description, status: "-1" });
                 //luc chua thanh toan moi nguoi chi co 1 bill
                 console.log(bill)
                 let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
@@ -446,26 +393,21 @@ app.get('/success/:buyer_id', async (req, res) => {
                 console.log("done check")
                 for (let i = 0; i < billsOfUser.length; i++) {
                   let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
-                  let CinemaHallSeat = await CinemaHallSeatModel.find({ _id: showSeat.idCinemaHallSeat });
                   console.log("tohere")
                   try {
                     let showingtemp;
                     let movietemp;
-                    let CinemaHalltemp;
                     let Cinematemp;
                     showingtemp = await ShowingModel.findById(showSeat.idShowing);
                     movietemp = await MovieModel.findById(showingtemp.idMovie);
                     movietemp = movietemp.name;
-                    CinemaHalltemp = await CinemaHallModel.findById(showingtemp.idHall);
-                    Cinematemp = await cinemaModel.findById(CinemaHalltemp.idCinema);
+                    Cinematemp = await cinemaModel.findById(showingtemp.idCinema);
                     Cinematemp = Cinematemp.name;
-                    var datetemp = new Date(showingtemp.startTime),
-                      mnthtemp = ("0" + (datetemp.getMonth() + 1)).slice(-2),
-                      daytemp = ("0" + datetemp.getDate()).slice(-2);
+                    var datetemp = timeHandle.formatDate_YearMonthDay(showingtemp.startTime)
                     if (session.indexOf(showingtemp.time) == -1)
                       session = session + ', ' + showingtemp.time;
-                    if (date.indexOf([datetemp.getFullYear(), mnthtemp, daytemp].join("-")) == -1)
-                      date = date + ', ' + [datetemp.getFullYear(), mnthtemp, daytemp].join("-");
+                    if (date.indexOf(datetemp) == -1)
+                      date = date + ', ' + datetemp;
                     if (movie.indexOf(movietemp) == -1)
                       movie = movie + ', ' + movietemp;
                     if (Cinema.indexOf(Cinematemp) == -1)
@@ -473,58 +415,25 @@ app.get('/success/:buyer_id', async (req, res) => {
                     if (seat.indexOf(showSeat.number) == -1)
                       seat = seat + ', ' + showSeat.number
                   }
-                  catch (error) { return res.status(500).send(error) }
+                  catch (error) {
+                    let subHtml = fileHandle.template3Notification(error)
+                    return res.status(400).write(subHtml)
+                  }
                 }
-                console.log(movie)
-                movie = movie.substring(1)
-                subHtml = subHtml.replace('MovieName', '' + movie + '');
-                Cinema = Cinema.substring(1)
-                console.log(Cinema)
-                subHtml = subHtml.replace('CinemaName', '' + Cinema + '');
-                date = date.substring(1)
-                console.log(date)
-                subHtml = subHtml.replace('DateName', '' + date + '');
-                session = session.substring(1)
-                console.log(session)
-                subHtml = subHtml.replace('SessionName', '' + session + '');
-                console.log(seat)
-                seat = seat.substring(1)
-                subHtml = subHtml.replace('SeatName', '' + seat + '');
-                console.log(billsOfUser.length)
-                subHtml = subHtml.replace('SeatQuantity', '' + billsOfUser.length + '');
-                console.log(total_for_execute)
-                subHtml = subHtml.replace('SeatQuantityMoney', '' + total_for_execute + '')
-                subHtml = subHtml.replace('TotalVatMoney', '' + total_for_execute + '')
-                console.log("done to hererrrrrrr")
-                var emailToSend = await userModel.find({ _id: payment.transactions[0].description }).select('email -_id')
-                var mailOptions = {
-                  from: 'backendtlcn@gmail.com',
-                  to: emailToSend[0].email,
-                  subject: 'Sending Email using Node.js',
-                  html: subHtml
-                };
-                console.log(emailToSend)
-                console.log("done to hererrrrrrr 2")
-                await new Promise((resolve, reject) => {
-                  emailProvider.sendMail(mailOptions, function (error, info) {
-                    if (error) {
-                      res.status(400).send(error);
-                      reject(error);
-                    } else {
-                      console.log(info)
-                      resolve(info);
-                    }
-                  })
-                });
+                let sendEmailResult = await emailHandle.sendInvoice(
+                  paymentId, payment, movie, Cinema, date, session, seat,
+                  billsOfUser, total_for_execute
+                )
+                if (!sendEmailResult) {
+                  let subHtml = fileHandle.template3Notification("Can't send email")
+                  return res.status(400).write(subHtml)
+                }
                 console.log("toherrrrrrrrer")
                 await billsModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
                 await showSeatModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
                 await orderModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
-                subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt3.html'), 'utf8')
-                subHtml = subHtml.replace('responseBody', "Done paying and sended invoice to email")
-                res.status(400);
-                res.write(subHtml);
-                res.end();
+                let subHtml = fileHandle.template3Notification("Done paying and sended invoice to email")
+                return res.status(400).write(subHtml)
                 /*              const data = await transactionsModel.create({
                                 buyer: buyer_id,
                                 Fname: paymentInfo.payer.payer_info.first_name,
@@ -547,12 +456,8 @@ app.get('/success/:buyer_id', async (req, res) => {
                                 Price_items: Price_items
                               });*/
               } catch (error) {
-                subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt3.html'), 'utf8')
-                subHtml = subHtml.replace('responseBody', error)
-                //"Khong tim thay cac ghe trong giao dich"
-                res.status(400);
-                res.write(subHtml);
-                res.end();
+                let subHtml = fileHandle.template3Notification(error)
+                return res.status(400).write(subHtml)
               }
             }
           });
