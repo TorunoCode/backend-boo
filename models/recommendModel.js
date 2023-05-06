@@ -8,7 +8,6 @@ const recommendSchema = new mongoose.Schema({
     },
     email: {
         type: String
-
     },
     count: {
         type: Number,

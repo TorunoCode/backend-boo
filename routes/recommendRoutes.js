@@ -4,8 +4,10 @@ import recommendModel from '../models/recommendModel.js';
 import mongoose from 'mongoose';
 const app = express.Router();
 app.get('/sendRecommend/:idMovie', async function (req, res) {
-    await recommend.sendRecommentMovie(req.params.idMovie);
-    return res.status(200).send({ message: "done" });
+    if (!req.params.idMovie) {
+        return res.status(400).send({ message: "Missing movie id" })
+    }
+    return res.status(200).send({ message: await recommend.sendRecommentMovie(req.params.idMovie) });
 })
 /*app.get('/test/:idMovie/:idUser', async function (req, res) {
     recommend.addUserRecentBuyMovieGenre(req.params.idUser, req.params.idMovie);
