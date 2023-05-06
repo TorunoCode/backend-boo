@@ -402,7 +402,7 @@ app.get('/success/:buyer_id', async function (req, res) {
             return
           } else {
             try {
-              let dateOrder = Date()
+              let dateOrder = new Date()
               let sendEmailResult = await paymentFunction.sendEmailInvoice(paymentId, req.params.buyer_id, total_for_execute, dateOrder)
               if (!sendEmailResult)
                 return res.status(400).send({ message: "Can't send confirm email" })
