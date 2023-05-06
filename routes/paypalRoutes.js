@@ -258,8 +258,7 @@ app.get('/pay/:id', async function (req, res) {
       showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat)
       showing = await ShowingModel.findById(showSeat.idShowing);
       movie = await MovieModel.findById(showing.idMovie);
-      CinemaHall = await CinemaHallModel.findById(showing.idHall);
-      Cinema = await cinemaModel.findById(CinemaHall.idCinema);
+      Cinema = await cinemaModel.findById(showing.idCinema);
     }
     catch (error) {
       let subHtml = fileHandle.template3Notification("Your movie booked not exist")

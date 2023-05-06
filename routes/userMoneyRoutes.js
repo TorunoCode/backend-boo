@@ -8,6 +8,7 @@ import orderModel from "../models/orderModel.js";
 import showSeatModel from '../models/showSeatModel.js';
 import paypalHandle from '../commonFunction/paypalHandle.js';
 import moneyHandle from '../commonFunction/moneyHandle.js';
+import payment from '../routeFunction/payment.js';
 const app = express.Router();
 app.get("/add/:email/:money", async function (req, res) {
     let user = await UserModal.findOne({ email: req.params.email })
@@ -162,11 +163,14 @@ app.post('/pay', async function (req, res) {
         return res.status(400).send({ message: "Not enough money in balance" })
     }
     userMoney = "" + userMoney;
+    let sendEmailResult = await payment.sendEmailInvoice(user.id)
+    if (!sendEmailResult)
+        return res.status(400).send({ message: "Can't send confirm email" })
     user = await UserModal.findOneAndUpdate({ email: req.body.email }, { money: userMoney }, { new: true })
     await billsModel.updateMany({ idCustomer: user.id }, { "$set": { status: "1" } })
     await showSeatModel.updateMany({ idCustomer: user.id }, { "$set": { status: "1" } })
     await orderModel.updateMany({ idCustomer: user.id }, { "$set": { status: "1" } })
-    res.status(200).send({ message: "Payed orders" })
+    return res.status(200).send({ message: "Payed orders" })
 })
 /*app.get('/testpaypalpayout/:email/:money', async function (req, res) {
     let user = UserModal.findOne({ email: req.params.email })
