@@ -32,4 +32,15 @@ async function updateUserInfoAfterVerifyLogin(email, name, given_name, picture) 
     console.log(existsInDB)
     return existsInDB;
 }
+async function addMoneyToUser(userEmail, total_for_execute) {
+    let user = await UserModal.findOne({ email: userEmail })
+    let userMoney
+    if (user.money == null)
+        userMoney = parseFloat(0)
+    else userMoney = parseFloat(user.money)
+    userMoney = moneyHandle.addMoney(userMoney, total_for_execute);
+    userMoney = userMoney.toString();
+    user = await UserModal.findOneAndUpdate({ email: userEmail }, { money: userMoney }, { new: true });
+    return user
+}
 export default { updateUserInfoAfterVerifyLogin }
