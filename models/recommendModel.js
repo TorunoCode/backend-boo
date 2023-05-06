@@ -6,15 +6,20 @@ const recommendSchema = new mongoose.Schema({
     genre: {
         type: String
     },
-    email: {
-        type: String
-    },
     count: {
         type: Number,
         default: 0
     }
 }, {
-    timestamps: true
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+});
+recommendSchema.virtual('user', {
+    ref: 'User',
+    localField: 'idCustomer',
+    foreignField: '_id',
+    justOne: true
 });
 const Recommend = mongoose.model('Recom', recommendSchema);
 export default Recommend;

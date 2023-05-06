@@ -9,6 +9,14 @@ app.get('/sendRecommend/:idMovie', async function (req, res) {
     }
     return res.status(200).send({ message: await recommend.sendRecommentMovie(req.params.idMovie) });
 })
+
+app.get('/getAll', async function (req, res) {
+    return res.status(200).send(await recommendModel.find({}))
+});
+app.get('/checkpopulate/:id', async function (req, res) {
+    console.log(await recommendModel.find({ _id: req.params.id }).populate("user"))
+    return res.status(200).send("done")
+})
 /*app.get('/test/:idMovie/:idUser', async function (req, res) {
     recommend.addUserRecentBuyMovieGenre(req.params.idUser, req.params.idMovie);
     return res.status(200).send({ message: "done" });
