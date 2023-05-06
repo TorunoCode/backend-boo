@@ -57,18 +57,24 @@ async function paypalCreate(returnUrl, cancelUrl, items, total, description) {
             "description": description
         }]
     };
-    paypal.payment.create(create_payment_json, function (error, payment) {
-        if (error) {
-            console.log(error)
-            return error
-        } else {
-            for (let i = 0; i < payment.links.length; i++) {
-                if (payment.links[i].rel === 'approval_url') {
-                    console.log(payment.links[i].href)
-                    return payment.links[i].href
+    console.log("inside paypal")
+    let paymentLink;
+    return new Promise(function (resolve, reject) {
+        paypal.payment.create(create_payment_json, function (error, payment) {
+            if (error) {
+                console.log(error)
+                reject(error)
+            } else {
+                for (let i = 0; i < payment.links.length; i++) {
+                    if (payment.links[i].rel === 'approval_url') {
+                        console.log(payment.links[i].href)
+                        paymentLink = payment.links[i].href + ""
+                        console.log("link payment: " + paymentLink)
+                        resolve(paymentLink)
+                    }
                 }
             }
-        }
+        });
     });
 }
 export default { paypalPayout, paypalCreate }

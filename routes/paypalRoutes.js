@@ -225,7 +225,8 @@ app.get("/test3", async function (req, res) {
                     "last_name": "Shopper"
                 }
             }*/
-app.get('/pay/:id', async (req, res) => {
+app.get('/pay/:id', async function (req, res) {
+  console.log(req.params.id)
   /*  let rand = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength = characters.length;
@@ -237,7 +238,7 @@ app.get('/pay/:id', async (req, res) => {
   let itemsToAdd = []
   let bill = await billsModel.find({ idCustomer: req.params.id, status: "-1" });
   console.log(bill[0])
-  if (!bill[0]._id) {
+  if (!bill[0]) {
     let subHtml = fileHandle.template3Notification("No bills to pay")
     return res.status(400).write(subHtml)
   }
@@ -263,7 +264,6 @@ app.get('/pay/:id', async (req, res) => {
       return res.status(400).write(subHtml)
     }
     let name = ""
-    console.log()
     try {
       var date = timeHandle.formatDate_YearMonthDay(showing.startTime)
       let hourMin = showing.time + "";
@@ -282,12 +282,15 @@ app.get('/pay/:id', async (req, res) => {
       "quantity": 1,
     })
   }
+  console.log("check")
   total = bill[0].totalMoney;
   let result = await paypalHandle.paypalCreate(
     req.protocol + "://" + req.get('host') + "/api/paypal/success/" + req.params.id,
     req.protocol + "://" + req.get('host') + "/api/paypal/cancel/" + req.params.id,
     itemsToAdd, total, req.params.id)
   try {
+    console.log("done here")
+    console.log(result)
     res.redirect(result)
     return;
   }
@@ -345,7 +348,7 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
   res.write(subHtml);
   res.end();
 });*/
-app.get('/success/:buyer_id', async (req, res) => {
+app.get('/success/:buyer_id', async function (req, res) {
   const paymentId = req.query.paymentId;
   new Promise(() => {
     paypal.payment.get(paymentId, function (error, payment) {
@@ -382,6 +385,7 @@ app.get('/success/:buyer_id', async (req, res) => {
 
               try {
                 //luc chua thanh toan moi nguoi chi co 1 bill
+                let bill = await billsModel.find({ id: payment.transactions[0].description })
                 console.log(bill)
                 let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
                 let movie = '';
@@ -420,6 +424,7 @@ app.get('/success/:buyer_id', async (req, res) => {
                     return res.status(400).write(subHtml)
                   }
                 }
+                console.log("to send email")
                 let sendEmailResult = await emailHandle.sendInvoice(
                   paymentId, payment, movie, Cinema, date, session, seat,
                   billsOfUser, total_for_execute
