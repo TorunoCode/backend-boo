@@ -2,6 +2,7 @@ import UserModal from '../models/userModel.js';
 import stringHandle from '../commonFunction/stringHandle.js';
 import bcrypt from 'bcryptjs'
 import emailHandle from '../commonFunction/emailHandle.js';
+import moneyHandle from '../commonFunction/moneyHandle.js';
 async function updateUserInfoAfterVerifyLogin(email, name, given_name, picture) {
     let existsInDB = await UserModal.findOne({ email: email });
     console.log(existsInDB)
@@ -43,4 +44,4 @@ async function addMoneyToUser(userEmail, total_for_execute) {
     user = await UserModal.findOneAndUpdate({ email: userEmail }, { money: userMoney }, { new: true });
     return user
 }
-export default { updateUserInfoAfterVerifyLogin }
+export default { updateUserInfoAfterVerifyLogin, addMoneyToUser }
