@@ -115,7 +115,7 @@ app.get('/success/:email', async function (req, res) {
             userMoney = moneyHandle.addMoney(userMoney, total_for_execute);
             userMoney = userMoney.toString();
             user = await UserModal.findOneAndUpdate({ email: req.params.email }, { money: userMoney }, { new: true });
-            subHtml = fileHandle.template4Notification("Success payment")
+            subHtml = fileHandle.template4Notification("Success add money")
             res.status(200);
             res.write(subHtml);
             res.end();
