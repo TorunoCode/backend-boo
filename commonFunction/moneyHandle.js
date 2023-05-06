@@ -1,11 +1,11 @@
 function largestDemical(money1, money2) {
     let demicalCount
     let demicalCount2
-    if (Math.floor(money2) === money2) {
+    if (Math.floor(money1) === money1) {
         demicalCount = 0
     }
     else {
-        demicalCount = money2.toString().split(".")[1].length || 0;
+        demicalCount = money1.toString().split(".")[1].length || 0;
     }
     if (Math.floor(money2) === money2) {
         demicalCount2 = 0
