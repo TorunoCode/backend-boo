@@ -385,7 +385,7 @@ app.get('/success/:buyer_id', async function (req, res) {
 
               try {
                 //luc chua thanh toan moi nguoi chi co 1 bill
-                let bill = await billsModel.find({ id: payment.transactions[0].description })
+                let bill = await billsModel.find({ id: payment.transactions[0].description, status: "-1" })
                 console.log(bill)
                 let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
                 let movie = '';
