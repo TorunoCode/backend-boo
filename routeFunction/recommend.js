@@ -15,8 +15,9 @@ async function addUserRecentBuyMovieGenre(idUser, idMovie) {
     }
     else {
         console.log("else")
-        let count = recommendTest.count
+        //let count = recommendTest.count
         //count = count + 1
+        let count
         count = 2
         console.log(count)
         recommendTest = await recommendModel.findOneAndUpdate({ idCustomer: idUser, genre: movieGerne.genre }, { count: count })
@@ -38,7 +39,7 @@ async function sendRecommentMovie(idMovie) {
     var emails = users.map(item => item.email)
     console.log(emails);
     let emailBody = fileHandle.RecommendHtml(movie.image, movie.name)
-    let test = emailHandle.sendHttpMailBcc(emailBody, emails)
+    let test = await emailHandle.sendHttpMailBcc(emailBody, emails)
     return
 }
 export default { addUserRecentBuyMovieGenre, sendRecommentMovie }

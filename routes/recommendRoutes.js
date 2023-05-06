@@ -4,7 +4,7 @@ import recommendModel from '../models/recommendModel.js';
 import mongoose from 'mongoose';
 const app = express.Router();
 app.get('/sendRecommend/:idMovie', async function (req, res) {
-    recommend.sendRecommentMovie(req.params.idMovie);
+    await recommend.sendRecommentMovie(req.params.idMovie);
     return res.status(200).send({ message: "done" });
 })
 /*app.get('/test/:idMovie/:idUser', async function (req, res) {
