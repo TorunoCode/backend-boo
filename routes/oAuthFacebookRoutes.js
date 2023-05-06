@@ -14,7 +14,7 @@ const app = express.Router();
 //const FACEBOOK_APP_TOKEN2 = "1620897148361329|Q78S4BaMN5TPM3HRrLlk2iCq5j4"
 const FACEBOOK_APP_TOKEN = process.env.FACEBOOK_APP_TOKEN
 //608150604248710|oJo9VAaZ1vktIKbWNS0epeLeEyg
-app.get("/", async (req, res) => {
+app.get("/", async function (req, res) {
     res.send({ message: "api/oAuthFacebookRoutes/Signup" })
 })
 //https://graph.facebook.com/debug_token?
@@ -26,7 +26,7 @@ async function verifyFacebookAccessToken(input_token) {
             + input_token + '&access_token=' + FACEBOOK_APP_TOKEN)
     return dataToUse
 }
-app.post("/login", async (req, res) => {
+app.post("/login", async function (req, res) {
     try {
         console.log("login here")
         console.log(req.body.accessToken)

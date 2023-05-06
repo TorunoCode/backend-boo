@@ -309,7 +309,7 @@ app.get('/pay/:id', async function (req, res) {
 
 });
 /*
-app.get('/send_verify/:userId/:rand', async (req, res) => {
+app.get('/send_verify/:userId/:rand', async function (req, res) {
   await billsModel.updateMany({ idCustomer: req.params.userId }, { "$set": { status: "1" } })
   await showSeatModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
   await orderModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
@@ -356,7 +356,7 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
   res.write(subHtml);
   res.end();
 });*/
-app.get('/success/:buyer_id', async (req, res) => {
+app.get('/success/:buyer_id', async function (req, res) {
   const paymentId = req.query.paymentId;
 
   paypal.payment.get(paymentId, function (error, payment) {
@@ -541,7 +541,7 @@ app.post("/delete_allTransaction", async (request, response) => {
     response.status(500).send(error);
   }
 });*/
-app.get('/cancel/:user_id', async (req, res) => {
+app.get('/cancel/:user_id', async function (req, res) {
   console.log('to delete all transactions');
 
   const check = await orderModel.findOne({ idCustomer: req.params.id, status: -1 });   //lay bill hien tai 

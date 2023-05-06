@@ -6,7 +6,7 @@ import emailHandle from '../commonFunction/emailHandle.js';
 import timeHandle from '../commonFunction/timeHandle.js';
 const app = express.Router();
 
-app.post("/forgotpassword", async (req, res) => {
+app.post("/forgotpassword", async function (req, res) {
     let RandOTP = stringHandle.randomString();
     console.log(RandOTP)
     let user = await UserModal.findOneAndUpdate({ email: req.body.email }, { OTP: RandOTP, timeCreatedOTP: Date.now() }, { new: true })
@@ -19,7 +19,7 @@ app.post("/forgotpassword", async (req, res) => {
     return res.status(200).json({ message: "Sended OTP to your email!" });
 
 });
-app.post("/forgotpasswordchangepass", async (req, res) => {
+app.post("/forgotpasswordchangepass", async function (req, res) {
     let user = await UserModal.find({ email: req.body.email, OTP: req.body.OTP })
     console.log(user)
     if (user[0] == null)
@@ -33,7 +33,7 @@ app.post("/forgotpasswordchangepass", async (req, res) => {
         return res.status(400).json({ message: "Error updating your password" });
     return res.status(200).json({ message: "Change password success" });
 })
-app.post("/changepass", async (req, res) => {
+app.post("/changepass", async function (req, res) {
     let user = await UserModal.findOne({ email: req.body.email })
     const isPasswordCorrect = await stringHandle.compareBcrypt(user.password, req.body.oldpassword);
     if (!isPasswordCorrect)

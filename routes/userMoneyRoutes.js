@@ -66,7 +66,7 @@ app.get("/add/:email/:money", async function (req, res) {
         }
     });
 })
-app.get('/success/:email', async (req, res) => {
+app.get('/success/:email', async function (req, res) {
     let subHtml;
     const paymentId = req.query.paymentId;
     let payerId, currency_for_execute, total_for_execute, execute_payment_json;
@@ -124,14 +124,14 @@ app.get('/success/:email', async (req, res) => {
     });
 
 });
-app.get('/cancel', (req, res) => {
+app.get('/cancel', function (req, res) {
     let subHtml = fileHandle.template4Notification("Cancelled add money")
     res.status(200);
     res.write(subHtml);
     res.end();
     return
 });
-app.get('/money/:email', async (req, res) => {
+app.get('/money/:email', async function (req, res) {
     let user = await UserModal.findOne({ email: req.params.email }).select('money');
     console.log(user)
     if (user)
@@ -139,7 +139,7 @@ app.get('/money/:email', async (req, res) => {
     else
         return res.status(400).send({ money: 0 })
 });
-app.post('/pay', async (req, res) => {
+app.post('/pay', async function (req, res) {
     let user = await UserModal.findOne({ email: req.body.email })
     if (!user) {
         return res.status(400).send({ message: "Can't find email" })
@@ -168,7 +168,7 @@ app.post('/pay', async (req, res) => {
     await orderModel.updateMany({ idCustomer: user.id }, { "$set": { status: "1" } })
     res.status(200).send({ message: "Payed orders" })
 })
-/*app.get('/testpaypalpayout/:email/:money', async (req, res) => {
+/*app.get('/testpaypalpayout/:email/:money', async function (req, res) {
     let user = UserModal.findOne({ email: req.params.email })
     if (!user) {
         return res.status(400).send({ message: "Can't find email" })
@@ -179,7 +179,7 @@ app.post('/pay', async (req, res) => {
     return res.status(200).send({ message: result.error })
 
 })*/
-app.get('/test/addMoney/:money1/:money2', async (req, res) => {
+app.get('/test/addMoney/:money1/:money2', async function (req, res) {
     let addResult = moneyHandle.addMoney(req.params.money1, req.params.money2)
     let subtractResult = moneyHandle.subtractionMoney(req.params.money1, req.params.money2)
     return res.send({ "add": addResult, "sub": subtractResult })

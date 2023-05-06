@@ -11,7 +11,7 @@ import getDataHandle from '../commonFunction/getDataHandle.js';
 import bcrypt from 'bcryptjs';
 import user from '../routeFunction/user.js';
 const app = express.Router();
-app.get("/", async (req, res) => {
+app.get("/", async function (req, res) {
     res.send({ message: "api/oAuthGoogleRoutes/Signup" })
 })
 //const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
@@ -47,7 +47,7 @@ async function userInfoFromGoogleAccessToken(token) {
 }
 
 // server.js
-app.post("/login", async (req, res) => {
+app.post("/login", async function (req, res) {
     try {
         console.log("loginRoute")
         let profile, verificationResponse;

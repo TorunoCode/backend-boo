@@ -16,7 +16,7 @@ const app = express.Router();
 /*app.get("/test", function (req, res) {
     res.send("Summing Routes");
 });
-app.get("/movieInDay/:day/:month/:year/:page", async (req, res) => {
+app.get("/movieInDay/:day/:month/:year/:page", async function (req, res) {
     let day = req.params.day;
     let month = req.params.month;
     let year = req.params.year;
@@ -88,7 +88,7 @@ app.get("/movieInDay/:day/:month/:year/:page", async (req, res) => {
     }
     res.status(200).send(result);
 })
-app.get("/movieInMonth/:month/:year/:page", async (req, res) => {
+app.get("/movieInMonth/:month/:year/:page", async function (req, res) {
     let month = req.params.month;
     let year = req.params.year;
     let page = req.params.page;
@@ -171,7 +171,7 @@ app.get("/movieInMonth/:month/:year/:page", async (req, res) => {
     }
     res.status(200).send(result);
 })
-app.get("/moneyInMonth/:month/:year", async (req, res) => {
+app.get("/moneyInMonth/:month/:year", async function (req, res) {
     let month = req.params.month;
     let year = req.params.year;
     let last_day_of_month = new Date(year, month);
@@ -199,7 +199,7 @@ app.get("/moneyInMonth/:month/:year", async (req, res) => {
     result.push({ "Sum money of month": sum_result });
     res.status(200).send(result);
 })
-app.get("/moneyInYear/:year", async (req, res) => {
+app.get("/moneyInYear/:year", async function (req, res) {
     let year = req.params.year;
     let result = [];
     for (let month = 1; month <= 12; month++) {
@@ -244,7 +244,7 @@ app.get("/moneyInYear/:year", async (req, res) => {
     }
     res.status(200).send(result);
 })*/
-app.get("/top10user", async (req, res) => {
+app.get("/top10user", async function (req, res) {
     let result = []
     const sum_money = await billsModel.aggregate([{
         $group: {
@@ -269,7 +269,7 @@ app.get("/top10user", async (req, res) => {
     }
     res.status(200).send(result);
 })
-app.get("/top10recent", async (req, res) => {
+app.get("/top10recent", async function (req, res) {
     let result = []
     const sum_money = await billsModel.find({}).sort({ "createdAt": -1 }).limit(10)
     let user, nameUser;
@@ -289,7 +289,7 @@ app.get("/top10recent", async (req, res) => {
     }
     res.status(200).send(result);
 })
-app.get("/summary/:date", async (req, res) => {
+app.get("/summary/:date", async function (req, res) {
     let day_finding = new Date(req.params.date);
     let result = {};
     let Revenue = await summing.countRevenue(timeHandle.getTodayAt0(day_finding), timeHandle.getTomorrorAt0(day_finding))
@@ -323,7 +323,7 @@ app.get("/summary/:date", async (req, res) => {
 
     res.status(200).send(result);
 })
-app.get("/summaryMoneyInThisYearAndLastYear", async (req, res) => {
+app.get("/summaryMoneyInThisYearAndLastYear", async function (req, res) {
     //let year = req.params.year;
     let year = (new Date()).getFullYear();
     let result = {};
