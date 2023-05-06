@@ -457,7 +457,9 @@ app.get('/success/:buyer_id', async (req, res) => {
               await showSeatModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
               await orderModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
               let subHtml = fileHandle.template3Notification("Done paying and sended invoice to email")
-              return res.status(200).write(subHtml)
+              res.status(200).write(subHtml)
+              res.end()
+              return
               /*              const data = await transactionsModel.create({
                               buyer: buyer_id,
                               Fname: paymentInfo.payer.payer_info.first_name,
