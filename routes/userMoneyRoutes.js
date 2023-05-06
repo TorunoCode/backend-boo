@@ -186,6 +186,11 @@ app.post('/pay', async function (req, res) {
 app.get('/test/addMoney/:money1/:money2', async function (req, res) {
     let addResult = moneyHandle.addMoney(req.params.money1, req.params.money2)
     let subtractResult = moneyHandle.subtractionMoney(req.params.money1, req.params.money2)
-    return res.send({ "add": addResult, "sub": subtractResult })
+    let compareReuslt;
+    if (subtractResult < 0)
+        compareReuslt = req.params.money1 + " < " + req.params.money2
+    else
+        compareReuslt = req.params.money1 + " > " + req.params.money2
+    return res.send({ "add": addResult, "sub": subtractResult, "compare": compareReuslt })
 })
 export default app;
