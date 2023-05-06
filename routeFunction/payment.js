@@ -7,7 +7,7 @@ import cinemaModel from '../models/cinemaModel.js';
 import fileHandle from '../commonFunction/fileHandle.js';
 import timeHandle from '../commonFunction/timeHandle.js';
 import emailHandle from '../commonFunction/emailHandle.js';
-async function sendEmailInvoice(idUser) {
+async function sendEmailInvoice(paymentId, idUser, total_for_execute, dateOrder) {
     //user vừa trả tiền status vẫn = -1
     let bill = await billsModel.find({ idCustomer: idUser, status: "-1" })
     console.log(bill)
@@ -49,8 +49,8 @@ async function sendEmailInvoice(idUser) {
     }
     console.log("to send email")
     let sendEmailResult = await emailHandle.sendInvoice(
-        paymentId, payment, movie, Cinema, date, session, seat,
-        billsOfUser, total_for_execute
+        paymentId, idUser, movie, Cinema, date, session, seat,
+        billsOfUser, total_for_execute, dateOrder
     )
     if (!sendEmailResult) {
         return false

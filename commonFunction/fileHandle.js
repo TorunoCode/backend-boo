@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import timeHandle from './timeHandle.js';
 function template3Notification(responseBody) {
     var subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt3.html'), 'utf8')
     subHtml = subHtml.replace('responseBody', responseBody)
@@ -17,10 +18,12 @@ function RecommendHtml(MovieImage, MovieName) {
     subHtml = subHtml.replace('MovieName2', MovieName)
     return subHtml;
 }
-function invoice(paymentId, payment, movie, cinema, date, session, seat, billsOfUser, total_for_execute) {
+function invoice(paymentId, movie, cinema, date, session, seat, billsOfUser, total_for_execute, dateOrder) {
     var subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt2.html'), 'utf8')
     subHtml = subHtml.replace('OrderNumber', paymentId)
-    subHtml = subHtml.replace('DateOrder', payment.transactions[0].related_resources[0].sale.update_time.substring(0, 10))
+    //subHtml = subHtml.replace('DateOrder', payment.transactions[0].related_resources[0].sale.update_time.substring(0, 10))
+    console.log(dateOrder)
+    subHtml = subHtml.replace('DateOrder', timeHandle.formatDate_YearMonthDay(dateOrder))
     console.log(movie)
     movie = movie.substring(1)
     subHtml = subHtml.replace('MovieName', '' + movie + '');

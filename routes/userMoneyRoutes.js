@@ -158,12 +158,14 @@ app.post('/pay', async function (req, res) {
     let userMoney = parseFloat(user.money)
     console.log(total)
     console.log(userMoney)
+    console.log(user)
     userMoney = moneyHandle.subtractionMoney(userMoney, total)
     if (userMoney < 0) {
         return res.status(400).send({ message: "Not enough money in balance" })
     }
     userMoney = "" + userMoney;
-    let sendEmailResult = await payment.sendEmailInvoice(user.id)
+    let dateOrder = new Date()
+    let sendEmailResult = await payment.sendEmailInvoice(bill[0].id, user.id, total, dateOrder)
     if (!sendEmailResult)
         return res.status(400).send({ message: "Can't send confirm email" })
     user = await UserModal.findOneAndUpdate({ email: req.body.email }, { money: userMoney }, { new: true })

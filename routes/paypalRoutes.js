@@ -19,6 +19,7 @@ import fs from 'fs';
 import path from 'path';
 import { time } from 'console';
 import emailHandle from '../commonFunction/emailHandle.js';
+import paymentFunction from '../routeFunction/payment.js';
 const app = express.Router();
 /*app.get("/test/:id", function (req, res) {
   res.send("paypal Routes");
@@ -396,61 +397,10 @@ app.get('/success/:buyer_id', async function (req, res) {
             res.end()
             return
           } else {
-
             try {
-              //luc chua thanh toan moi nguoi chi co 1 bill
-              let bill = await billsModel.find({ idCustomer: req.params.buyer_id, status: "-1" })
-              console.log(bill)
-              let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
-              let movie = '';
-              let Cinema = '';
-              let date = '';
-              let session = '';
-              let seat = '';
-              console.log(billsOfUser)
-              console.log("done check")
-              for (let i = 0; i < billsOfUser.length; i++) {
-                let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
-                console.log("tohere")
-                try {
-                  let showingtemp;
-                  let movietemp;
-                  let Cinematemp;
-                  showingtemp = await ShowingModel.findById(showSeat.idShowing);
-                  movietemp = await MovieModel.findById(showingtemp.idMovie);
-                  movietemp = movietemp.name;
-                  Cinematemp = await cinemaModel.findById(showingtemp.idCinema);
-                  Cinematemp = Cinematemp.name;
-                  var datetemp = timeHandle.formatDate_YearMonthDay(showingtemp.startTime)
-                  if (session.indexOf(showingtemp.time) == -1)
-                    session = session + ', ' + showingtemp.time;
-                  if (date.indexOf(datetemp) == -1)
-                    date = date + ', ' + datetemp;
-                  if (movie.indexOf(movietemp) == -1)
-                    movie = movie + ', ' + movietemp;
-                  if (Cinema.indexOf(Cinematemp) == -1)
-                    Cinema = Cinema + ', ' + Cinematemp;
-                  if (seat.indexOf(showSeat.number) == -1)
-                    seat = seat + ', ' + showSeat.number
-                }
-                catch (error) {
-                  let subHtml = fileHandle.template3Notification(error)
-                  res.status(400).write(subHtml)
-                  res.end()
-                  return
-                }
-              }
-              console.log("to send email")
-              let sendEmailResult = await emailHandle.sendInvoice(
-                paymentId, payment, movie, Cinema, date, session, seat,
-                billsOfUser, total_for_execute
-              )
-              if (!sendEmailResult) {
-                let subHtml = fileHandle.template3Notification("Can't send email")
-                res.status(400).write(subHtml)
-                res.end()
-                return
-              }
+              let sendEmailResult = await paymentFunction.sendEmailInvoice(paymentId, req.params.buyer_id, total_for_execute, payment.transactions[0].related_resources[0].sale.update_time)
+              if (!sendEmailResult)
+                return res.status(400).send({ message: "Can't send confirm email" })
               console.log("toherrrrrrrrer")
               await billsModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
               await showSeatModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })

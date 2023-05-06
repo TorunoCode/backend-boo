@@ -58,11 +58,11 @@ async function sendHttpMailBcc(emailBody, mail) {
     });
     return result
 }
-async function sendInvoice(paymentId, payment, movie, cinema, date, session, seat, billsOfUser, total_for_execute) {
+async function sendInvoice(paymentId, idUser, movie, cinema, date, session, seat, billsOfUser, total_for_execute, dateOrder) {
     console.log("to send invoice")
-    let subHtml = fileHandle.invoice(paymentId, payment, movie, cinema, date, session, seat, billsOfUser, total_for_execute)
+    let subHtml = fileHandle.invoice(paymentId, movie, cinema, date, session, seat, billsOfUser, total_for_execute, dateOrder)
     console.log("done to hererrrrrrr")
-    var emailToSend = await userModel.find({ _id: payment.transactions[0].description }).select('email -_id')
+    var emailToSend = await userModel.find({ _id: idUser }).select('email -_id')
     var mailOptions = {
         from: 'backendtlcn@gmail.com',
         to: emailToSend[0].email,
