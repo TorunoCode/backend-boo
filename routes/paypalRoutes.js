@@ -240,7 +240,9 @@ app.get('/pay/:id', async function (req, res) {
   console.log(bill[0])
   if (!bill[0]) {
     let subHtml = fileHandle.template3Notification("No bills to pay")
-    return res.status(400).write(subHtml).end()
+    res.status(400).write(subHtml)
+    res.end()
+    return
   }
   //luc chua thanh toan moi nguoi chi co 1 bill
   let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
@@ -261,7 +263,9 @@ app.get('/pay/:id', async function (req, res) {
     }
     catch (error) {
       let subHtml = fileHandle.template3Notification("Your movie booked not exist")
-      return res.status(400).write(subHtml).end()
+      res.status(400).write(subHtml)
+      res.end()
+      return
     }
     let name = ""
     try {
@@ -271,7 +275,9 @@ app.get('/pay/:id', async function (req, res) {
     }
     catch (error) {
       let subHtml = fileHandle.template3Notification("Your seat booked not exist")
-      return res.status(400).write(subHtml).end()
+      res.status(400).write(subHtml)
+      res.end()
+      return
     }
     console.log(name)
     itemsToAdd.push({
@@ -296,7 +302,9 @@ app.get('/pay/:id', async function (req, res) {
   }
   catch (error) {
     let subHtml = fileHandle.template3Notification("Can't create payment")
-    return res.status(400).write(subHtml).end()
+    res.status(400).write(subHtml)
+    res.end()
+    return
   }
 
 });
@@ -354,12 +362,16 @@ app.get('/success/:buyer_id', async (req, res) => {
   paypal.payment.get(paymentId, function (error, payment) {
     if (error) {
       let subHtml = fileHandle.template3Notification("Can't get bill")
-      return res.status(400).write(subHtml).end()
+      res.status(400).write(subHtml)
+      res.end()
+      return
     } else {
       console.log("Get Payment Response");
       if (payment.state == "approved") {
         let subHtml = fileHandle.template3Notification("Bill payed before")
-        return res.status(400).write(subHtml).end()
+        res.status(400).write(subHtml)
+        res.end()
+        return
 
       }
       {
@@ -381,7 +393,9 @@ app.get('/success/:buyer_id', async (req, res) => {
           //When error occurs when due to non-existent transaction, throw an error else log the transaction details in the console then send a Success string reposponse to the user.
           if (error) {
             let subHtml = fileHandle.template3Notification("Error paypal server")
-            return res.status(400).write(subHtml).end()
+            res.status(400).write(subHtml)
+            res.end()
+            return
           } else {
 
             try {
@@ -422,7 +436,9 @@ app.get('/success/:buyer_id', async (req, res) => {
                 }
                 catch (error) {
                   let subHtml = fileHandle.template3Notification(error)
-                  return res.status(400).write(subHtml).end()
+                  res.status(400).write(subHtml)
+                  res.end()
+                  return
                 }
               }
               console.log("to send email")
@@ -432,7 +448,9 @@ app.get('/success/:buyer_id', async (req, res) => {
               )
               if (!sendEmailResult) {
                 let subHtml = fileHandle.template3Notification("Can't send email")
-                return res.status(400).write(subHtml).end()
+                res.status(400).write(subHtml)
+                res.end()
+                return
               }
               console.log("toherrrrrrrrer")
               await billsModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
@@ -463,7 +481,9 @@ app.get('/success/:buyer_id', async (req, res) => {
                             });*/
             } catch (error) {
               let subHtml = fileHandle.template3Notification(error)
-              return res.status(400).write(subHtml).end()
+              res.status(400).write(subHtml)
+              res.end()
+              return
             }
           }
         });
