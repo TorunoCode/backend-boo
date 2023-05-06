@@ -240,7 +240,7 @@ app.get('/pay/:id', async function (req, res) {
   console.log(bill[0])
   if (!bill[0]) {
     let subHtml = fileHandle.template3Notification("No bills to pay")
-    return res.status(400).write(subHtml)
+    return res.status(400).write(subHtml).end()
   }
   //luc chua thanh toan moi nguoi chi co 1 bill
   let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
@@ -261,7 +261,7 @@ app.get('/pay/:id', async function (req, res) {
     }
     catch (error) {
       let subHtml = fileHandle.template3Notification("Your movie booked not exist")
-      return res.status(400).write(subHtml)
+      return res.status(400).write(subHtml).end()
     }
     let name = ""
     try {
@@ -271,7 +271,7 @@ app.get('/pay/:id', async function (req, res) {
     }
     catch (error) {
       let subHtml = fileHandle.template3Notification("Your seat booked not exist")
-      return res.status(400).write(subHtml)
+      return res.status(400).write(subHtml).end()
     }
     console.log(name)
     itemsToAdd.push({
@@ -296,7 +296,7 @@ app.get('/pay/:id', async function (req, res) {
   }
   catch (error) {
     let subHtml = fileHandle.template3Notification("Can't create payment")
-    return res.status(400).write(subHtml)
+    return res.status(400).write(subHtml).end()
   }
 
 });
@@ -348,128 +348,127 @@ app.get('/send_verify/:userId/:rand', async (req, res) => {
   res.write(subHtml);
   res.end();
 });*/
-app.get('/success/:buyer_id', async function (req, res) {
+app.get('/success/:buyer_id', async (req, res) => {
   const paymentId = req.query.paymentId;
-  new Promise(() => {
-    paypal.payment.get(paymentId, function (error, payment) {
-      if (error) {
-        let subHtml = fileHandle.template3Notification("Can't get bill")
-        return res.status(400).write(subHtml)
-      } else {
-        console.log("Get Payment Response");
-        if (payment.state == "approved") {
-          let subHtml = fileHandle.template3Notification("Bill payed before")
-          return res.status(400).write(subHtml)
-        }
-        {
-          const payerId = req.query.PayerID;
-          const currency_for_execute = payment.transactions[0].amount.currency;
-          const total_for_execute = payment.transactions[0].amount.total;
-          console.log(payerId)
-          const execute_payment_json = {
-            "payer_id": payerId,
-            "transactions": [{
-              "amount": {
-                "currency": currency_for_execute,
-                "total": total_for_execute
-              }
-            }]
-          };
-          // Obtains the transaction details from paypal
-          paypal.payment.execute(paymentId, execute_payment_json, async function (error, payment) {
-            //When error occurs when due to non-existent transaction, throw an error else log the transaction details in the console then send a Success string reposponse to the user.
-            if (error) {
-              let subHtml = fileHandle.template3Notification("Error paypal server")
-              return res.status(400).write(subHtml)
-            } else {
 
-              try {
-                //luc chua thanh toan moi nguoi chi co 1 bill
-                let bill = await billsModel.find({ id: payment.transactions[0].description, status: "-1" })
-                console.log(bill)
-                let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
-                let movie = '';
-                let Cinema = '';
-                let date = '';
-                let session = '';
-                let seat = '';
-                console.log(billsOfUser)
-                console.log("done check")
-                for (let i = 0; i < billsOfUser.length; i++) {
-                  let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
-                  console.log("tohere")
-                  try {
-                    let showingtemp;
-                    let movietemp;
-                    let Cinematemp;
-                    showingtemp = await ShowingModel.findById(showSeat.idShowing);
-                    movietemp = await MovieModel.findById(showingtemp.idMovie);
-                    movietemp = movietemp.name;
-                    Cinematemp = await cinemaModel.findById(showingtemp.idCinema);
-                    Cinematemp = Cinematemp.name;
-                    var datetemp = timeHandle.formatDate_YearMonthDay(showingtemp.startTime)
-                    if (session.indexOf(showingtemp.time) == -1)
-                      session = session + ', ' + showingtemp.time;
-                    if (date.indexOf(datetemp) == -1)
-                      date = date + ', ' + datetemp;
-                    if (movie.indexOf(movietemp) == -1)
-                      movie = movie + ', ' + movietemp;
-                    if (Cinema.indexOf(Cinematemp) == -1)
-                      Cinema = Cinema + ', ' + Cinematemp;
-                    if (seat.indexOf(showSeat.number) == -1)
-                      seat = seat + ', ' + showSeat.number
-                  }
-                  catch (error) {
-                    let subHtml = fileHandle.template3Notification(error)
-                    return res.status(400).write(subHtml)
-                  }
-                }
-                console.log("to send email")
-                let sendEmailResult = await emailHandle.sendInvoice(
-                  paymentId, payment, movie, Cinema, date, session, seat,
-                  billsOfUser, total_for_execute
-                )
-                if (!sendEmailResult) {
-                  let subHtml = fileHandle.template3Notification("Can't send email")
-                  return res.status(400).write(subHtml)
-                }
-                console.log("toherrrrrrrrer")
-                await billsModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
-                await showSeatModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
-                await orderModel.updateMany({ idCustomer: payment.transactions[0].description }, { "$set": { status: "1" } })
-                let subHtml = fileHandle.template3Notification("Done paying and sended invoice to email")
-                return res.status(400).write(subHtml)
-                /*              const data = await transactionsModel.create({
-                                buyer: buyer_id,
-                                Fname: paymentInfo.payer.payer_info.first_name,
-                                Lname: paymentInfo.payer.payer_info.last_name,
-                                recipient_name: paymentInfo.payer.payer_info.shipping_address.recipient_name,
-                                Seller: paymentInfo.transactions[0].payee.email,
-                                Line1: paymentInfo.payer.payer_info.shipping_address.line1,
-                                City: paymentInfo.payer.payer_info.shipping_address.city,
-                                postal_code: paymentInfo.payer.payer_info.shipping_address.postal_code,
-                                country_code: paymentInfo.payer.payer_info.shipping_address.country_code,
-                                Name_items: Name_items,
-                                Sku_items: Sku_items,
-                                dateCreate: paymentInfo.transactions[0].related_resources[0].sale.create_time,
-                                dateUpdate: paymentInfo.transactions[0].related_resources[0].sale.update_time,
-                                status: paymentInfo.payer.status,
-                                subTotal: paymentInfo.transactions[0].amount.details.subTotal,
-                                Fee_payment: paymentInfo.transactions[0].amount.details.handling_fee,
-                                Quantity_items: Quantity_items,
-                                Currency_items: Currency_items,
-                                Price_items: Price_items
-                              });*/
-              } catch (error) {
-                let subHtml = fileHandle.template3Notification(error)
-                return res.status(400).write(subHtml)
-              }
-            }
-          });
-        }
+  paypal.payment.get(paymentId, function (error, payment) {
+    if (error) {
+      let subHtml = fileHandle.template3Notification("Can't get bill")
+      return res.status(400).write(subHtml).end()
+    } else {
+      console.log("Get Payment Response");
+      if (payment.state == "approved") {
+        let subHtml = fileHandle.template3Notification("Bill payed before")
+        return res.status(400).write(subHtml).end()
+
       }
+      {
+        const payerId = req.query.PayerID;
+        const currency_for_execute = payment.transactions[0].amount.currency;
+        const total_for_execute = payment.transactions[0].amount.total;
+        console.log(payerId)
+        const execute_payment_json = {
+          "payer_id": payerId,
+          "transactions": [{
+            "amount": {
+              "currency": currency_for_execute,
+              "total": total_for_execute
+            }
+          }]
+        };
+        // Obtains the transaction details from paypal
+        paypal.payment.execute(paymentId, execute_payment_json, async function (error, payment) {
+          //When error occurs when due to non-existent transaction, throw an error else log the transaction details in the console then send a Success string reposponse to the user.
+          if (error) {
+            let subHtml = fileHandle.template3Notification("Error paypal server")
+            return res.status(400).write(subHtml).end()
+          } else {
 
-    });
+            try {
+              //luc chua thanh toan moi nguoi chi co 1 bill
+              let bill = await billsModel.find({ idCustomer: req.params.buyer_id, status: "-1" })
+              console.log(bill)
+              let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
+              let movie = '';
+              let Cinema = '';
+              let date = '';
+              let session = '';
+              let seat = '';
+              console.log(billsOfUser)
+              console.log("done check")
+              for (let i = 0; i < billsOfUser.length; i++) {
+                let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
+                console.log("tohere")
+                try {
+                  let showingtemp;
+                  let movietemp;
+                  let Cinematemp;
+                  showingtemp = await ShowingModel.findById(showSeat.idShowing);
+                  movietemp = await MovieModel.findById(showingtemp.idMovie);
+                  movietemp = movietemp.name;
+                  Cinematemp = await cinemaModel.findById(showingtemp.idCinema);
+                  Cinematemp = Cinematemp.name;
+                  var datetemp = timeHandle.formatDate_YearMonthDay(showingtemp.startTime)
+                  if (session.indexOf(showingtemp.time) == -1)
+                    session = session + ', ' + showingtemp.time;
+                  if (date.indexOf(datetemp) == -1)
+                    date = date + ', ' + datetemp;
+                  if (movie.indexOf(movietemp) == -1)
+                    movie = movie + ', ' + movietemp;
+                  if (Cinema.indexOf(Cinematemp) == -1)
+                    Cinema = Cinema + ', ' + Cinematemp;
+                  if (seat.indexOf(showSeat.number) == -1)
+                    seat = seat + ', ' + showSeat.number
+                }
+                catch (error) {
+                  let subHtml = fileHandle.template3Notification(error)
+                  return res.status(400).write(subHtml).end()
+                }
+              }
+              console.log("to send email")
+              let sendEmailResult = await emailHandle.sendInvoice(
+                paymentId, payment, movie, Cinema, date, session, seat,
+                billsOfUser, total_for_execute
+              )
+              if (!sendEmailResult) {
+                let subHtml = fileHandle.template3Notification("Can't send email")
+                return res.status(400).write(subHtml).end()
+              }
+              console.log("toherrrrrrrrer")
+              await billsModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
+              await showSeatModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
+              await orderModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
+              let subHtml = fileHandle.template3Notification("Done paying and sended invoice to email")
+              return res.status(200).write(subHtml)
+              /*              const data = await transactionsModel.create({
+                              buyer: buyer_id,
+                              Fname: paymentInfo.payer.payer_info.first_name,
+                              Lname: paymentInfo.payer.payer_info.last_name,
+                              recipient_name: paymentInfo.payer.payer_info.shipping_address.recipient_name,
+                              Seller: paymentInfo.transactions[0].payee.email,
+                              Line1: paymentInfo.payer.payer_info.shipping_address.line1,
+                              City: paymentInfo.payer.payer_info.shipping_address.city,
+                              postal_code: paymentInfo.payer.payer_info.shipping_address.postal_code,
+                              country_code: paymentInfo.payer.payer_info.shipping_address.country_code,
+                              Name_items: Name_items,
+                              Sku_items: Sku_items,
+                              dateCreate: paymentInfo.transactions[0].related_resources[0].sale.create_time,
+                              dateUpdate: paymentInfo.transactions[0].related_resources[0].sale.update_time,
+                              status: paymentInfo.payer.status,
+                              subTotal: paymentInfo.transactions[0].amount.details.subTotal,
+                              Fee_payment: paymentInfo.transactions[0].amount.details.handling_fee,
+                              Quantity_items: Quantity_items,
+                              Currency_items: Currency_items,
+                              Price_items: Price_items
+                            });*/
+            } catch (error) {
+              let subHtml = fileHandle.template3Notification(error)
+              return res.status(400).write(subHtml).end()
+            }
+          }
+        });
+      }
+    }
   });
 });
 
