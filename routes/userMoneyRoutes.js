@@ -89,29 +89,25 @@ app.get("/VNPaySuccess/:email/:money", async function (req, res) {
     var signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
     let subHtml;
     if (secureHash === signed) {
-        let result = await userFunction.addMoneyToUser(req.params.email, req.params.money)
+        //VND sang USD 2023-05-07: USD = VND * 0.000043
+        let result = await userFunction.addMoneyToUser(req.params.email, req.params.money * 43 / (10 ** 6))
         if (!result) {
-            subHtml = fileHandle.template4Notification("Can't add money")
-            res.status(400);
-            res.write(subHtml);
-            res.end();
-            return;
+            return res.redirect(req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccessRes/Can't add money")
         }
-        subHtml = fileHandle.template4Notification("Success add money")
-        res.status(400);
-        res.write(subHtml);
-        res.end();
-        return;
+        return res.redirect(req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccessRes/Success add money")
     }
     else {
         console.log(secureHash + "/" + signed)
-        subHtml = fileHandle.template4Notification("Wrong secureHash")
-        res.status(400);
-        res.write(subHtml);
-        res.end();
-        return;
+        return res.redirect(req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccessRes/Wrong secureHash")
 
     }
+});
+app.get("/VNPaySuccessRes/:message", async function (req, res) {
+    let subHtml = fileHandle.template4Notification(req.params.message)
+    res.status(400);
+    res.write(subHtml);
+    res.end();
+    return;
 });
 app.get("/add/:email/:money", async function (req, res) {
     let user = await UserModal.findOne({ email: req.params.email })
@@ -279,6 +275,6 @@ app.get('/test/addMoney/:money1/:money2', async function (req, res) {
         compareReuslt = req.params.money1 + " < " + req.params.money2
     else
         compareReuslt = req.params.money1 + " > " + req.params.money2
-    return res.send({ "add": addResult, "sub": subtractResult, "compare": compareReuslt, "vnd to usd": req.params.money1 * 43 })
+    return res.send({ "add": addResult, "sub": subtractResult, "compare": compareReuslt, "vnd to usd": req.params.money1 * 43 / (10 ** 6) })
 })
 export default app;
