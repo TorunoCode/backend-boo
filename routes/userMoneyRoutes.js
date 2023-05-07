@@ -17,7 +17,21 @@ import queryString from 'query-string';
 import crypto from 'crypto';
 import user from '../routeFunction/user.js';
 const app = express.Router();
-
+function sortObject(obj) {
+    let sorted = {};
+    let str = [];
+    let key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            str.push(encodeURIComponent(key));
+        }
+    }
+    str.sort();
+    for (key = 0; key < str.length; key++) {
+        sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
+    }
+    return sorted;
+}
 app.get("/VNPayAdd/:email/:money", async function (req, res) {
     var ipAddr = req.headers['x-forwarded-for'] ||
         req.connection.remoteAddress ||
@@ -35,7 +49,7 @@ app.get("/VNPayAdd/:email/:money", async function (req, res) {
     var amount = req.params.money
     var orderInfo = "Nap " + req.params.money + " vao tai khoan" + req.params.email
     var locale = 'vn'
-    var currCode = 'USD';
+    var currCode = 'VND';
     var vnp_Params = {
         //VNPay số tiền sẽ trả được gửi dưới dạng số tiền sẽ trả * 100
         'vnp_Amount': amount * 100,
@@ -51,14 +65,15 @@ app.get("/VNPayAdd/:email/:money", async function (req, res) {
         'vnp_Version': '2.1.0',
 
     };
+    vnp_Params = sortObject(vnp_Params);
     var signData = queryString.stringify(vnp_Params, { encode: false });
-    console.log(queryString.stringify(vnp_Params, { encode: false }))
+    //console.log(queryString.stringify(vnp_Params, { encode: false }))
 
     var hmac = crypto.createHmac("sha512", secretKey);
     var signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
     vnpUrl += '?' + queryString.stringify(vnp_Params, { encode: false })
         + "&vnp_SecureHash=" + signed;
-    console.log(vnp_Params)
+    console.log(signed)
     return res.redirect(vnpUrl)
 });
 app.get("/VNPaySuccess/:email/:money", async function (req, res) {
@@ -66,11 +81,13 @@ app.get("/VNPaySuccess/:email/:money", async function (req, res) {
     var secureHash = vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHashType'];
+    vnp_Params = sortObject(vnp_Params);
     var tmnCode = process.env.vnp_TmnCode
     var secretKey = process.env.vnp_HashSecret
     var signData = queryString.stringify(vnp_Params, { encode: false });
     var hmac = crypto.createHmac("sha512", secretKey);
     var signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
+    let subHtml;
     if (secureHash === signed) {
         let result = await userFunction.addMoneyToUser(req.params.email, req.params.money)
         if (!result) {
@@ -262,6 +279,6 @@ app.get('/test/addMoney/:money1/:money2', async function (req, res) {
         compareReuslt = req.params.money1 + " < " + req.params.money2
     else
         compareReuslt = req.params.money1 + " > " + req.params.money2
-    return res.send({ "add": addResult, "sub": subtractResult, "compare": compareReuslt })
+    return res.send({ "add": addResult, "sub": subtractResult, "compare": compareReuslt, "vnd to usd": req.params.money1 * 43 })
 })
 export default app;
