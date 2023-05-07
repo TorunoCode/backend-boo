@@ -131,7 +131,7 @@ app.get("/add/:email/:money", async function (req, res) {
         "name": "Add money to account",
         "sku": user.id,
         "price": moneyAdd,
-        "currency": "USD",
+        "currency": "VND",
         "quantity": 1
     })
     let result = await paypalHandle.paypalCreate(

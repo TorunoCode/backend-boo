@@ -51,7 +51,7 @@ async function paypalCreate(returnUrl, cancelUrl, items, total, description) {
                 "items": items
             },
             "amount": {
-                "currency": "USD",
+                "currency": "VND",
                 "total": total
             },
             "description": description
