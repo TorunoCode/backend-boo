@@ -288,7 +288,7 @@ app.get('/pay/:id', async function (req, res) {
       "name": name,
       "sku": billsOfUser[i]._id,
       "price": showSeat.price,
-      "currency": "VND",
+      "currency": "USD",
       "quantity": 1,
     })
   }
