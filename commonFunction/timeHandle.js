@@ -60,6 +60,21 @@ function formatDate_YearMonthDay(time) {
         year = time.getFullYear();
     return year + "-" + month + "-" + day;
 }
+function format_yyyymmddHHmmss(time) {
+    let year = time.getFullYear(),
+        month = ("0" + (time.getMonth() + 1)).slice(-2),
+        day = ("0" + time.getDate()).slice(-2),
+        hours = ("0" + time.getHours()).slice(-2),
+        minutes = ("0" + time.getMinutes()).slice(-2),
+        seconds = ("0" + time.getSeconds()).slice(-2)
+    return "" + year + month + day + hours + minutes + seconds
+}
+function format_HHmmss(time) {
+    let hours = ("0" + time.getHours()).slice(-2),
+        minutes = ("0" + time.getMinutes()).slice(-2),
+        seconds = ("0" + time.getSeconds()).slice(-2)
+    return "" + hours + minutes + seconds
+}
 function formatTime(time) {
     let result = time.getHours() + ':' + time.getMinutes() + ':' + time.getSeconds() + ' - ' + time.getDate() + '/' + (time.getMonth() + 1) + '/' + time.getFullYear()
     return result;
@@ -94,5 +109,6 @@ export default {
     getFirstDayOfNextYear, getFirstDayOfThisYear, getTodayAt0, getTomorrorAt0,
     getFirstDayOfNextMonth, getFirstDayOfWeek, getFirstDayOfNextWeek, checkDateIsTodayOrNotYetOrPassedTime,
     formatDate_YearMonthDay, formatTime, timeElapsedSecond,
-    timeElapsedDayRemand, timeElapsedHourRemand, timeElapsedMinuteRemand, timeElapsedSecondRemand
+    timeElapsedDayRemand, timeElapsedHourRemand, timeElapsedMinuteRemand, timeElapsedSecondRemand,
+    format_yyyymmddHHmmss, format_HHmmss
 }

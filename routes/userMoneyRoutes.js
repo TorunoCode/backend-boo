@@ -1,3 +1,5 @@
+import dotenv from 'dotenv'
+dotenv.config();
 import express from 'express';
 import UserModal from '../models/userModel.js';
 import stringHandle from '../commonFunction/stringHandle.js';
@@ -10,7 +12,90 @@ import paypalHandle from '../commonFunction/paypalHandle.js';
 import moneyHandle from '../commonFunction/moneyHandle.js';
 import userFunction from '../routeFunction/user.js';
 import payment from '../routeFunction/payment.js';
+import timeHandle from '../commonFunction/timeHandle.js';
+import queryString from 'query-string';
+import crypto from 'crypto';
+import user from '../routeFunction/user.js';
 const app = express.Router();
+
+app.get("/VNPayAdd/:email/:money", async function (req, res) {
+    var ipAddr = req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress;
+    console.log(process.env.vnp_TmnCode)
+    console.log(process.env.vnp_HashSecret)
+    var tmnCode = process.env.vnp_TmnCode
+    var secretKey = process.env.vnp_HashSecret
+    var vnpUrl = process.env.vnp_Url
+    var returnUrl = req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccess/" + req.params.email + "/" + req.params.money
+    var date = new Date();
+    var createDate = timeHandle.format_yyyymmddHHmmss(date)
+    var orderId = timeHandle.format_HHmmss(date);
+    var amount = req.params.money
+    var orderInfo = "Nap " + req.params.money + " vao tai khoan" + req.params.email
+    var locale = 'vn'
+    var currCode = 'USD';
+    var vnp_Params = {
+        //VNPay số tiền sẽ trả được gửi dưới dạng số tiền sẽ trả * 100
+        'vnp_Amount': amount * 100,
+        'vnp_Command': 'pay',
+        'vnp_CreateDate': createDate,
+        'vnp_CurrCode': currCode,
+        'vnp_IpAddr': ipAddr,
+        'vnp_Locale': locale,
+        'vnp_OrderInfo': orderInfo,
+        'vnp_ReturnUrl': returnUrl,
+        'vnp_TmnCode': tmnCode,
+        'vnp_TxnRef': orderId,
+        'vnp_Version': '2.1.0',
+
+    };
+    var signData = queryString.stringify(vnp_Params, { encode: false });
+    console.log(queryString.stringify(vnp_Params, { encode: false }))
+
+    var hmac = crypto.createHmac("sha512", secretKey);
+    var signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
+    vnpUrl += '?' + queryString.stringify(vnp_Params, { encode: false })
+        + "&vnp_SecureHash=" + signed;
+    console.log(vnp_Params)
+    return res.redirect(vnpUrl)
+});
+app.get("/VNPaySuccess/:email/:money", async function (req, res) {
+    var vnp_Params = req.query;
+    var secureHash = vnp_Params['vnp_SecureHash'];
+    delete vnp_Params['vnp_SecureHash'];
+    delete vnp_Params['vnp_SecureHashType'];
+    var tmnCode = process.env.vnp_TmnCode
+    var secretKey = process.env.vnp_HashSecret
+    var signData = queryString.stringify(vnp_Params, { encode: false });
+    var hmac = crypto.createHmac("sha512", secretKey);
+    var signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
+    if (secureHash === signed) {
+        let result = await userFunction.addMoneyToUser(req.params.email, req.params.money)
+        if (!result) {
+            subHtml = fileHandle.template4Notification("Can't add money")
+            res.status(400);
+            res.write(subHtml);
+            res.end();
+            return;
+        }
+        subHtml = fileHandle.template4Notification("Success add money")
+        res.status(400);
+        res.write(subHtml);
+        res.end();
+        return;
+    }
+    else {
+        console.log(secureHash + "/" + signed)
+        subHtml = fileHandle.template4Notification("Wrong secureHash")
+        res.status(400);
+        res.write(subHtml);
+        res.end();
+        return;
+
+    }
+});
 app.get("/add/:email/:money", async function (req, res) {
     let user = await UserModal.findOne({ email: req.params.email })
     let subHtml
@@ -32,41 +117,22 @@ app.get("/add/:email/:money", async function (req, res) {
         "currency": "USD",
         "quantity": 1
     })
-    const create_payment_json = {
-        "intent": "sale",
-        "payer": {
-            "payment_method": "paypal"
-        },
-        "redirect_urls": {
-            "return_url": req.protocol + "://" + req.get('host') + "/api/userMoney/success/" + req.params.email,
-            "cancel_url": req.protocol + "://" + req.get('host') + "/api/userMoney/cancel"
-        },
-        "transactions": [{
-            "item_list": {
-                //tra mot luc nhieu ve
-                //sku lay theo id
-                //status = 0: trong qua trinh tra; status = 1: thanh toan roi; status=-1: chua tra
-                // lay status = -1 xu ly roi gan = 0
-                "items": itemsToAdd
-            },
-            "amount": {
-                "currency": "USD",
-                "total": moneyAdd
-            }
-        }]
-    };
-    paypal.payment.create(create_payment_json, function (error, payment) {
-        if (error) {
-            res.status(400).send(error);
-        } else {
-            for (let i = 0; i < payment.links.length; i++) {
-                if (payment.links[i].rel === 'approval_url') {
-                    console.log(payment.links[i].href)
-                    res.redirect(payment.links[i].href);
-                }
-            }
-        }
-    });
+    let result = await paypalHandle.paypalCreate(
+        req.protocol + "://" + req.get('host') + "/api/userMoney/success/" + req.params.email,
+        req.protocol + "://" + req.get('host') + "/api/userMoney/cancel",
+        itemsToAdd, moneyAdd, "Add money to account")
+    try {
+        console.log("done here")
+        console.log(result)
+        res.redirect(result)
+        return;
+    }
+    catch (error) {
+        let subHtml = fileHandle.template3Notification("Can't create payment")
+        res.status(400).write(subHtml)
+        res.end()
+        return
+    }
 })
 app.get('/success/:email', async function (req, res) {
     let subHtml;

@@ -12,7 +12,7 @@ function paypalPayout(email, money) {
                 "recipient_type": "EMAIL",
                 "amount": {
                     "value": money,
-                    "currency": "USD"
+                    "currency": "VND"
                 },
                 "receiver": email,
                 "note": "Thank you.",

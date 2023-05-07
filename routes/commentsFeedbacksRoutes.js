@@ -149,9 +149,7 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
     const feedbacks = await feedbacksModel.find({ movieId: movieId }).sort({ "updatedAt": -1 }).skip(1 * page * 10).limit(10);
     const count = await feedbacksModel.count({ movieId: movieId });
     const numpage = Math.ceil(count / 10);
-    let ipAddr = request.headers['x-forwarded-for'] || request.connection.remoteAddress ||
-        request.socket.remoteAddress || request.connection.socket.remoteAddress
-    const allCommentsOfMovie = { number_of_feedback: count, _number_of_page: numpage, ip: ipAddr };
+    const allCommentsOfMovie = { number_of_feedback: count, _number_of_page: numpage };
     const result = [];
     for (const element of feedbacks) {
         let nameUser = await UserModal.findById(element['userId']);
