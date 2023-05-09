@@ -204,16 +204,17 @@ movieRoute.post(
         req.session.idCustomer = req.params.id; //"636b67fa4f1670cf789a8a80";
         const body = req.body.data;
         console.log(req.body);
+        const check = await billModel.findOne({ idCustomer: req.params.id, status: -1 });   //kiem tra da co bill chua   
         const checkShowing = await ShowingModel.findById(req.body.idShowing);
         if (checkShowing == null) res.status(500).json({ message: "Something went wrong" });
-        const check = await billModel.findOne({ idCustomer: req.params.id, status: "-1" });   //lay bill hien tai 
+        console.log("check" + check)
         if (check) {
-            const listCheck = await orderModel.distinct('idShowSeat', { idCustomer: req.params.id, status: "-1" });
-            for (let a of listCheck) {
-                await showSeatModel.findByIdAndUpdate(a, { $set: { isReserved: false } });
-            }
-            await orderModel.deleteMany({ idBill: check._id.toString() });
-            await billModel.findByIdAndRemove(check._id.toString());
+        const listCheck = await orderModel.distinct('idShowSeat',{ idBill: check._id.toString() });
+        for (let a of listCheck) {
+            await showSeatModel.findByIdAndUpdate(a,{ $set: { isReserved: false }});
+        }        
+        await orderModel.deleteMany({idBill:check._id.toString()});
+        await billModel.findByIdAndRemove(check._id.toString());
         }
         recommend.addUserRecentBuyMovieGenre(req.params.id, checkShowing.idMovie);
         const bill = await billModel({ totalMoney: 0, idCustomer: req.params.id, status: -1 }); //tao ma bill moi
