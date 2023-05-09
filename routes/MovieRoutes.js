@@ -206,7 +206,6 @@ movieRoute.post(
         console.log(req.body);
         const checkShowing = await ShowingModel.findById(req.body.idShowing);
         if (checkShowing == null) res.status(500).json({ message: "Something went wrong" });
-        console.log("check" + check)
         const check = await billModel.findOne({ idCustomer: req.params.id, status: "-1" });   //lay bill hien tai 
         if (check) {
             const listCheck = await orderModel.distinct('idShowSeat', { idCustomer: req.params.id, status: "-1" });
