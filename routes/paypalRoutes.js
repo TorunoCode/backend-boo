@@ -1,7 +1,7 @@
 import express, { response } from 'express';
 import paypal from 'paypal-rest-sdk';
 import transactionsModel from "../models/transactionsModel.js"
-import billsModel from "../models/billsModel.js"
+import billModel from "../models/billsModel.js"
 import emailProvider from '../config/nodeMailer.js';
 import userModel from "../models/userModel.js"
 import orderModel from "../models/orderModel.js";
@@ -496,16 +496,19 @@ app.post("/delete_allTransaction", async (request, response) => {
   }
 });*/
 app.get('/cancel/:id', async function (req, res) {
-  console.log('to delete all transactions');
-
-  const check = await orderModel.findOne({ idCustomer: req.params.id, status: -1 });   //lay bill hien tai 
-  const listCheck = await orderModel.distinct('idShowSeat', { idBill: check._id.toString() });
+  try {
+  const check = await billModel.findOne({ idCustomer: req.params.id, status: "-1" });   //lay bill hien tai 
+  const listCheck = await orderModel.distinct('idShowSeat', {  idCustomer: req.params.id, status: "-1" });
   for (let a of listCheck) {
     await showSeatModel.findByIdAndUpdate(a, { $set: { isReserved: false } });
   }
   await orderModel.deleteMany({ idBill: check._id.toString() });
   await billModel.findByIdAndRemove(check._id.toString());
   res.send({ message: 'Cancelled' })
-
+  }
+  catch (error) {
+    res.status(500).json({ message: "Something went wrong" });
+    console.log(error);
+}
 });
 export default app;
