@@ -205,7 +205,7 @@ movieRoute.post(
         req.session.idCustomer = req.params.id; //"636b67fa4f1670cf789a8a80";
         const body = req.body.data;
         console.log(req.body);
-        const check = await billModel.findOne({ idCustomer: req.params.id, status: -1 });   //kiem tra da co bill chua   
+        const check = await billModel.findOne({ idCustomer: req.params.id, status: 1 });   //kiem tra da co bill chua   
         const checkShowing = await ShowingModel.findById(req.body.idShowing);
         if (checkShowing == null) res.status(500).json({ message: "Something went wrong" });
         console.log("check" + check)
@@ -973,18 +973,6 @@ movieRoute.get('/rating/delete/:id', async (req, res) => {
     }
 });
 movieRoute.get(
-    "/:id",
-    asyncHandler(async (req, res) => {
-        const movie = await MovieModel.findOne({ name: req.params.id });
-        if (movie) {
-            res.json(movie);
-        } else {
-            res.status(404)
-            throw new Error("Movie not Found");
-        }
-    })
-);
-movieRoute.get(
     "/checkIn/:id",
     asyncHandler(async (req, res) => {
         const order = await orderModel.distinct('idShowSeat',{ idBill: req.params.id });
@@ -1037,5 +1025,37 @@ movieRoute.get(
     })
 );
 
-
+movieRoute.get(
+    "/updateBill",
+    asyncHandler(async (req, res) => {
+        const list = await billModel.find({ status: -1 });
+        if (list) {
+            for (let item of list) {
+                console.log(item._id.toString());
+                const listCheck = await orderModel.distinct('idShowSeat',{ idBill: item._id.toString()});
+                for (let a of listCheck) {
+                    await showSeatModel.findByIdAndUpdate(a,{ $set: { isReserved: false }});
+                }        
+                await orderModel.deleteMany({idBill:item._id.toString() });
+                await billModel.findByIdAndRemove(item._id.toString());
+            }
+             res.send({message:"Done"});
+        } else {
+            res.status(404)
+            throw new Error("List is unavailable");
+        }
+    })
+);
+movieRoute.get(
+    "/:id",
+    asyncHandler(async (req, res) => {
+        const movie = await MovieModel.findOne({ name: req.params.id });
+        if (movie) {
+            res.json(movie);
+        } else {
+            res.status(404)
+            throw new Error("Movie not Found");
+        }
+    })
+);
 export default movieRoute;

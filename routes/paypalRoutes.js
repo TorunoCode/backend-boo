@@ -495,14 +495,16 @@ app.post("/delete_allTransaction", async (request, response) => {
     response.status(500).send(error);
   }
 });*/
-app.get('/cancel/:user_id', async function (req, res) {
+app.get('/cancel/:id', async function (req, res) {
   console.log('to delete all transactions');
 
   const check = await orderModel.findOne({ idCustomer: req.params.id, status: -1 });   //lay bill hien tai 
-  await showSeatModel.findById(check.idShowing).updateOne({}, { $set: { isReserved: false } }); //cap nhat trang thai ve tro lai trang thai ban dau
-  await billsModel.findByIdAndDelete({ idCustomer: req.params.user_id, status: -1 });    //xoa  totalbill       
-  await orderModel.findByIdAndDelete({ idCustomer: req.params.user_id, status: -1 });    //xoa order       
-
+  const listCheck = await orderModel.distinct('idShowSeat', { idBill: check._id.toString() });
+  for (let a of listCheck) {
+    await showSeatModel.findByIdAndUpdate(a, { $set: { isReserved: false } });
+  }
+  await orderModel.deleteMany({ idBill: check._id.toString() });
+  await billModel.findByIdAndRemove(check._id.toString());
   res.send({ message: 'Cancelled' })
 
 });

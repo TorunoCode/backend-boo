@@ -28,15 +28,15 @@ app.post("/delete_allbills", async (request, response) => {
         response.status(500).send(error);
     }
 });
-app.post("/delete_bills", async (request, response) => {
+// app.post("/delete_bills", async (request, response) => {
 
-    try {
-        await billsModel.deleteOne({ _id: request.body._id });
-        response.send({ message: 'done delete bill' });
-    } catch (error) {
-        response.status(500).send(error);
-    }
-});
+//     try {
+//         await billsModel.deleteOne({ _id: request.body._id });
+//         response.send({ message: 'done delete bill' });
+//     } catch (error) {
+//         response.status(500).send(error);
+//     }
+// });
 app.get("/bills/:userId/:page", async (request, response) => {
     const userId = request.params.userId;
     const page = request.params.page;
