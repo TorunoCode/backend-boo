@@ -237,7 +237,7 @@ app.get('/pay/:id', async function (req, res) {
     console.log(rand);*/
   let total = 0;
   let itemsToAdd = []
-  let bill = await billsModel.find({ idCustomer: req.params.id, status: "-1" });
+  let bill = await billModel.find({ idCustomer: req.params.id, status: "-1" });
   console.log(bill)
   if (!bill[0]) {
     let subHtml = fileHandle.template3Notification("No bills to pay")
@@ -407,7 +407,7 @@ app.get('/success/:buyer_id', async function (req, res) {
               if (!sendEmailResult)
                 return res.status(400).send({ message: "Can't send confirm email" })
               console.log("toherrrrrrrrer")
-              await billsModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
+              await billModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
               await showSeatModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
               await orderModel.updateMany({ idCustomer: req.params.buyer_id }, { "$set": { status: "1" } })
               let subHtml = fileHandle.template3Notification("Done paying and sended invoice to email")
@@ -497,18 +497,18 @@ app.post("/delete_allTransaction", async (request, response) => {
 });*/
 app.get('/cancel/:id', async function (req, res) {
   try {
-  const check = await billModel.findOne({ idCustomer: req.params.id, status: "-1" });   //lay bill hien tai 
-  const listCheck = await orderModel.distinct('idShowSeat', {  idCustomer: req.params.id, status: "-1" });
-  for (let a of listCheck) {
-    await showSeatModel.findByIdAndUpdate(a, { $set: { isReserved: false } });
-  }
-  await orderModel.deleteMany({ idBill: check._id.toString() });
-  await billModel.findByIdAndRemove(check._id.toString());
-  res.send({ message: 'Cancelled' })
+    const check = await billModel.findOne({ idCustomer: req.params.id, status: "-1" });   //lay bill hien tai 
+    const listCheck = await orderModel.distinct('idShowSeat', { idCustomer: req.params.id, status: "-1" });
+    for (let a of listCheck) {
+      await showSeatModel.findByIdAndUpdate(a, { $set: { isReserved: false } });
+    }
+    await orderModel.deleteMany({ idBill: check._id.toString() });
+    await billModel.findByIdAndRemove(check._id.toString());
+    res.send({ message: 'Cancelled' })
   }
   catch (error) {
     res.status(500).json({ message: "Something went wrong" });
     console.log(error);
-}
+  }
 });
 export default app;
