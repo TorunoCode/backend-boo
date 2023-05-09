@@ -204,7 +204,6 @@ movieRoute.post(
         req.session.idCustomer = req.params.id; //"636b67fa4f1670cf789a8a80";
         const body = req.body.data;
         console.log(req.body);
-        
         const check = await billModel.findOne({ idCustomer: req.params.id, status: -1 });   //kiem tra da co bill chua   
         const checkShowing = await ShowingModel.findById(req.body.idShowing);
         if (checkShowing == null) res.status(500).json({ message: "Something went wrong" });
