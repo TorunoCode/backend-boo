@@ -238,7 +238,7 @@ app.get('/pay/:id', async function (req, res) {
   let total = 0;
   let itemsToAdd = []
   let bill = await billsModel.find({ idCustomer: req.params.id, status: "-1" });
-  console.log(bill[0])
+  console.log(bill)
   if (!bill[0]) {
     let subHtml = fileHandle.template3Notification("No bills to pay")
     res.status(400).write(subHtml)
