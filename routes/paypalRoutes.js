@@ -504,11 +504,16 @@ app.get('/cancel/:id', async function (req, res) {
     }
     await orderModel.deleteMany({ idBill: check._id.toString() });
     await billModel.findByIdAndRemove(check._id.toString());
-    res.send({ message: 'Cancelled' })
+    let subHtml = fileHandle.template3Notification('Cancelled')
+    res.status(400).write(subHtml)
+    res.end()
+    return
   }
   catch (error) {
-    res.status(500).json({ message: "Something went wrong" });
-    console.log(error);
+    let subHtml = fileHandle.template3Notification("Something went wrong")
+    res.status(400).write(subHtml)
+    res.end()
+    return
   }
 });
 export default app;
