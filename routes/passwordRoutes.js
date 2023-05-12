@@ -24,8 +24,8 @@ app.post("/forgotpasswordchangepass", async function (req, res) {
     console.log(user)
     if (user[0] == null)
         return res.status(400).json({ message: "Error OTP" });
-    if (timeHandle.checkTimeDifferenceMinute(user[0].timeCreatedOTP, Date.now()) > 5)
-        return res.status(400).json({ message: "OTP time out" });
+    // if (timeHandle.checkTimeDifferenceMinute(user[0].timeCreatedOTP, Date.now()) > 5)
+    //     return res.status(400).json({ message: "OTP time out" });
 
     console.log(req.body.newpassword)
     user = await UserModal.findOneAndUpdate({ email: req.body.email }, { OTP: "", password: await bcrypt.hash(req.body.newpassword, 12), timeCreatedOTP: null })
