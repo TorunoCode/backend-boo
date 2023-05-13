@@ -191,7 +191,6 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
             'fullName': userFullName,
             'avatar': userAvartar
         })
-        console.log(nameUser['avatar'] + '/' + nameUser['fullName'])
         result.push(eachUser);
     }
     result.push(allCommentsOfMovie);
