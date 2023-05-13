@@ -22,7 +22,7 @@ async function sendEmailInvoice(paymentId, idUser, total_for_execute, dateOrder)
     console.log("done check")
     //1 bill chỉ có 1 phim
     //add vô recommend
-    let showingRecommend = await ShowingModel.findById(billsOfUser[0].idShowSeat)
+    let showingRecommend = await ShowingModel.findById(billsOfUser[0].idShowing)
     let movieRecommend = await MovieModel.findById(showingRecommend.idMovie);
     recommend.addUserRecentBuyMovieGenre(idUser, movieRecommend.id)
 
