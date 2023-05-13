@@ -19,8 +19,8 @@ const showSeatSchema =  new mongoose.Schema({
         type: String,
         require:true
     }
-   
-
+}, {
+    timestamps: true
 });
 const showSeat =  mongoose.model('showSeat',showSeatSchema);
 export default showSeat;

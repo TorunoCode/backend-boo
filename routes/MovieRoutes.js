@@ -1027,8 +1027,10 @@ movieRoute.get(
 movieRoute.get(
     "/updateBill",
     asyncHandler(async (req, res) => {
+        try{
         const list = await billModel.find({ status: -1 });
-        if (list) {
+        console.log(list);
+        if (list[0]) {
             for (let item of list) {
                 console.log(item._id.toString());
                 const listCheck = await orderModel.distinct('idShowSeat', { idBill: item._id.toString() });
@@ -1040,10 +1042,14 @@ movieRoute.get(
             }
             res.send({ message: "Done" });
         } else {
-            res.status(404)
-            throw new Error("List is unavailable");
+            res.send({ message: "unavaible" });
         }
-    })
+    }
+    catch (error) {
+        res.status(500).json({ message: "Something went wrong" });
+        console.log(error);
+    }
+})
 );
 movieRoute.get(
     "/:id",

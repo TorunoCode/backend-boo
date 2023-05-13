@@ -14,17 +14,15 @@ const revertSchema =  new mongoose.Schema({
     idNewOrder:{
         type: String,
     },
-   startTime:{
-        type: Date,
-        require:true
-    },
-    money:{
+    totalMoney:{
         type: Number,
     },
     status:{
         type: Number
     },
 
+}, {
+    timestamps: true
 });
 const Revert =  mongoose.model('Revert',revertSchema);
 export default Revert;

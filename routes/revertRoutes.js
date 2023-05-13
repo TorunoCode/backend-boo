@@ -3,7 +3,6 @@ import asyncHandler from 'express-async-handler';
 import showSeatModel from '../models/showSeatModel.js';
 import billModel from '../models/billsModel.js';
 import orderModel from '../models/orderModel.js';
-import listModel from '../models/listModel.js';
 import UserModal from '../models/userModel.js';
 import revertModal from '../models/revertModel.js';
 import mongoose from 'mongoose';

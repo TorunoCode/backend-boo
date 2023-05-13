@@ -30,6 +30,8 @@ const showingSchema =  new mongoose.Schema({
         type: Boolean
     },
 
+}, {
+    timestamps: true
 });
 const Showing =  mongoose.model('Showing',showingSchema);
 export default Showing;

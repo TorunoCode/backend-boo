@@ -9,6 +9,8 @@ const cinemaSchema =  new mongoose.Schema({
         require:true
     },
 
+}, {
+    timestamps: true
 });
 const Cinema =  mongoose.model('Cinema',cinemaSchema);
 export default Cinema;
