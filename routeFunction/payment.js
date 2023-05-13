@@ -7,6 +7,7 @@ import cinemaModel from '../models/cinemaModel.js';
 import fileHandle from '../commonFunction/fileHandle.js';
 import timeHandle from '../commonFunction/timeHandle.js';
 import emailHandle from '../commonFunction/emailHandle.js';
+import recommend from "./recommend.js";
 async function sendEmailInvoice(paymentId, idUser, total_for_execute, dateOrder) {
     //user vừa trả tiền status vẫn = -1
     let bill = await billsModel.find({ idCustomer: idUser, status: "-1" })
@@ -19,6 +20,12 @@ async function sendEmailInvoice(paymentId, idUser, total_for_execute, dateOrder)
     let seat = '';
     console.log(billsOfUser)
     console.log("done check")
+    //1 bill chỉ có 1 phim
+    //add vô recommend
+    let showingRecommend = await ShowingModel.findById(billsOfUser[0].idShowSeat)
+    let movieRecommend = await MovieModel.findById(showingRecommend.idMovie);
+    recommend.addUserRecentBuyMovieGenre(idUser, movieRecommend.id)
+
     for (let i = 0; i < billsOfUser.length; i++) {
         let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
         console.log("tohere")
