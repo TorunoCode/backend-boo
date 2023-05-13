@@ -12,7 +12,7 @@ async function sendEmailInvoice(paymentId, idUser, total_for_execute, dateOrder)
     //user vừa trả tiền status vẫn = -1
     let bill = await billsModel.find({ idCustomer: idUser, status: "-1" })
     console.log(bill)
-    let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
+    let billsOfUser = await orderModel.find({ idBill: bill[0].id });
     let movie = '';
     let Cinema = '';
     let date = '';
