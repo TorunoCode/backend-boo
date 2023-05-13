@@ -89,6 +89,9 @@ app.get("/VNPaySuccess/:email/:money", async function (req, res) {
     var signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
     let subHtml;
     if (secureHash === signed) {
+        if (vnp_Params['vnp_TransactionStatus'] != "00") {
+            return res.redirect(req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccessRes/Failed add money")
+        }
         //VND sang USD 2023-05-07: USD = VND * 0.000043
         let result = await userFunction.addMoneyToUser(req.params.email, req.params.money * 43 / (10 ** 6))
         if (!result) {

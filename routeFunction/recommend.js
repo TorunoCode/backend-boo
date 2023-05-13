@@ -40,6 +40,7 @@ async function sendRecommentMovie(idMovie) {
     }
     var emails = users.map(item => item.user.email)
     console.log(emails);
+    console.log(movie)
     let emailBody = fileHandle.RecommendHtml(movie.image, movie.name)
     let test = await emailHandle.sendHttpMailBcc(emailBody, emails)
     if (!test)

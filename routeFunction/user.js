@@ -35,6 +35,7 @@ async function updateUserInfoAfterVerifyLogin(email, name, given_name, picture) 
 }
 async function addMoneyToUser(userEmail, total_for_execute) {
     let user = await UserModal.findOne({ email: userEmail })
+    console.log(user)
     let userMoney
     if (user.money == null)
         userMoney = parseFloat(0)
@@ -42,6 +43,7 @@ async function addMoneyToUser(userEmail, total_for_execute) {
     userMoney = moneyHandle.addMoney(userMoney, total_for_execute);
     userMoney = userMoney.toString();
     user = await UserModal.findOneAndUpdate({ email: userEmail }, { money: userMoney }, { new: true });
+    console.log(user)
     return user
 }
 export default { updateUserInfoAfterVerifyLogin, addMoneyToUser }
