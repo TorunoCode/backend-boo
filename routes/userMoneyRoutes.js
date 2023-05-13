@@ -100,7 +100,6 @@ app.get("/VNPaySuccess/:email/:money", async function (req, res) {
         return res.redirect(req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccessRes/Success add money")
     }
     else {
-        console.log(secureHash + "/" + signed)
         return res.redirect(req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccessRes/Wrong secureHash")
 
     }
@@ -138,8 +137,6 @@ app.get("/add/:email/:money", async function (req, res) {
         req.protocol + "://" + req.get('host') + "/api/userMoney/cancel",
         itemsToAdd, moneyAdd, "Add money to account")
     try {
-        console.log("done here")
-        console.log(result)
         res.redirect(result)
         return;
     }
@@ -217,7 +214,6 @@ app.get('/cancel', function (req, res) {
 });
 app.get('/money/:email', async function (req, res) {
     let user = await UserModal.findOne({ email: req.params.email }).select('money');
-    console.log(user)
     if (user)
         return res.status(200).send({ money: user.money })
     else
@@ -239,9 +235,6 @@ app.post('/pay', async function (req, res) {
     let total = bill[0].totalMoney
     total = parseFloat(total)
     let userMoney = parseFloat(user.money)
-    console.log(total)
-    console.log(userMoney)
-    console.log(user)
     userMoney = moneyHandle.subtractionMoney(userMoney, total)
     if (userMoney < 0) {
         return res.status(400).send({ message: "Not enough money in balance" })
@@ -272,8 +265,6 @@ app.get('/test/addMoney/:money1/:money2', async function (req, res) {
     let addResult = moneyHandle.addMoney(req.params.money1, req.params.money2)
     let subtractResult = moneyHandle.subtractionMoney(req.params.money1, req.params.money2)
     let compareReuslt;
-    console.log(await
-        userFunction.addMoneyToUser("testEmailAccccc1234@gmail.com", 100))
     if (subtractResult < 0)
         compareReuslt = req.params.money1 + " < " + req.params.money2
     else

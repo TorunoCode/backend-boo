@@ -1,6 +1,4 @@
 import express from 'express';
-import commentsModel from "../models/commentsModel.js";
-import responseToCommentsModel from "../models/responseToCommentsModel.js";
 import feedbacksModel from "../models/feedbacksModel.js";
 import timeHandle from '../commonFunction/timeHandle.js';
 import UserModal from '../models/userModel.js';
