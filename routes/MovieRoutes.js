@@ -168,6 +168,21 @@ movieRoute.post(
 
 );
 movieRoute.post(
+    "/update", async (req, res) => {
+      try {
+        const data = await MovieModel.findOneAndUpdate({ _id: req.body._id }, req.body, { new: true });
+        console.log(data);
+        if (data)
+          res.status(201).json({ data });
+        else
+          return res.status(404).json({ data: null, message: "Movie doesn't exist" });
+      } catch (error) {
+        res.status(500).json({ message: "Something went wrong" });
+        console.log(error);
+      }
+    }
+  );
+movieRoute.post(
     "/showing/add",
     asyncHandler(async (req, res) => {
         console.log(req.body);
