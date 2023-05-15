@@ -1069,6 +1069,18 @@ movieRoute.get(
 movieRoute.get(
     "/:id",
     asyncHandler(async (req, res) => {
+        const movie = await MovieModel.findById({ name: req.params.id });
+        if (movie) {
+            res.json(movie);
+        } else {
+            res.status(404)
+            throw new Error("Movie not Found");
+        }
+    })
+);
+movieRoute.get(
+    "/filterId/:id",
+    asyncHandler(async (req, res) => {
         const movie = await MovieModel.findById(req.params.id,{});
         if (movie) {
             res.json(movie);
