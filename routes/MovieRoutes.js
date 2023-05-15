@@ -1069,7 +1069,7 @@ movieRoute.get(
 movieRoute.get(
     "/:id",
     asyncHandler(async (req, res) => {
-        const movie = await MovieModel.find({ name: req.params.id });
+        const movie = await MovieModel.findOne({ name: req.params.id });
         if (movie) {
             res.json(movie);
         } else {
