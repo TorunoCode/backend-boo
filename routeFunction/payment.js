@@ -25,28 +25,16 @@ async function sendEmailInvoice(paymentId, idUser, total_for_execute, dateOrder)
     let showingRecommend = await ShowingModel.findById(billsOfUser[0].idShowing)
     let movieRecommend = await MovieModel.findById(showingRecommend.idMovie);
     recommend.addUserRecentBuyMovieGenre(idUser, movieRecommend.id)
-
+    let Cinematemp;
+    movie = movieRecommend.name;
+    Cinematemp = await cinemaModel.findById(showingRecommend.idCinema);
+    Cinema = Cinematemp.name;
+    date = timeHandle.formatDate_YearMonthDay(showingRecommend.startTime)
+    session = showingRecommend.time
     for (let i = 0; i < billsOfUser.length; i++) {
         let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
         console.log("tohere")
         try {
-            let showingtemp;
-            let movietemp;
-            let Cinematemp;
-            showingtemp = await ShowingModel.findById(showSeat.idShowing);
-            movietemp = await MovieModel.findById(showingtemp.idMovie);
-            movietemp = movietemp.name;
-            Cinematemp = await cinemaModel.findById(showingtemp.idCinema);
-            Cinematemp = Cinematemp.name;
-            var datetemp = timeHandle.formatDate_YearMonthDay(showingtemp.startTime)
-            if (session.indexOf(showingtemp.time) == -1)
-                session = session + ', ' + showingtemp.time;
-            if (date.indexOf(datetemp) == -1)
-                date = date + ', ' + datetemp;
-            if (movie.indexOf(movietemp) == -1)
-                movie = movie + ', ' + movietemp;
-            if (Cinema.indexOf(Cinematemp) == -1)
-                Cinema = Cinema + ', ' + Cinematemp;
             if (seat.indexOf(showSeat.number) == -1)
                 seat = seat + ', ' + showSeat.number
         }
