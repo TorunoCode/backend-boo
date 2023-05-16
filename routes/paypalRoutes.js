@@ -295,7 +295,7 @@ app.get('/pay/:id', async function (req, res) {
   console.log("check")
   total = bill[0].totalMoney;
   let result = await paypalHandle.paypalCreate(
-    req.protocol + "://" + req.get('host') + "/api/paypal/success/" + req.params.id,
+    req.protocol + "://" + req.get('host') + "/api/paypal/success/" + req.params.id + "/" + bill[0]._id,
     req.protocol + "://" + req.get('host') + "/api/paypal/cancel/" + req.params.id,
     itemsToAdd, total, req.params.id)
   try {
@@ -360,7 +360,7 @@ app.get('/send_verify/:userId/:rand', async function (req, res) {
   res.write(subHtml);
   res.end();
 });*/
-app.get('/success/:buyer_id', async function (req, res) {
+app.get('/success/:buyer_id/:bill_id', async function (req, res) {
   const paymentId = req.query.paymentId;
 
   paypal.payment.get(paymentId, function (error, payment) {
@@ -403,7 +403,7 @@ app.get('/success/:buyer_id', async function (req, res) {
           } else {
             try {
               let dateOrder = new Date()
-              let sendEmailResult = await paymentFunction.sendEmailInvoice(paymentId, req.params.buyer_id, total_for_execute, dateOrder)
+              let sendEmailResult = await paymentFunction.sendEmailInvoice(req.params.bill_id, req.params.buyer_id, total_for_execute, dateOrder)
               if (!sendEmailResult)
                 return res.status(400).send({ message: "Can't send confirm email" })
               console.log("toherrrrrrrrer")
