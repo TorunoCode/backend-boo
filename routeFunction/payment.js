@@ -42,6 +42,7 @@ async function sendEmailInvoice(paymentId, idUser, total_for_execute, dateOrder)
             return false
         }
     }
+    seat = seat.substring(1)
     console.log("to send email")
     let sendEmailResult = await emailHandle.sendInvoice(
         paymentId, idUser, movie, Cinema, date, session, seat,
