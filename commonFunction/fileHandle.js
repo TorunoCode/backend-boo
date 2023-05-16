@@ -25,19 +25,14 @@ function invoice(paymentId, movie, cinema, date, session, seat, billsOfUser, tot
     console.log(dateOrder)
     subHtml = subHtml.replace('DateOrder', timeHandle.formatDate_YearMonthDay(dateOrder))
     console.log(movie)
-    movie = movie.substring(1)
     subHtml = subHtml.replace('MovieName', '' + movie + '');
-    cinema = cinema.substring(1)
     console.log(cinema)
     subHtml = subHtml.replace('CinemaName', '' + cinema + '');
-    date = date.substring(1)
     console.log(date)
     subHtml = subHtml.replace('DateName', '' + date + '');
-    session = session.substring(1)
     console.log(session)
     subHtml = subHtml.replace('SessionName', '' + session + '');
     console.log(seat)
-    seat = seat.substring(1)
     subHtml = subHtml.replace('SeatName', '' + seat + '');
     console.log(billsOfUser.length)
     subHtml = subHtml.replace('SeatQuantity', '' + billsOfUser.length + '');

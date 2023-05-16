@@ -26,11 +26,11 @@ async function sendEmailInvoice(paymentId, idUser, total_for_execute, dateOrder)
     let movieRecommend = await MovieModel.findById(showingRecommend.idMovie);
     recommend.addUserRecentBuyMovieGenre(idUser, movieRecommend.id)
     let Cinematemp;
-    movie = movieRecommend.name;
+    movie = " " + movieRecommend.name;
     Cinematemp = await cinemaModel.findById(showingRecommend.idCinema);
-    Cinema = Cinematemp.name;
-    date = timeHandle.formatDate_YearMonthDay(showingRecommend.startTime)
-    session = showingRecommend.time
+    Cinema = " " + Cinematemp.name;
+    date = " " + timeHandle.formatDate_YearMonthDay(showingRecommend.startTime)
+    session = " " + showingRecommend.time
     for (let i = 0; i < billsOfUser.length; i++) {
         let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
         console.log("tohere")
