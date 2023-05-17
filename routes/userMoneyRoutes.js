@@ -37,8 +37,6 @@ app.get("/VNPayAdd/:email/:money", async function (req, res) {
         req.connection.remoteAddress ||
         req.socket.remoteAddress ||
         req.connection.socket.remoteAddress;
-    console.log(process.env.vnp_TmnCode)
-    console.log(process.env.vnp_HashSecret)
     var tmnCode = process.env.vnp_TmnCode
     var secretKey = process.env.vnp_HashSecret
     var vnpUrl = process.env.vnp_Url
@@ -67,13 +65,10 @@ app.get("/VNPayAdd/:email/:money", async function (req, res) {
     };
     vnp_Params = sortObject(vnp_Params);
     var signData = queryString.stringify(vnp_Params, { encode: false });
-    //console.log(queryString.stringify(vnp_Params, { encode: false }))
-
     var hmac = crypto.createHmac("sha512", secretKey);
     var signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
     vnpUrl += '?' + queryString.stringify(vnp_Params, { encode: false })
         + "&vnp_SecureHash=" + signed;
-    console.log(signed)
     return res.redirect(vnpUrl)
 });
 app.get("/VNPaySuccess/:email/:money", async function (req, res) {

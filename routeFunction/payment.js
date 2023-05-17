@@ -11,15 +11,12 @@ import recommend from "./recommend.js";
 async function sendEmailInvoice(paymentId, idUser, total_for_execute, dateOrder) {
     //user vừa trả tiền status vẫn = -1
     let bill = await billsModel.find({ idCustomer: idUser, status: "-1" })
-    console.log(bill)
     let billsOfUser = await orderModel.find({ idBill: bill[0]._id });
     let movie = '';
     let Cinema = '';
     let date = '';
     let session = '';
     let seat = '';
-    console.log(billsOfUser)
-    console.log("done check")
     //1 bill chỉ có 1 phim
     //add vô recommend
     let showingRecommend = await ShowingModel.findById(billsOfUser[0].idShowing)
@@ -33,7 +30,6 @@ async function sendEmailInvoice(paymentId, idUser, total_for_execute, dateOrder)
     session = " " + showingRecommend.time
     for (let i = 0; i < billsOfUser.length; i++) {
         let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
-        console.log("tohere")
         try {
             if (seat.indexOf(showSeat.number) == -1)
                 seat = seat + ', ' + showSeat.number
@@ -43,7 +39,6 @@ async function sendEmailInvoice(paymentId, idUser, total_for_execute, dateOrder)
         }
     }
     seat = seat.substring(1)
-    console.log("to send email")
     let sendEmailResult = await emailHandle.sendInvoice(
         paymentId, idUser, movie, Cinema, date, session, seat,
         billsOfUser, total_for_execute, dateOrder

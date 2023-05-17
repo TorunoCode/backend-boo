@@ -1,7 +1,6 @@
 import paypal from 'paypal-rest-sdk'
 function paypalPayout(email, money) {
     var sender_batch_id = Math.random().toString(36).substring(9);
-    console.log(email)
     var create_payout_json = {
         "sender_batch_header": {
             "sender_batch_id": sender_batch_id,
@@ -24,7 +23,6 @@ function paypalPayout(email, money) {
     return new Promise(function (resolve, reject) {
         paypal.payout.create(create_payout_json, function (error, payout) {
             if (error) {
-                console.log(error.response);
                 reject(error)
             } else {
                 resolve(payout)
@@ -57,19 +55,15 @@ async function paypalCreate(returnUrl, cancelUrl, items, total, description) {
             "description": description
         }]
     };
-    console.log("inside paypal")
     let paymentLink;
     return new Promise(function (resolve, reject) {
         paypal.payment.create(create_payment_json, function (error, payment) {
             if (error) {
-                console.log(error)
                 reject(error)
             } else {
                 for (let i = 0; i < payment.links.length; i++) {
                     if (payment.links[i].rel === 'approval_url') {
-                        console.log(payment.links[i].href)
                         paymentLink = payment.links[i].href + ""
-                        console.log("link payment: " + paymentLink)
                         resolve(paymentLink)
                     }
                 }
