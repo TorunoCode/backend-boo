@@ -721,12 +721,12 @@ movieRoute.get(
     "/listBillManage",
     asyncHandler(async (req, res) => {
         var listItem = [];
-        const bill = await billModel.find({},{_id:1,createdAt:1});
+        const bill = await billModel.find({},{_id:1,createdAt:1,idCustomer:1}).limit(10).sort( { createDate : -1 } );
         for (let x of bill) {
             const ticket = await orderModel.distinct('idShowing', { idBill: x._id.toString() });
             for (let b of ticket) {
-                const showing = await ShowingModel.findById(b,{startTime:1, time:1,idMovie:1}).sort( { timestamp : -1 } );
-                // const cinema = await CinemaModel.findById(showing.idCinema);
+                const showing = await ShowingModel.findById(b,{startTime:1, time:1,idMovie:1,idCinema:1}).sort( { timestamp : -1 } );
+                const cinema = await CinemaModel.findById(showing.idCinema);
                 const movie = await MovieModel.findOne({_id:showing.idMovie});
                 let list = [];
                 const ticketOfMovie = await orderModel.find({ idBill: x._id.toString(), idShowing: b },{idShowSeat:1}).sort( { timestamp : -1 } );
@@ -736,11 +736,12 @@ movieRoute.get(
                     total += seat.price;
                     list.push(seat.number);
                 }
-                // const user = await UserModal.findById(x.idCustomer);
+                const user = await UserModal.findById(x.idCustomer,{name:1});
                 var item = {
                     idBill: x._id.toString(),
                     movie: movie.name,
-                    // cinema: cinema.name,
+                    fullName: user.name,
+                    cinema: cinema.name,
                     date: convert(showing.startTime),
                     session: showing.time,
                     listItem: list,
