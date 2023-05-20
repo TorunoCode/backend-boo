@@ -60,9 +60,9 @@ app.post("/add_feedback", async function (request, response) {
             $match: { movieId: feedback.movieId }
         }, { $group: { _id: "$movieId", avg_val: { $avg: "$rate" } } }]);
         await MovieModel.findByIdAndUpdate(data[0]._id, { $set: { rate: Math.round(data[0].avg_val * 10) / 10 } });
-        response.send({ message: 'done add feedback, user have feedback ' + numAdd });
+        return response.send({ message: 'done add feedback, user have feedback ' + numAdd });
     } catch (error) {
-        response.status(500).send(error);
+        return response.status(500).send(error);
     }
 });
 app.post("/delete_feedback", async function (request, response) {
@@ -70,9 +70,9 @@ app.post("/delete_feedback", async function (request, response) {
 
     try {
         await feedbacksModel.deleteOne({ _id: feedback['_id'] });
-        response.send({ message: 'done delete feedback' });
+        return response.send({ message: 'done delete feedback' });
     } catch (error) {
-        response.status(500).send(error);
+        return response.status(500).send(error);
     }
 });
 app.get("/feedbacks/:movieId/:page", async (request, response) => {
@@ -125,7 +125,7 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
     }
     result.push(allCommentsOfMovie);
 
-    response.status(200).send(result);
+    return response.status(200).send(result);
 });
 
 export default app;
