@@ -721,7 +721,8 @@ movieRoute.get(
     "/listBillManage",
     asyncHandler(async (req, res) => {
         var listItem = [];
-        const bill = await billModel.find({},{_id:1,createdAt:1,idCustomer:1}).limit(10).sort( { createDate : -1 } );
+        const bill = await billModel.find({},{_id:1,createdAt:1,idCustomer:1}).limit(10).sort( { createdAt : -1 } );
+        console.log(bill);
         for (let x of bill) {
             const ticket = await orderModel.distinct('idShowing', { idBill: x._id.toString() });
             for (let b of ticket) {
