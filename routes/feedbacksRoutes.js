@@ -3,7 +3,7 @@ import feedbacksModel from "../models/feedbacksModel.js";
 import timeHandle from '../commonFunction/timeHandle.js';
 import UserModal from '../models/userModel.js';
 import MovieModel from '../models/movieModel.js';
-
+import OrderModel from '../models/orderModel.js';
 
 const app = express.Router();
 app.get("/", function (req, res) {
@@ -44,13 +44,17 @@ app.post("/delete_allfeedback", async (request, response) => {
 });
 app.post("/add_feedback", async function (request, response) {
     const feedback = new feedbacksModel(request.body);
+    const Orders = await OrderModel.find({ idCustomer: feedback.userId }).select('idShowing').populate({
+        path: "Ordershowing",
+        match: { idMovie: feedback.movieId },
+        select: 'idMovie -_id'
+    })
+    //tìm xem coi trong Order có tìm tìm kiếm trên có cái nào có tìm được showing không
+    var picked = Orders.find(o => o.Ordershowing != null);
+    if (!picked)
+        return response.status(400).send({ message: 'You have to buy ticket for movie first' })
     //feedback.userId = request.session.userId; 
     try {
-        const count = await feedbacksModel.count({ userId: feedback.userId, movieId: feedback.movieId });
-        var numAdd = parseInt(count) + 1;
-        // if (false) {
-        //     return response.status(400).json({ data: null, message: "User already feedback " + numAdd });
-        // }
         await feedback.save();
         var data = await feedbacksModel.aggregate([{
             $match: { movieId: feedback.movieId }

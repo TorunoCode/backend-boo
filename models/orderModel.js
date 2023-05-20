@@ -18,9 +18,16 @@ const orderSchema = new mongoose.Schema({
      status: {
           type: Number, require: true
      }
-
 }, {
-     timestamps: true
- });
+     timestamps: true,
+     toJSON: { virtuals: true },
+     toObject: { virtuals: true }
+});
+orderSchema.virtual('Ordershowing', {
+     ref: 'Showing',
+     localField: 'idShowing',
+     foreignField: '_id',
+     justOne: true
+});
 const Order = mongoose.model('Order', orderSchema);
 export default Order;
