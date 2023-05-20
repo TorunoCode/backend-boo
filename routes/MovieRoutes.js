@@ -193,7 +193,7 @@ movieRoute.post(
         if (!comfirm) {
             const showing = new ShowingModel(req.body);
             const cinemaSeat = await cinemaSeatModel.find({ name: req.body.idHall });
-            showing.save();
+            await showing.save();
             cinemaSeat.map(async (a) => {
                 const showSeat = await showSeatModel({ price: req.body.price, idCinemaHallSeat: a._id, number: a.seatRow + a.seatColumn, idShowing: showing._id });
                 showSeat.save();
@@ -738,10 +738,9 @@ movieRoute.get(
                     total += seat.price;
                     list.push(seat.number);
                 }
-                const user = await UserModal.findById(x.idCustomer);
+                // const user = await UserModal.findById(x.idCustomer);
                 var item = {
                     idBill: x._id.toString(),
-                    fullName: user.fullName == null ? null : user.fullName,
                     movie: movie.name,
                     cinema: cinema.name,
                     date: convert(showing.startTime),

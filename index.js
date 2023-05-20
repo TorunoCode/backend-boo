@@ -26,6 +26,7 @@ import passwordRoutes from './routes/passwordRoutes.js';
 import userMoneyRoutes from './routes/userMoneyRoutes.js';
 import checkBillRoutes from './routes/checkBillRoutes.js';
 import recommendRoutes from './routes/recommendRoutes.js';
+import revertTicketRoutes from './routes/revertRoutes.js';
 const app = express();
 app.enable('trust proxy');
 const MongoStore = MongoDBSession(session);
@@ -91,6 +92,7 @@ app.use("/api/password", passwordRoutes);
 app.use("/api/userMoney", userMoneyRoutes);
 app.use("/api/checkBill", checkBillRoutes);
 app.use("/api/recommend", recommendRoutes);
+app.use("/api/revertTicket", revertTicketRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
