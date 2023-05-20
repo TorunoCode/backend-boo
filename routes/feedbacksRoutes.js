@@ -60,8 +60,9 @@ app.post("/add_feedback", async function (request, response) {
             $match: { movieId: feedback.movieId }
         }, { $group: { _id: "$movieId", avg_val: { $avg: "$rate" } } }]);
         await MovieModel.findByIdAndUpdate(data[0]._id, { $set: { rate: Math.round(data[0].avg_val * 10) / 10 } });
-        return response.send({ message: 'done add feedback, user have feedback ' + numAdd });
+        return response.send({ message: 'done add feedback, user have feedback ' });
     } catch (error) {
+        console.log(error)
         return response.status(500).send(error);
     }
 });
