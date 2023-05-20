@@ -721,19 +721,18 @@ movieRoute.get(
     "/listBillManage",
     asyncHandler(async (req, res) => {
         var listItem = [];
-        const bill = await billModel.find({});
+        const bill = await billModel.find({},{_id:1,createdAt:1});
         for (let x of bill) {
             const ticket = await orderModel.distinct('idShowing', { idBill: x._id.toString() });
             for (let b of ticket) {
-                const showing = await ShowingModel.findById(b);
+                const showing = await ShowingModel.findById(b,{startTime:1, time:1,idMovie:1}).sort( { timestamp : -1 } );
                 // const cinema = await CinemaModel.findById(showing.idCinema);
-                const movie = await MovieModel.findById(showing.idMovie);
-
+                const movie = await MovieModel.findOne({_id:showing.idMovie});
                 let list = [];
-                const ticketOfMovie = await orderModel.find({ idBill: x._id.toString(), idShowing: b });
+                const ticketOfMovie = await orderModel.find({ idBill: x._id.toString(), idShowing: b },{idShowSeat:1}).sort( { timestamp : -1 } );
                 let total = 0;
                 for (let c of ticketOfMovie) {
-                    const seat = await showSeatModel.findById(c.idShowSeat);
+                    const seat = await showSeatModel.findById(c.idShowSeat).sort( { timestamp : -1 } );
                     total += seat.price;
                     list.push(seat.number);
                 }
