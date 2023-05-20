@@ -22,26 +22,13 @@ function invoice(paymentId, movie, cinema, date, session, seat, billsOfUser, tot
     var subHtml = fs.readFileSync(path.join(path.resolve(process.cwd(), "template"), 'mailreceipt2.html'), 'utf8')
     subHtml = subHtml.replace('OrderNumber', paymentId)
     //subHtml = subHtml.replace('DateOrder', payment.transactions[0].related_resources[0].sale.update_time.substring(0, 10))
-    console.log(dateOrder)
     subHtml = subHtml.replace('DateOrder', timeHandle.formatDate_YearMonthDay(dateOrder))
-    console.log(movie)
-    movie = movie.substring(1)
     subHtml = subHtml.replace('MovieName', '' + movie + '');
-    cinema = cinema.substring(1)
-    console.log(cinema)
     subHtml = subHtml.replace('CinemaName', '' + cinema + '');
-    date = date.substring(1)
-    console.log(date)
     subHtml = subHtml.replace('DateName', '' + date + '');
-    session = session.substring(1)
-    console.log(session)
     subHtml = subHtml.replace('SessionName', '' + session + '');
-    console.log(seat)
-    seat = seat.substring(1)
     subHtml = subHtml.replace('SeatName', '' + seat + '');
-    console.log(billsOfUser.length)
     subHtml = subHtml.replace('SeatQuantity', '' + billsOfUser.length + '');
-    console.log(total_for_execute)
     subHtml = subHtml.replace('SeatQuantityMoney', '' + total_for_execute + '')
     subHtml = subHtml.replace('TotalVatMoney', '' + total_for_execute + '')
     return subHtml;

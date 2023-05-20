@@ -5,7 +5,6 @@ import emailHandle from '../commonFunction/emailHandle.js';
 import moneyHandle from '../commonFunction/moneyHandle.js';
 async function updateUserInfoAfterVerifyLogin(email, name, given_name, picture) {
     let existsInDB = await UserModal.findOne({ email: email });
-    console.log(existsInDB)
     if (!existsInDB) {
         let randPass = stringHandle.randomString()
         const UserModalCreated = await UserModal.create({
@@ -29,13 +28,10 @@ async function updateUserInfoAfterVerifyLogin(email, name, given_name, picture) 
             new: true
         })
     }
-    console.log("here")
-    console.log(existsInDB)
     return existsInDB;
 }
 async function addMoneyToUser(userEmail, total_for_execute) {
     let user = await UserModal.findOne({ email: userEmail })
-    console.log(user)
     let userMoney
     if (user.money == null)
         userMoney = parseFloat(0)
@@ -43,7 +39,6 @@ async function addMoneyToUser(userEmail, total_for_execute) {
     userMoney = moneyHandle.addMoney(userMoney, total_for_execute);
     userMoney = userMoney.toString();
     user = await UserModal.findOneAndUpdate({ email: userEmail }, { money: userMoney }, { new: true });
-    console.log(user)
     return user
 }
 export default { updateUserInfoAfterVerifyLogin, addMoneyToUser }

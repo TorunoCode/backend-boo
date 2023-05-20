@@ -14,8 +14,6 @@ const app = express.Router();
 app.get("/", async function (req, res) {
     res.send({ message: "api/oAuthGoogleRoutes/Signup" })
 })
-//const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
-//const GOOGLE_CLIENT_ID = '1049176429942-4243i6lqlhfu6cdcbu4lk9aitn2tijj6.apps.googleusercontent.com'
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 let DB = [];
@@ -46,10 +44,8 @@ async function userInfoFromGoogleAccessToken(token) {
     return dataToUse;
 }
 
-// server.js
 app.post("/login", async function (req, res) {
     try {
-        console.log("loginRoute")
         let profile, verificationResponse;
         if (!req.body.access_token) {
             return res.status(400).json({
@@ -67,7 +63,6 @@ app.post("/login", async function (req, res) {
                 return res.status(400).send({ message: "Access token not from fixgo" })
         }
 
-        console.log(req.body.access_token)
         let GoogleUserInfo = await userInfoFromGoogleAccessToken(req.body.access_token);
         if (GoogleUserInfo.error) {
             return res.status(400).json({
@@ -75,7 +70,6 @@ app.post("/login", async function (req, res) {
             });
         }
         profile = GoogleUserInfo
-        console.log(profile)
         let existsInDB = await user.updateUserInfoAfterVerifyLogin(profile?.email, profile?.name, profile?.given_name, profile?.picture)
         if (existsInDB.message) {
             return res.status(404).send({ data: null, message: existsInDB.message })
@@ -87,7 +81,6 @@ app.post("/login", async function (req, res) {
         req.session.userId = existsInDB.id
         req.session.save()
         return res.status(200).json({ data: existsInDB });
-        //return res.status(400).json({ data: null, message: "Not Found login token" })
     } catch (error) {
         res.status(500).json({
             message: error?.message || error,

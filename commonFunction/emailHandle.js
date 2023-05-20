@@ -59,9 +59,7 @@ async function sendHttpMailBcc(emailBody, mail) {
     return result
 }
 async function sendInvoice(paymentId, idUser, movie, cinema, date, session, seat, billsOfUser, total_for_execute, dateOrder) {
-    console.log("to send invoice")
     let subHtml = fileHandle.invoice(paymentId, movie, cinema, date, session, seat, billsOfUser, total_for_execute, dateOrder)
-    console.log("done to hererrrrrrr")
     var emailToSend = await userModel.find({ _id: idUser }).select('email -_id')
     var mailOptions = {
         from: 'backendtlcn@gmail.com',
@@ -69,14 +67,11 @@ async function sendInvoice(paymentId, idUser, movie, cinema, date, session, seat
         subject: 'Sending Email using Node.js',
         html: subHtml
     };
-    console.log(emailToSend)
-    console.log("done to hererrrrrrr 2")
     return await new Promise((resolve, reject) => {
         emailProvider.sendMail(mailOptions, function (error, info) {
             if (error) {
                 reject(false);
             } else {
-                console.log(info)
                 resolve(true);
             }
         })
