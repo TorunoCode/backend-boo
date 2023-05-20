@@ -722,12 +722,11 @@ movieRoute.get(
     asyncHandler(async (req, res) => {
         var listItem = [];
         const bill = await billModel.find({});
-        console.log(bill)
         for (let x of bill) {
             const ticket = await orderModel.distinct('idShowing', { idBill: x._id.toString() });
             for (let b of ticket) {
                 const showing = await ShowingModel.findById(b);
-                const cinema = await CinemaModel.findById(showing.idCinema);
+                // const cinema = await CinemaModel.findById(showing.idCinema);
                 const movie = await MovieModel.findById(showing.idMovie);
 
                 let list = [];
@@ -742,7 +741,7 @@ movieRoute.get(
                 var item = {
                     idBill: x._id.toString(),
                     movie: movie.name,
-                    cinema: cinema.name,
+                    // cinema: cinema.name,
                     date: convert(showing.startTime),
                     session: showing.time,
                     listItem: list,
