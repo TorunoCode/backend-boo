@@ -21,7 +21,7 @@ async function sendOTPMail(OTP, mail) {
     return result
 }
 async function sendCreateAccountPass(password, mail) {
-    var subHtml = fileHandle.template4Notification("Account" + mail + " created with password: " + password)
+    var subHtml = fileHandle.template4Notification("Account: " + mail + " created with password: " + password)
     var mailOptions = {
         from: 'backendtlcn@gmail.com',
         to: mail,

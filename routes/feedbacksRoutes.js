@@ -60,7 +60,7 @@ app.post("/add_feedback", async function (request, response) {
             $match: { movieId: feedback.movieId }
         }, { $group: { _id: "$movieId", avg_val: { $avg: "$rate" } } }]);
         await MovieModel.findByIdAndUpdate(data[0]._id, { $set: { rate: Math.round(data[0].avg_val * 10) / 10 } });
-        return response.send({ message: 'done add feedback, user have feedback ' });
+        return response.send({ message: 'Done add feedback' });
     } catch (error) {
         console.log(error)
         return response.status(500).send(error);
@@ -71,7 +71,7 @@ app.post("/delete_feedback", async function (request, response) {
 
     try {
         await feedbacksModel.deleteOne({ _id: feedback['_id'] });
-        return response.send({ message: 'done delete feedback' });
+        return response.send({ message: 'Done delete feedback' });
     } catch (error) {
         return response.status(500).send(error);
     }
