@@ -182,15 +182,9 @@ app.get('/success/:email', async function (req, res) {
                 return;
             }
             total_for_execute = payment.transactions[0].amount.total; total_for_execute = parseFloat(total_for_execute)
-            let user = await UserModal.findOne({ email: req.params.email })
-            let userMoney
-            if (user.money == null)
-                userMoney = parseFloat(0)
-            else userMoney = parseFloat(user.money)
-            userMoney = moneyHandle.addMoney(userMoney, total_for_execute);
-            userMoney = moneyHandle.addMoney(userMoney, total_for_execute * 5 / 100)
-            userMoney = userMoney.toString();
-            user = await UserModal.findOneAndUpdate({ email: req.params.email }, { money: userMoney }, { new: true });
+            let amount = moneyHandle.addMoney(total_for_execute, total_for_execute * 5 / 100)
+            //VND sang USD 2023-05-07: USD = VND * 0.000043
+            await userFunction.addMoneyToUser(req.params.email, amount * 43 / (10 ** 6))
             subHtml = fileHandle.template4Notification("Success add money")
             res.status(200);
             res.write(subHtml);
