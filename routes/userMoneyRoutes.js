@@ -40,11 +40,11 @@ app.get("/VNPayAdd/:email/:money", async function (req, res) {
     var tmnCode = process.env.vnp_TmnCode
     var secretKey = process.env.vnp_HashSecret
     var vnpUrl = process.env.vnp_Url
-    var returnUrl = req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccess/" + req.params.email + "/" + req.params.money
+    var amount = req.params.money
+    var returnUrl = req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccess/" + req.params.email
     var date = new Date();
     var createDate = timeHandle.format_yyyymmddHHmmss(date)
     var orderId = timeHandle.format_HHmmss(date);
-    var amount = req.params.money
     var orderInfo = "Nap " + req.params.money + " vao tai khoan" + req.params.email
     var locale = 'vn'
     var currCode = 'VND';
@@ -71,24 +71,23 @@ app.get("/VNPayAdd/:email/:money", async function (req, res) {
         + "&vnp_SecureHash=" + signed;
     return res.redirect(vnpUrl)
 });
-app.get("/VNPaySuccess/:email/:money", async function (req, res) {
+app.get("/VNPaySuccess/:email", async function (req, res) {
     var vnp_Params = req.query;
     var secureHash = vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHashType'];
     vnp_Params = sortObject(vnp_Params);
-    var tmnCode = process.env.vnp_TmnCode
     var secretKey = process.env.vnp_HashSecret
     var signData = queryString.stringify(vnp_Params, { encode: false });
     var hmac = crypto.createHmac("sha512", secretKey);
     var signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
-    let subHtml;
     if (secureHash === signed) {
         if (vnp_Params['vnp_TransactionStatus'] != "00") {
             return res.redirect(req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccessRes/Failed add money")
         }
+        let amount = moneyHandle.addMoney(vnp_Params['vnp_Amount'] / 100, vnp_Params['vnp_Amount'] / 100 * 5 / 100)
         //VND sang USD 2023-05-07: USD = VND * 0.000043
-        let result = await userFunction.addMoneyToUser(req.params.email, req.params.money * 43 / (10 ** 6))
+        let result = await userFunction.addMoneyToUser(req.params.email, amount * 43 / (10 ** 6))
         if (!result) {
             return res.redirect(req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccessRes/Can't add money")
         }
