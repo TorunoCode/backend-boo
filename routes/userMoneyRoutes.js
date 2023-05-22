@@ -188,6 +188,7 @@ app.get('/success/:email', async function (req, res) {
                 userMoney = parseFloat(0)
             else userMoney = parseFloat(user.money)
             userMoney = moneyHandle.addMoney(userMoney, total_for_execute);
+            userMoney = moneyHandle.addMoney(userMoney, total_for_execute * 5 / 100)
             userMoney = userMoney.toString();
             user = await UserModal.findOneAndUpdate({ email: req.params.email }, { money: userMoney }, { new: true });
             subHtml = fileHandle.template4Notification("Success add money")
@@ -263,6 +264,9 @@ app.get('/test/addMoney/:money1/:money2', async function (req, res) {
         compareReuslt = req.params.money1 + " < " + req.params.money2
     else
         compareReuslt = req.params.money1 + " > " + req.params.money2
-    return res.send({ "add": addResult, "sub": subtractResult, "compare": compareReuslt, "vnd to usd": req.params.money1 * 43 / (10 ** 6) })
+    return res.send({
+        "add": addResult, "sub": subtractResult, "compare": compareReuslt, "vnd to usd": req.params.money1 * 43 / (10 ** 6),
+        "mul": req.params.money1 * req.params.money2
+    })
 })
 export default app;
