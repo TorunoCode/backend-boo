@@ -184,7 +184,7 @@ app.get('/success/:email', async function (req, res) {
             total_for_execute = payment.transactions[0].amount.total; total_for_execute = parseFloat(total_for_execute)
             let amount = moneyHandle.addMoney(total_for_execute, total_for_execute * 5 / 100)
             //VND sang USD 2023-05-07: USD = VND * 0.000043
-            await userFunction.addMoneyToUser(req.params.email, amount * 43 / (10 ** 6))
+            await userFunction.addMoneyToUser(req.params.email, amount)
             subHtml = fileHandle.template4Notification("Success add money")
             res.status(200);
             res.write(subHtml);
