@@ -8,6 +8,7 @@ import fileHandle from '../commonFunction/fileHandle.js';
 import timeHandle from '../commonFunction/timeHandle.js';
 import emailHandle from '../commonFunction/emailHandle.js';
 import recommend from "./recommend.js";
+import CinemaHallModel from "../models/cinemaHallModel.js";
 async function sendEmailInvoice(paymentId, idUser, total_for_execute, dateOrder) {
     //user vừa trả tiền status vẫn = -1
     let bill = await billsModel.find({ idCustomer: idUser, status: "-1" })
@@ -23,9 +24,10 @@ async function sendEmailInvoice(paymentId, idUser, total_for_execute, dateOrder)
     let movieRecommend = await MovieModel.findById(showingRecommend.idMovie);
     recommend.addUserRecentBuyMovieGenre(idUser, movieRecommend.id)
     let Cinematemp;
+    let CinemaHall = await CinemaHallModel.findById(showingRecommend.idHall)
     movie = " " + movieRecommend.name;
     Cinematemp = await cinemaModel.findById(showingRecommend.idCinema);
-    Cinema = " " + Cinematemp.name;
+    Cinema = " " + CinemaHall.name + ", " + Cinematemp.name;
     date = " " + timeHandle.formatDate_YearMonthDay(showingRecommend.startTime)
     session = " " + showingRecommend.time
     for (let i = 0; i < billsOfUser.length; i++) {

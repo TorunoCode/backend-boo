@@ -34,8 +34,8 @@ app.get('/billToday/:id', async function (req, res) {
             "movie": movie.name,
             "seat": showSeat.number,
             "at": timeHandle.formatDate_YearMonthDay(showing.startTime) + " " + showing.time,
-            "cinemaHall": cinemaHall.name,
-            "cinema": cinema.name
+            // "cinemaHall": cinemaHall.name,
+            "cinema": cinemaHall.name + ", " + cinema.name
         });
     }
     return res.status(200).send(result)
