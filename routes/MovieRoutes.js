@@ -592,9 +592,14 @@ movieRoute.get(
 movieRoute.get(
     "/findMovieStep3/:idMovie/:idCinema/:startTime",      //Tim suat chieu phim dua tren ngay chieu(*) va rap (*)
     asyncHandler(async (req, res) => {
-        const data = await ShowingModel.distinct('time', { idMovie: req.params.idMovie, idCinema: req.params.idCinema, startTime: req.params.startTime });
-        if (data) {
-            return res.json(data);
+        const data = await ShowingModel.find({ idMovie: req.params.idMovie, idCinema: req.params.idCinema, startTime: req.params.startTime },{time:1,idHall:1});
+        var list = [];
+        for (let a of data) {
+            const hall = await cinemaHallModel.findById(a.idHall);
+            list.push({"time":a.time,"name":hall.name});
+        };       
+         if (data) {
+            return res.json(list);
         } else {
             return res.status(400).json({ message: "No item found" });
         }
