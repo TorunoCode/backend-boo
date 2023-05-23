@@ -75,7 +75,7 @@ app.get('/pay/:id', async function (req, res) {
     try {
       var date = timeHandle.formatDate_YearMonthDay(showing.startTime)
       let hourMin = showing.time + "";
-      name = showSeat.number + " movie: " + movie.name + " at " + date + " " + hourMin + ", " + CinemaHall.name + ", " + Cinema.name;
+      name = showSeat.number + " movie: " + movie.name + " at " + date + " " + hourMin + "; " + CinemaHall.name + ", " + Cinema.name;
     }
     catch (error) {
       let subHtml = fileHandle.template3Notification("Your seat booked not exist")

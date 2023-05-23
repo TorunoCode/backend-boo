@@ -110,6 +110,35 @@ userRoute.post(
     }
   }
 );
+userRoute.post(
+  "/loginAdmin", async (req, res) => {
+    const { email, password } = req.body
+    try {
+      const oldUser = await UserModal.findOne({ email });
+      if (!oldUser)
+        return res.status(404).json({ data: null, message: "User doesn't exist" });
+      if (!oldUser.isAdmin) {
+        return res.status(400).json({ message: "User not admin" });
+      }
+      if (oldUser.status == false)
+        return res.status(404).json({ data: null, message: "User is still block" });
+      const isPasswordCorrect = bcrypt.compare(password, oldUser.password);
+
+      if (!isPasswordCorrect) { return res.status(400).json({ message: "Wrong password!" }); }
+      //  const accessToken = jwt.sign(oldUser,process.env.ACCESS_TOKEN_SECRET)
+      req.session.isAdmin = true;
+      req.session.isAuth = true;
+      req.session.userEmail = oldUser.email;
+      req.session.userId = oldUser.id
+      req.session.save();
+      // res.status(200).json({ data: oldUser ,accessToken:accessToken});
+      res.status(200).json({ data: oldUser });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+      console.log(error);
+    }
+  }
+);
 function authenticateToken(req, res, next) {
   const authHeader = req.header['authorization']
   const token = authHeader && authHeader.split(' ')[1]

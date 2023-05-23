@@ -169,19 +169,19 @@ movieRoute.post(
 );
 movieRoute.post(
     "/update", async (req, res) => {
-      try {
-        const data = await MovieModel.findOneAndUpdate({ _id: req.body._id }, req.body, { new: true });
-        console.log(data);
-        if (data)
-          res.status(201).json({ data });
-        else
-          return res.status(404).json({ data: null, message: "Movie doesn't exist" });
-      } catch (error) {
-        res.status(500).json({ message: "Something went wrong" });
-        console.log(error);
-      }
+        try {
+            const data = await MovieModel.findOneAndUpdate({ _id: req.body._id }, req.body, { new: true });
+            console.log(data);
+            if (data)
+                res.status(201).json({ data });
+            else
+                return res.status(404).json({ data: null, message: "Movie doesn't exist" });
+        } catch (error) {
+            res.status(500).json({ message: "Something went wrong" });
+            console.log(error);
+        }
     }
-  );
+);
 movieRoute.post(
     "/showing/add",
     asyncHandler(async (req, res) => {
@@ -224,21 +224,20 @@ movieRoute.post(
         if (checkShowing == null) res.status(500).json({ message: "Something went wrong" });
         console.log("check" + check)
         if (check) {
-        const listCheck = await orderModel.distinct('idShowSeat',{ idBill: check._id.toString() });
-        for (let a of listCheck) {
-            await showSeatModel.findByIdAndUpdate(a,{ $set: { isReserved: false }});
-        }        
-        await orderModel.deleteMany({idBill:check._id.toString()});
-        await billModel.findByIdAndRemove(check._id.toString());
+            const listCheck = await orderModel.distinct('idShowSeat', { idBill: check._id.toString() });
+            for (let a of listCheck) {
+                await showSeatModel.findByIdAndUpdate(a, { $set: { isReserved: false } });
+            }
+            await orderModel.deleteMany({ idBill: check._id.toString() });
+            await billModel.findByIdAndRemove(check._id.toString());
         }
-        recommend.addUserRecentBuyMovieGenre(req.params.id, checkShowing.idMovie);
         const bill = await billModel({ totalMoney: 0, idCustomer: req.params.id, status: -1 }); //tao ma bill moi
         await bill.save();
         for (let a of body) {
             console.log("bill: " + bill._id);
             console.log(a)
             const bookingTicket = await orderModel({ idBill: bill._id.toString(), idShowSeat: a, idCustomer: req.session.idCustomer, idShowing: req.body.idShowing, status: -1 })
-            bookingTicket.save();  //gan nhan ticket voi ma bill ma kh mua
+            await bookingTicket.save();  //gan nhan ticket voi ma bill ma kh mua
             const data = await showSeatModel.findById(a); // lay price moi ve
             const total = await billModel.findById(bill._id.toString()); //lay total bill de cap nhat
             console.log("total: " + total.totalMoney)
@@ -726,23 +725,23 @@ movieRoute.get(
     "/listBillManage",
     asyncHandler(async (req, res) => {
         var listItem = [];
-        const bill = await billModel.find({},{_id:1,createdAt:1,idCustomer:1}).limit(10).sort( { createdAt : -1 } );
+        const bill = await billModel.find({}, { _id: 1, createdAt: 1, idCustomer: 1 }).limit(10).sort({ createdAt: -1 });
         console.log(bill);
         for (let x of bill) {
             const ticket = await orderModel.distinct('idShowing', { idBill: x._id.toString() });
             for (let b of ticket) {
-                const showing = await ShowingModel.findById(b,{startTime:1, time:1,idMovie:1,idCinema:1}).sort( { timestamp : -1 } );
+                const showing = await ShowingModel.findById(b, { startTime: 1, time: 1, idMovie: 1, idCinema: 1 }).sort({ timestamp: -1 });
                 const cinema = await CinemaModel.findById(showing.idCinema);
-                const movie = await MovieModel.findOne({_id:showing.idMovie});
+                const movie = await MovieModel.findOne({ _id: showing.idMovie });
                 let list = [];
-                const ticketOfMovie = await orderModel.find({ idBill: x._id.toString(), idShowing: b },{idShowSeat:1}).sort( { timestamp : -1 } );
+                const ticketOfMovie = await orderModel.find({ idBill: x._id.toString(), idShowing: b }, { idShowSeat: 1 }).sort({ timestamp: -1 });
                 let total = 0;
                 for (let c of ticketOfMovie) {
-                    const seat = await showSeatModel.findById(c.idShowSeat).sort( { timestamp : -1 } );
+                    const seat = await showSeatModel.findById(c.idShowSeat).sort({ timestamp: -1 });
                     total += seat.price;
                     list.push(seat.number);
                 }
-                const user = await UserModal.findById(x.idCustomer,{name:1});
+                const user = await UserModal.findById(x.idCustomer, { name: 1 });
                 var item = {
                     idBill: x._id.toString(),
                     movie: movie.name,
@@ -1046,29 +1045,29 @@ movieRoute.get(
 movieRoute.get(
     "/updateBill",
     asyncHandler(async (req, res) => {
-        try{
-        const list = await billModel.find({ status: -1 });
-        console.log(list);
-        if (list[0]) {
-            for (let item of list) {
-                console.log(item._id.toString());
-                const listCheck = await orderModel.distinct('idShowSeat', { idBill: item._id.toString() });
-                for (let a of listCheck) {
-                    await showSeatModel.findByIdAndUpdate(a, { $set: { isReserved: false } });
+        try {
+            const list = await billModel.find({ status: -1 });
+            console.log(list);
+            if (list[0]) {
+                for (let item of list) {
+                    console.log(item._id.toString());
+                    const listCheck = await orderModel.distinct('idShowSeat', { idBill: item._id.toString() });
+                    for (let a of listCheck) {
+                        await showSeatModel.findByIdAndUpdate(a, { $set: { isReserved: false } });
+                    }
+                    await orderModel.deleteMany({ idBill: item._id.toString() });
+                    await billModel.findByIdAndRemove(item._id.toString());
                 }
-                await orderModel.deleteMany({ idBill: item._id.toString() });
-                await billModel.findByIdAndRemove(item._id.toString());
+                res.send({ message: "Done" });
+            } else {
+                res.send({ message: "unavaible" });
             }
-            res.send({ message: "Done" });
-        } else {
-            res.send({ message: "unavaible" });
         }
-    }
-    catch (error) {
-        res.status(500).json({ message: "Something went wrong" });
-        console.log(error);
-    }
-})
+        catch (error) {
+            res.status(500).json({ message: "Something went wrong" });
+            console.log(error);
+        }
+    })
 );
 movieRoute.get(
     "/:id",
@@ -1085,7 +1084,7 @@ movieRoute.get(
 movieRoute.get(
     "/filterId/:id",
     asyncHandler(async (req, res) => {
-        const movie = await MovieModel.findById(req.params.id,{});
+        const movie = await MovieModel.findById(req.params.id, {});
         if (movie) {
             res.json(movie);
         } else {

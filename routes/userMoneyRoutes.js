@@ -182,14 +182,9 @@ app.get('/success/:email', async function (req, res) {
                 return;
             }
             total_for_execute = payment.transactions[0].amount.total; total_for_execute = parseFloat(total_for_execute)
-            let user = await UserModal.findOne({ email: req.params.email })
-            let userMoney
-            if (user.money == null)
-                userMoney = parseFloat(0)
-            else userMoney = parseFloat(user.money)
-            userMoney = moneyHandle.addMoney(userMoney, total_for_execute);
-            userMoney = userMoney.toString();
-            user = await UserModal.findOneAndUpdate({ email: req.params.email }, { money: userMoney }, { new: true });
+            let amount = moneyHandle.addMoney(total_for_execute, total_for_execute * 5 / 100)
+            //VND sang USD 2023-05-07: USD = VND * 0.000043
+            await userFunction.addMoneyToUser(req.params.email, amount)
             subHtml = fileHandle.template4Notification("Success add money")
             res.status(200);
             res.write(subHtml);
@@ -263,6 +258,9 @@ app.get('/test/addMoney/:money1/:money2', async function (req, res) {
         compareReuslt = req.params.money1 + " < " + req.params.money2
     else
         compareReuslt = req.params.money1 + " > " + req.params.money2
-    return res.send({ "add": addResult, "sub": subtractResult, "compare": compareReuslt, "vnd to usd": req.params.money1 * 43 / (10 ** 6) })
+    return res.send({
+        "add": addResult, "sub": subtractResult, "compare": compareReuslt, "vnd to usd": req.params.money1 * 43 / (10 ** 6),
+        "mul": req.params.money1 * req.params.money2
+    })
 })
 export default app;
