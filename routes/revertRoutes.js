@@ -5,6 +5,8 @@ import revertModal from '../models/revertModel.js';
 import showSeatModel from '../models/showSeatModel.js';
 import orderModel from '../models/orderModel.js';
 import ShowingModel from '../models/showingModel.js';
+import moneyHandle from '../commonFunction/moneyHandle.js';
+import UserModal from '../models/userModel.js';
 import mongoose from 'mongoose';
 import moment from 'moment';
 const app = express.Router();
@@ -20,20 +22,39 @@ function convert(str, a) {
 app.post(
     "/checkIn",
     asyncHandler(async (req, res) => {
-        // await showSeatModel.findByIdAndUpdate(req.body.idShowSeat,{ $set: { isReserved: false }}); //idshowSeat idUser
-        // await orderModel.findOneAndUpdate({idShowSeat:req.body.idShowSeat,status:1},{ $set: { status: 3 }}); //idshowSeat idUser
         const a = moment(new Date(), 'YYYY-MM-DD');
         const b = moment(req.body.createdAt, 'YYYY-MM-DD');
-        const day = b.diff(a, 'days');
-        console.log(day);
-        // const data = await revertModal({idUser:req.body.idUser,idOldOrder: oldBill._id.toString(),idShowSeat:req.body.idShowSeat, status:0});
-        // data.save();
-        // if (data) {
-        //     res.json(data);
-        // } else {
-        //     res.status(404)
-        //     throw new Error("Order not Found");
-        // }
+        const day = b.diff(a, 'days') + 1;
+        if(day>=3){
+            const order = await orderModel.findOne({idBill:req.body.idBill,idShowSeat:req.body.idShowSeat},{idShowing:1});
+            console.log(order);
+            const showing = await ShowingModel.findById(order.idShowing);
+            console.log(showing);
+            const users = await UserModal.findById(req.body.idUser,{email:1});
+            let user = await UserModal.findOne({ email: users.email });
+            let userMoney;
+            if (user.money == null)
+                userMoney = parseFloat(0);
+            else userMoney = parseFloat(user.money);
+            userMoney = moneyHandle.addMoney(userMoney, (parseFloat(showing.price)*90)/100);
+            userMoney = userMoney.toString();
+            await UserModal.findOneAndUpdate({ email: users.email }, { money: user.money }, { new: true });
+            const data = await revertModal({idUser:req.body.idUser,idOldOrder: order._id.toString(),idShowSeat:req.body.idShowSeat, status:1});
+            data.save();
+            res.send({ message: "refund before 3 day" });
+        }
+        else if(3>day>0){        
+        await showSeatModel.findByIdAndUpdate(req.body.idShowSeat,{ $set: { isReserved: false }}); //idshowSeat idUser
+        // await orderModel.findOneAndUpdate({idShowSeat:req.body.idShowSeat,status:1},{ $set: { status: 3 }}); //idshowSeat idUser
+            const data = await revertModal({idUser:req.body.idUser,idOldOrder: oldBill._id.toString(),idShowSeat:req.body.idShowSeat, status:0});
+            data.save();
+            res.send({ message: "refund after 3 day" });
+
+        }
+        else
+        {
+        res.send({ message: "refund fail" });
+        }
     })
 );
 app.get(
