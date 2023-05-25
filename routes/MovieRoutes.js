@@ -143,6 +143,14 @@ movieRoute.get(
     })
 
 );
+movieRoute.get(
+    "/cinemaHalls/:id",
+    asyncHandler(async (req, res) => {
+        const data = await cinemaHallModel.find({idCinema:req.params.id});
+        res.json(data);
+    })
+
+);
 movieRoute.post(
     "/add",
     asyncHandler(async (req, res) => {
