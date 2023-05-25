@@ -1115,16 +1115,16 @@ movieRoute.get(
     })
 );
 movieRoute.get(
-    "/findIdSeat/:idUser/:idBill",
+    "/findIdSeat/:idUser/:idBill/:name",
     asyncHandler(async (req, res) => {
-        const data = await orderModel.findOne({idCustomer:req.params.idUser, idBill:req.params.idBill},{idShowSeat:1});
-        console.log(data);
-        if (data) {
-            res.json(data);
-        } else {
-            res.status(404)
-            throw new Error("Movie not Found");
-        }
+        const data = await orderModel.find({idCustomer:req.params.idUser, idBill:req.params.idBill});
+            const check = await showSeatModel.findOne({name: data.idShowing,seatRow:req.params.name[0],seatColumn:req.params.name[1]});
+            if (check) {
+                res.json(check._id.toString());
+            } else {
+                res.status(404)
+                throw new Error("Movie not Found");
+            }
     })
 );
 export default movieRoute;
