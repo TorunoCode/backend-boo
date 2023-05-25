@@ -1093,4 +1093,16 @@ movieRoute.get(
         }
     })
 );
+movieRoute.get(
+    "/showing/list/",
+    asyncHandler(async (req, res) => {
+        const data = await ShowingModel.find({});
+        if (data) {
+            res.json(data);
+        } else {
+            res.status(404)
+            throw new Error("Movie not Found");
+        }
+    })
+);
 export default movieRoute;
