@@ -742,14 +742,12 @@ movieRoute.get(
                 const cinema = await CinemaModel.findById(showing.idCinema);
                 const movie = await MovieModel.findOne({ _id: showing.idMovie });
                 let list = [];
-                let listId = [];
                 const ticketOfMovie = await orderModel.find({ idBill: x._id.toString(), idShowing: b }, { idShowSeat: 1 }).sort({ timestamp: -1 });
                 let total = 0;
                 for (let c of ticketOfMovie) {
                     const seat = await showSeatModel.findById(c.idShowSeat).sort({ timestamp: -1 });
                     total += seat.price;
                     list.push(seat.number);
-                    listId.push(seat._id.toString());
                 }
                 const user = await UserModal.findById(x.idCustomer, { name: 1 });
                 var item = {
@@ -760,7 +758,6 @@ movieRoute.get(
                     date: convert(showing.startTime),
                     session: showing.time,
                     list: list,
-                    listItemId: listId,
                     createDate: convert(x.createdAt),
                     totalMoney: total
                 }
@@ -1107,7 +1104,20 @@ movieRoute.get(
 movieRoute.get(
     "/showing/list/",
     asyncHandler(async (req, res) => {
-        const data = await ShowingModel.find({});
+        const data = await showSeatModel.deleteMany({name:"646f8873753b587ea2d0e93d"});
+        console.log(data);
+        if (data) {
+            res.json(data);
+        } else {
+            res.status(404)
+            throw new Error("Movie not Found");
+        }
+    })
+);
+movieRoute.get(
+    "/findIdSeat/:idUser/:idBill",
+    asyncHandler(async (req, res) => {
+        const data = await orderModel.findOne({idCustomer:req.params.idUser, idBill:req.params.idBill},{idShowSeat:1});
         console.log(data);
         if (data) {
             res.json(data);
