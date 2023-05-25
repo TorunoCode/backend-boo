@@ -742,12 +742,14 @@ movieRoute.get(
                 const cinema = await CinemaModel.findById(showing.idCinema);
                 const movie = await MovieModel.findOne({ _id: showing.idMovie });
                 let list = [];
+                let listId = [];
                 const ticketOfMovie = await orderModel.find({ idBill: x._id.toString(), idShowing: b }, { idShowSeat: 1 }).sort({ timestamp: -1 });
                 let total = 0;
                 for (let c of ticketOfMovie) {
                     const seat = await showSeatModel.findById(c.idShowSeat).sort({ timestamp: -1 });
                     total += seat.price;
                     list.push(seat.number);
+                    listId.push(seat._id.toString());
                 }
                 const user = await UserModal.findById(x.idCustomer, { name: 1 });
                 var item = {
@@ -757,7 +759,8 @@ movieRoute.get(
                     cinema: cinema.name,
                     date: convert(showing.startTime),
                     session: showing.time,
-                    listItem: list,
+                    list: list,
+                    listItemId: listId,
                     createDate: convert(x.createdAt),
                     totalMoney: total
                 }
