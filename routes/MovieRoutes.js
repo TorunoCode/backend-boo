@@ -1077,18 +1077,7 @@ movieRoute.get(
         }
     })
 );
-movieRoute.get(
-    "/:id",
-    asyncHandler(async (req, res) => {
-        const movie = await MovieModel.findOne({ name: req.params.id });
-        if (movie) {
-            res.json(movie);
-        } else {
-            res.status(404)
-            throw new Error("Movie not Found");
-        }
-    })
-);
+
 movieRoute.get(
     "/filterId/:id",
     asyncHandler(async (req, res) => {
@@ -1125,6 +1114,25 @@ movieRoute.get(
                 res.status(404)
                 throw new Error("Movie not Found");
             }
+    })
+);
+movieRoute.get(
+    "/idrom",
+    asyncHandler(async (req, res) => {
+                res.json(["6:00","7:30","9:00","10:00","12:00","13:30","15:00","16:00","18:00","19:30","21:00","22:00","24:00"]);
+            
+    })
+);
+movieRoute.get(
+    "/:id",
+    asyncHandler(async (req, res) => {
+        const movie = await MovieModel.findOne({ name: req.params.id });
+        if (movie) {
+            res.json(movie);
+        } else {
+            res.status(404)
+            throw new Error("Movie not Found");
+        }
     })
 );
 export default movieRoute;
