@@ -15,6 +15,7 @@ import UserModal from '../models/userModel.js';
 import feedbackModel from '../models/feedbacksModel.js';
 import recommend from '../routeFunction/recommend.js';
 import mongoose from 'mongoose';
+import moment from 'moment';
 import pkg from 'paypal-rest-sdk';
 const { order } = pkg;
 
@@ -584,7 +585,14 @@ movieRoute.get(
     asyncHandler(async (req, res) => {
         if (req.params.idMovie != null) {
             if (req.params.idCinema != null) {
-                const data = await ShowingModel.distinct('startTime', { idMovie: req.params.idMovie, idCinema: req.params.idCinema });
+                // const data = await ShowingModel.distinct('startTime', { idMovie: req.params.idMovie, idCinema: req.params.idCinema });
+               const data=  await ShowingModel.aggregate([{
+                    $match: {
+                        startTime: {
+                            $gte: new Date(),
+                        }, idMovie: req.params.idMovie, idCinema: req.params.idCinema 
+                    }
+                }]);
                 if (data) {
                     return res.json(data);
                 }
@@ -747,7 +755,7 @@ movieRoute.get(
                 for (let c of ticketOfMovie) {
                     const seat = await showSeatModel.findById(c.idShowSeat).sort({ timestamp: -1 });
                     total += seat.price;
-                    list.push(seat.number);
+                    list.push({"number":seat.number,"id":seat._id.toString()});
                 }
                 const user = await UserModal.findById(x.idCustomer, { name: 1 });
                 var item = {
