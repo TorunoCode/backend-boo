@@ -15,6 +15,7 @@ import UserModal from '../models/userModel.js';
 import feedbackModel from '../models/feedbacksModel.js';
 import recommend from '../routeFunction/recommend.js';
 import mongoose from 'mongoose';
+import moment from 'moment';
 import pkg from 'paypal-rest-sdk';
 const { order } = pkg;
 
@@ -143,6 +144,14 @@ movieRoute.get(
     })
 
 );
+movieRoute.get(
+    "/cinemaHalls/:id",
+    asyncHandler(async (req, res) => {
+        const data = await cinemaHallModel.find({idCinema:req.params.id});
+        res.json(data);
+    })
+
+);
 movieRoute.post(
     "/add",
     asyncHandler(async (req, res) => {
@@ -186,7 +195,7 @@ movieRoute.post(
     "/showing/add",
     asyncHandler(async (req, res) => {
         console.log(req.body);
-        const check = await ShowingModel.find({ startTime: req.body.startTime, idCinema: req.body.idCinema });
+        const check = await ShowingModel.find({ startTime: req.body.startTime, idCinema: req.body.idCinema, idHall: req.body.idHall });
         let listTest = check.map(a => a.time = parseInt(a.time.slice(0, 2)));
         var testValue = parseInt(req.body.time.slice(0, 2));
         const comfirm = listTest.includes(testValue);
@@ -576,9 +585,23 @@ movieRoute.get(
     asyncHandler(async (req, res) => {
         if (req.params.idMovie != null) {
             if (req.params.idCinema != null) {
-                const data = await ShowingModel.distinct('startTime', { idMovie: req.params.idMovie, idCinema: req.params.idCinema });
+                // const data = await ShowingModel.distinct('startTime', { idMovie: req.params.idMovie, idCinema: req.params.idCinema });
+                const text = convert(new Date()).toString();
+                const date = text[6] + text[7] + text[8] + text[9] + "-" + text[3] + text[4] + "-" + text[0] + text[1]+ "T00:00:00.000Z";
+               const data=  await ShowingModel.aggregate([{
+                    $match: {
+                        startTime: {
+                            $gte: new Date(date)
+                        }, idMovie: req.params.idMovie, idCinema: req.params.idCinema 
+                    }
+                }]);
+                var list = [];
+                data.forEach(element => {
+                    if(list.includes(element.startTime.toString()) !== true)
+                    list.push(element.startTime.toString());
+                });                
                 if (data) {
-                    return res.json(data);
+                    return res.json(list.map(a => formatDate(a)+"T00:00:00.000Z"));
                 }
             }
         }
@@ -588,12 +611,31 @@ movieRoute.get(
     })
 
 );
+function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+ 
 movieRoute.get(
     "/findMovieStep3/:idMovie/:idCinema/:startTime",      //Tim suat chieu phim dua tren ngay chieu(*) va rap (*)
     asyncHandler(async (req, res) => {
-        const data = await ShowingModel.distinct('time', { idMovie: req.params.idMovie, idCinema: req.params.idCinema, startTime: req.params.startTime });
-        if (data) {
-            return res.json(data);
+        const data = await ShowingModel.find({ idMovie: req.params.idMovie, idCinema: req.params.idCinema, startTime: req.params.startTime },{time:1,idHall:1});
+        var list = [];
+        for (let a of data) {
+            const hall = await cinemaHallModel.findById(a.idHall);
+            list.push({"time":a.time,"name":hall.name});
+        };       
+         if (data) {
+            return res.json(list);
         } else {
             return res.status(400).json({ message: "No item found" });
         }
@@ -691,7 +733,7 @@ movieRoute.get(
                 for (let c of ticketOfMovie) {
                     const seat = await showSeatModel.findById(c.idShowSeat);
                     console.log(seat);
-                    list.push(seat.number);
+                    list.push({"number":seat.number,"id":seat._id.toString()});
                 }
                 var item = {
                     idBill: a._id.toString(),
@@ -744,7 +786,7 @@ movieRoute.get(
                     cinema: cinema.name,
                     date: convert(showing.startTime),
                     session: showing.time,
-                    listItem: list,
+                    list: list,
                     createDate: convert(x.createdAt),
                     totalMoney: total
                 }
@@ -1064,10 +1106,11 @@ movieRoute.get(
         }
     })
 );
+
 movieRoute.get(
-    "/:id",
+    "/filterId/:id",
     asyncHandler(async (req, res) => {
-        const movie = await MovieModel.findOne({ name: req.params.id });
+        const movie = await MovieModel.findById(req.params.id, {});
         if (movie) {
             res.json(movie);
         } else {
@@ -1077,9 +1120,42 @@ movieRoute.get(
     })
 );
 movieRoute.get(
-    "/filterId/:id",
+    "/showing/list/",
     asyncHandler(async (req, res) => {
-        const movie = await MovieModel.findById(req.params.id, {});
+        const data = await showSeatModel.deleteMany({name:"646f8873753b587ea2d0e93d"});
+        console.log(data);
+        if (data) {
+            res.json(data);
+        } else {
+            res.status(404)
+            throw new Error("Movie not Found");
+        }
+    })
+);
+movieRoute.get(
+    "/findIdSeat/:idUser/:idBill/:name",
+    asyncHandler(async (req, res) => {
+        const data = await orderModel.find({idCustomer:req.params.idUser, idBill:req.params.idBill});
+            const check = await showSeatModel.findOne({name: data.idShowing,seatRow:req.params.name[0],seatColumn:req.params.name[1]});
+            if (check) {
+                res.json(check._id.toString());
+            } else {
+                res.status(404)
+                throw new Error("Movie not Found");
+            }
+    })
+);
+movieRoute.get(
+    "/idrom",
+    asyncHandler(async (req, res) => {
+                res.json(["6:00","7:30","9:00","10:00","12:00","13:30","15:00","16:00","18:00","19:30","21:00","22:00","24:00"]);
+            
+    })
+);
+movieRoute.get(
+    "/:id",
+    asyncHandler(async (req, res) => {
+        const movie = await MovieModel.findOne({ name: req.params.id });
         if (movie) {
             res.json(movie);
         } else {
