@@ -588,7 +588,6 @@ movieRoute.get(
                 // const data = await ShowingModel.distinct('startTime', { idMovie: req.params.idMovie, idCinema: req.params.idCinema });
                 const text = convert(new Date()).toString();
                 const date = text[6] + text[7] + text[8] + text[9] + "-" + text[3] + text[4] + "-" + text[0] + text[1]+ "T00:00:00.000Z";
-                console.log(date);
                const data=  await ShowingModel.aggregate([{
                     $match: {
                         startTime: {
@@ -598,11 +597,11 @@ movieRoute.get(
                 }]);
                 var list = [];
                 data.forEach(element => {
-                    if(list.includes(element.startTime) != true)
-                    list.push(element.startTime);
+                    if(list.includes(element.startTime.toString()) !== true)
+                    list.push(element.startTime.toString());
                 });                
                 if (data) {
-                    return res.json(list);
+                    return res.json(list.map(a => formatDate(a)+"T00:00:00.000Z"));
                 }
             }
         }
@@ -612,6 +611,20 @@ movieRoute.get(
     })
 
 );
+function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+ 
 movieRoute.get(
     "/findMovieStep3/:idMovie/:idCinema/:startTime",      //Tim suat chieu phim dua tren ngay chieu(*) va rap (*)
     asyncHandler(async (req, res) => {
