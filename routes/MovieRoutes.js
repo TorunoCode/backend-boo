@@ -586,15 +586,22 @@ movieRoute.get(
         if (req.params.idMovie != null) {
             if (req.params.idCinema != null) {
                 // const data = await ShowingModel.distinct('startTime', { idMovie: req.params.idMovie, idCinema: req.params.idCinema });
+                const text = convert(new Date()).toString();
+                const date = text[6] + text[7] + text[8] + text[9] + "-" + text[3] + text[4] + "-" + text[0] + text[1]+ "T00:00:00.000Z";
+                console.log(date);
                const data=  await ShowingModel.aggregate([{
                     $match: {
                         startTime: {
-                            $gte: new Date(),
+                            $gte: new Date(date)
                         }, idMovie: req.params.idMovie, idCinema: req.params.idCinema 
                     }
                 }]);
+                var list = [];
+                data.forEach(element => {
+                    list.push(convert(element.startTime));
+                });                
                 if (data) {
-                    return res.json(data);
+                    return res.json(list);
                 }
             }
         }
