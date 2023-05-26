@@ -712,7 +712,7 @@ movieRoute.get(
                 for (let c of ticketOfMovie) {
                     const seat = await showSeatModel.findById(c.idShowSeat);
                     console.log(seat);
-                    list.push(seat.number);
+                    list.push({"number":seat.number,"id":seat._id.toString()});
                 }
                 var item = {
                     idBill: a._id.toString(),
@@ -755,7 +755,7 @@ movieRoute.get(
                 for (let c of ticketOfMovie) {
                     const seat = await showSeatModel.findById(c.idShowSeat).sort({ timestamp: -1 });
                     total += seat.price;
-                    list.push({"number":seat.number,"id":seat._id.toString()});
+                    list.push(seat.number);
                 }
                 const user = await UserModal.findById(x.idCustomer, { name: 1 });
                 var item = {
