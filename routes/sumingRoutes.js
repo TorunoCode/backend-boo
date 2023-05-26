@@ -1,5 +1,4 @@
 import express from 'express';
-import transactionsModel from "../models/transactionsModel.js"
 import billsModel from "../models/billsModel.js"
 import emailProvider from '../config/nodeMailer.js';
 import userModel from "../models/userModel.js"

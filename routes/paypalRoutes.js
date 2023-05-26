@@ -1,6 +1,5 @@
 import express, { response } from 'express';
 import paypal from 'paypal-rest-sdk';
-import transactionsModel from "../models/transactionsModel.js"
 import billModel from "../models/billsModel.js"
 import emailProvider from '../config/nodeMailer.js';
 import userModel from "../models/userModel.js"
