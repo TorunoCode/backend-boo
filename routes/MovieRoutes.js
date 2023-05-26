@@ -598,7 +598,7 @@ movieRoute.get(
                 }]);
                 var list = [];
                 data.forEach(element => {
-                    list.push(convert(element.startTime));
+                    list.push(element.startTime);
                 });                
                 if (data) {
                     return res.json(list);
