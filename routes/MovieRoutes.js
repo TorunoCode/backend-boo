@@ -598,6 +598,7 @@ movieRoute.get(
                 }]);
                 var list = [];
                 data.forEach(element => {
+                    if(!list.includes(element.startTime))
                     list.push(element.startTime);
                 });                
                 if (data) {
