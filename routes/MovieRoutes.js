@@ -195,7 +195,7 @@ movieRoute.post(
     "/showing/add",
     asyncHandler(async (req, res) => {
         console.log(req.body);
-        const check = await ShowingModel.find({ startTime: req.body.startTime, idCinema: req.body.idCinema, idHall: req.body.idHall });
+        const check = await ShowingModel.find({ startTime: req.body.startTime+"T00:00:00.000+00:00", idCinema: req.body.idCinema, idHall: req.body.idHall });
         let listTest = check.map(a => a.time = parseInt(a.time.slice(0, 2)));
         var testValue = parseInt(req.body.time.slice(0, 2));
         const comfirm = listTest.includes(testValue);
