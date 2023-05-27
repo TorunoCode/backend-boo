@@ -219,7 +219,7 @@ app.post('/pay', async function (req, res) {
     }
     let bill = await billsModel.find({ idCustomer: user.id, status: "-1" });
     if (!bill) {
-        return res.status(400).send({ message: "No bill to pay" })
+        return res.status(400).send({ message: "Your bill timeout" })
     }
     let total = bill[0].totalMoney
     total = parseFloat(total)

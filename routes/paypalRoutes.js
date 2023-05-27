@@ -109,7 +109,13 @@ app.get('/pay/:id', async function (req, res) {
 });
 app.get('/success/:buyer_id/:bill_id', async function (req, res) {
   const paymentId = req.query.paymentId;
-
+  let bill = await billModel.find({ idCustomer: req.params.id, status: "-1" });
+  if (!bill[0]) {
+    let subHtml = fileHandle.template3Notification("Your bill timeout, you haven't pay for order")
+    res.status(400).write(subHtml)
+    res.end()
+    return
+  }
   paypal.payment.get(paymentId, function (error, payment) {
     if (error) {
       let subHtml = fileHandle.template3Notification("Can't get bill")
@@ -174,6 +180,12 @@ app.get('/success/:buyer_id/:bill_id', async function (req, res) {
 app.get('/cancel/:id', async function (req, res) {
   try {
     const check = await billModel.findOne({ idCustomer: req.params.id, status: "-1" });   //lay bill hien tai 
+    if (!check) {
+      let subHtml = fileHandle.template3Notification('Your bill timeout')
+      res.status(400).write(subHtml)
+      res.end()
+      return
+    }
     const listCheck = await orderModel.distinct('idShowSeat', { idCustomer: req.params.id, status: "-1" });
     for (let a of listCheck) {
       await showSeatModel.findByIdAndUpdate(a, { $set: { isReserved: false } });
