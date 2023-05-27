@@ -2,7 +2,7 @@ import emailProvider from '../config/nodeMailer.js';
 import fileHandle from './fileHandle.js';
 import userModel from '../models/userModel.js';
 async function sendOTPMail(OTP, mail) {
-    var subHtml = fileHandle.template4Notification("Your OTP: " + OTP)
+    var subHtml = fileHandle.template4Notification("Your forgot password OTP: " + OTP)
     var mailOptions = {
         from: 'backendtlcn@gmail.com',
         to: mail,
