@@ -6,7 +6,7 @@ async function sendOTPMail(OTP, mail) {
     var mailOptions = {
         from: 'backendtlcn@gmail.com',
         to: mail,
-        subject: 'OTP verify',
+        subject: 'OTP verify for forgot password',
         html: subHtml
     };
     const result = await new Promise((resolve, reject) => {
@@ -25,7 +25,7 @@ async function sendCreateAccountPass(password, mail) {
     var mailOptions = {
         from: 'backendtlcn@gmail.com',
         to: mail,
-        subject: 'Create account',
+        subject: 'Created account information',
         html: subHtml
     };
     const result = await new Promise((resolve, reject) => {
@@ -44,7 +44,7 @@ async function sendHttpMailBcc(emailBody, mail) {
     var mailOptions = {
         from: 'backendtlcn@gmail.com',
         bcc: mail,
-        subject: 'Recommend',
+        subject: 'Recommend movie',
         html: subHtml
     };
     const result = await new Promise((resolve, reject) => {
@@ -64,7 +64,7 @@ async function sendInvoice(paymentId, idUser, movie, cinema, date, session, seat
     var mailOptions = {
         from: 'backendtlcn@gmail.com',
         to: emailToSend[0].email,
-        subject: 'Sending Email using Node.js',
+        subject: 'Bill informations',
         html: subHtml
     };
     return await new Promise((resolve, reject) => {
