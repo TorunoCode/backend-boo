@@ -1088,12 +1088,20 @@ movieRoute.get(
             if (list[0]) {
                 for (let item of list) {
                     console.log(item._id.toString());
-                    const listCheck = await orderModel.distinct('idShowSeat', { idBill: item._id.toString() });
-                    for (let a of listCheck) {
-                        await showSeatModel.findByIdAndUpdate(a, { $set: { isReserved: false } });
+                    const listCheck = await orderModel.find( { idBill: item._id.toString() },{idShowSeat:1, createDate:1});
+                    const seconds="";
+                    const a = moment(new Date());
+                    for (let x of listCheck) {
+                    const b = moment(x.createDate);
+                    seconds = a.diff(b, 'seconds');
+                        if(seconds>300)
+                        await showSeatModel.findByIdAndUpdate(x.idShowSeat, { $set: { isReserved: false } });
                     }
+                    if(seconds>300)
+                {
                     await orderModel.deleteMany({ idBill: item._id.toString() });
                     await billModel.findByIdAndRemove(item._id.toString());
+                }
                 }
                 res.send({ message: "Done" });
             } else {
@@ -1153,9 +1161,14 @@ movieRoute.get(
     })
 );
 movieRoute.get(
-    "/:id",
+    "/checkcheck",
     asyncHandler(async (req, res) => {
         const movie = await MovieModel.findOne({ name: req.params.id });
+        const a = moment(new Date());
+        const b = moment("2023-05-27T15:26:11.433Z");
+        const seconds = a.diff(b, 'seconds');
+        console.log(a);
+        console.log(seconds);
         if (movie) {
             res.json(movie);
         } else {
