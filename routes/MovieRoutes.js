@@ -1161,14 +1161,9 @@ movieRoute.get(
     })
 );
 movieRoute.get(
-    "/checkcheck",
+    "/:id",
     asyncHandler(async (req, res) => {
         const movie = await MovieModel.findOne({ name: req.params.id });
-        const a = moment(new Date());
-        const b = moment("2023-05-27T15:26:11.433Z");
-        const seconds = a.diff(b, 'seconds');
-        console.log(a);
-        console.log(seconds);
         if (movie) {
             res.json(movie);
         } else {
