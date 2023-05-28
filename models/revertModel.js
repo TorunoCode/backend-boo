@@ -17,6 +17,9 @@ const revertSchema =  new mongoose.Schema({
     idShowSeat:{
         type: String,
     },
+    nameSeat:{
+        type: String,
+    },
     totalMoney:{
         type: Number,
     },
