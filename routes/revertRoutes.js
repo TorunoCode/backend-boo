@@ -33,6 +33,14 @@ app.post(
         }
     })
 );
+app.get(
+    "/",
+    asyncHandler(async (req, res) => {
+        const data = await revertModal.find({});
+        res.json(data);
+    })
+
+);
 app.post(
     "/checkIn",
     asyncHandler(async (req, res) => {
