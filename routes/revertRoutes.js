@@ -61,14 +61,14 @@ app.post(
                 await UserModal.findOneAndUpdate({ email: user.email }, { $set: { money: userMoney } });
                 const data = await revertModal({ idUser: req.body.idUser, idOldOrder: order._id.toString(), idShowSeat: c, status: 1 }); //status:1 hoàn luôn 90% giá trị vé
                 data.save();
-                res.send({ message: "refund before 3 day" });
+                res.send({ message: "refund before 2 day" });
             }
             else if (2 > day > 0) {
                 await showSeatModel.findByIdAndUpdate(c, { $set: { isReserved: false } }); //idshowSeat idUser
                 // await orderModel.findOneAndUpdate({idShowSeat:req.body.idShowSeat,status:1},{ $set: { status: 3 }}); //idshowSeat idUser
                 const data = await revertModal({ idUser: req.body.idUser, idOldOrder: order._id.toString(), idShowSeat: c, status: 0 });
                 data.save();
-                res.send({ message: "refund after 3 day" });
+                res.send({ message: "refund after 2 day" });
 
             }
             else {

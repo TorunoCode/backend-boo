@@ -929,6 +929,18 @@ movieRoute.get(
     })
 
 );
+movieRoute.get(
+    "/nameSeat/:id",
+    asyncHandler(async (req, res) => {
+        const data = await showSeatModel.findById(req.params.id);
+        if (data) {
+            return res.json(data);
+        } else {
+            return res.status(400).json({ message: "No item found" });
+        }
+    })
+
+);
 movieRoute.get('/cinemaHall/delete/:id', async (req, res) => {
     try {
         console.log(req.params.id);
