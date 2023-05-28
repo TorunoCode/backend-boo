@@ -79,7 +79,7 @@ app.post("/delete_feedback", async function (request, response) {
 app.get("/feedbacks/:movieId/:page", async (request, response) => {
     const movieId = request.params.movieId;
     const page = request.params.page;
-    const feedbacks = await feedbacksModel.find({ movieId: movieId }).sort({ "updatedAt": -1 }).skip(1 * page * 10).limit(10);
+    const feedbacks = await feedbacksModel.find({ movieId: movieId }).sort({ "updatedAt": -1 })// .skip(1 * page * 10).limit(10);
     const count = await feedbacksModel.count({ movieId: movieId });
     const numpage = Math.ceil(count / 10);
     const allCommentsOfMovie = { number_of_feedback: count, _number_of_page: numpage };
