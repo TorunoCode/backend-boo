@@ -36,7 +36,7 @@ app.post(
 app.get(
     "/:id",
     asyncHandler(async (req, res) => {
-        const data = await revertModal.find({idOldOrder:req.params.id});
+        const data = await revertModal.find({idUser:req.params.id});
         res.json(data);
     })
 
