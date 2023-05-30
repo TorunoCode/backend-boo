@@ -87,7 +87,7 @@ app.get("/VNPaySuccess/:email/:money", async function (req, res) {
         if (vnp_Params['vnp_TransactionStatus'] != "00") {
             return res.redirect(req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccessRes/Failed add money")
         }
-        let amount = req.params.money
+        let amount = moneyHandle.addMoney(req.params.money, req.params.money / 100 * 5 / 100)
         //VND sang USD 2023-05-07: USD = VND * 0.000043
         let result = await userFunction.addMoneyToUser(req.params.email, amount)
         if (!result) {
