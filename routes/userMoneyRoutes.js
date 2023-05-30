@@ -47,7 +47,7 @@ app.get("/VNPayAdd/:email/:money", async function (req, res) {
     var date = new Date();
     var createDate = timeHandle.format_yyyymmddHHmmss(date)
     var orderId = timeHandle.format_HHmmss(date);
-    var orderInfo = "Nap " + req.params.money + " vao tai khoan" + req.params.email
+    var orderInfo = "Nap " + amonutUSD + " vao tai khoan" + req.params.email
     var locale = 'vn'
     var currCode = 'VND';
     var vnp_Params = {
@@ -63,7 +63,6 @@ app.get("/VNPayAdd/:email/:money", async function (req, res) {
         'vnp_TmnCode': tmnCode,
         'vnp_TxnRef': orderId,
         'vnp_Version': '2.1.0',
-        // 'vnp_IpnUrl': req.protocol + "://" + req.get('host') + "/api/userMoney/ipnVnpay/" + req.params.email + "/" + amonutUSD
 
     };
     vnp_Params = sortObject(vnp_Params);
@@ -73,38 +72,6 @@ app.get("/VNPayAdd/:email/:money", async function (req, res) {
     vnpUrl += '?' + queryString.stringify(vnp_Params, { encode: false })
         + "&vnp_SecureHash=" + signed;
     return res.redirect(vnpUrl)
-});
-app.get('/ipnVnpay', async function (req, res, next) {
-    var vnp_Params = req.query;
-    var secureHash = vnp_Params['vnp_SecureHash'];
-    delete vnp_Params['vnp_SecureHash'];
-    delete vnp_Params['vnp_SecureHashType'];
-    vnp_Params = sortObject(vnp_Params);
-    var secretKey = process.env.vnp_HashSecret
-    var signData = queryString.stringify(vnp_Params, { encode: false });
-    var hmac = crypto.createHmac("sha512", secretKey);
-    var signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
-    if (secureHash === signed) {
-        try {
-            var email = vnp_Params['vnp_OrderInfo'].split(/[, ]+/).pop()
-            console.log((vnp_Params['vnp_Amount']))
-            console.log((vnp_Params['vnp_Amount'] / 100) / 23480)
-            let amount = moneyHandle.addMoney((vnp_Params['vnp_Amount'] / 100) / 23480,
-                (vnp_Params['vnp_Amount'] / 100) / 23480 * 5 / 100)
-            //VND sang USD 2023-05-07: USD = VND * 0.000043
-            let result = await userFunction.addMoneyToUser(email, amount)
-            if (!result) {
-                res.status(200).json({ RspCode: '97', Message: 'Fail checksum' })
-            }
-        } catch (error) {
-
-        }
-        res.status(200).json({ RspCode: '00', Message: 'success' })
-    }
-    else {
-        res.status(200).json({ RspCode: '97', Message: 'Fail checksum' })
-    }
-
 });
 app.get("/VNPaySuccess/:email/:money", async function (req, res) {
     var vnp_Params = req.query;
@@ -119,6 +86,12 @@ app.get("/VNPaySuccess/:email/:money", async function (req, res) {
     if (secureHash === signed) {
         if (vnp_Params['vnp_TransactionStatus'] != "00") {
             return res.redirect(req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccessRes/Failed add money")
+        }
+        let amount = moneyHandle.addMoney(req.params.money, req.params.money * 5 / 100)
+        //VND sang USD 2023-05-07: USD = VND * 0.000043
+        let result = await userFunction.addMoneyToUser(req.params.email, amount)
+        if (!result) {
+            return res.redirect(req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccessRes/Can't add money")
         }
         return res.redirect(req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccessRes/Success add money")
     }
@@ -289,8 +262,7 @@ app.get('/test/addMoney/:money1/:money2', async function (req, res) {
         compareReuslt = req.params.money1 + " > " + req.params.money2
     return res.send({
         "add": addResult, "sub": subtractResult, "compare": compareReuslt, "vnd to usd": req.params.money1 * 43 / (10 ** 6),
-        "mul": req.params.money1 * req.params.money2, "money VND": Math.round((1 * 23480) * (10 ^ 2)) / (10 ^ 2)
-        , "money USD": Math.round((1 * 23480) * (10 ^ 2)) / (10 ^ 2) / 23480
+        "mul": req.params.money1 * req.params.money2
     })
 })
 export default app;
