@@ -85,20 +85,20 @@ app.get('/ipnVnpay', async function (req, res, next) {
     var hmac = crypto.createHmac("sha512", secretKey);
     var signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
     if (secureHash === signed) {
-        /* try {
-             var email = vnp_Params['vnp_OrderInfo'].split(/[, ]+/).pop()
-             console.log((vnp_Params['vnp_Amount']))
-             console.log((vnp_Params['vnp_Amount'] / 100) / 23480)
-             let amount = moneyHandle.addMoney((vnp_Params['vnp_Amount'] / 100) / 23480,
-                 (vnp_Params['vnp_Amount'] / 100) / 23480 * 5 / 100)
-             //VND sang USD 2023-05-07: USD = VND * 0.000043
-             let result = await userFunction.addMoneyToUser(email, amount)
-             if (!result) {
-                 res.status(200).json({ RspCode: '97', Message: 'Fail checksum' })
-             }
-         } catch (error) {
- 
-         }*/
+        try {
+            var email = vnp_Params['vnp_OrderInfo'].split(/[, ]+/).pop()
+            console.log((vnp_Params['vnp_Amount']))
+            console.log((vnp_Params['vnp_Amount'] / 100) / 23480)
+            let amount = moneyHandle.addMoney((vnp_Params['vnp_Amount'] / 100) / 23480,
+                (vnp_Params['vnp_Amount'] / 100) / 23480 * 5 / 100)
+            //VND sang USD 2023-05-07: USD = VND * 0.000043
+            let result = await userFunction.addMoneyToUser(email, amount)
+            if (!result) {
+                res.status(200).json({ RspCode: '97', Message: 'Fail checksum' })
+            }
+        } catch (error) {
+
+        }
         res.status(200).json({ RspCode: '00', Message: 'success' })
     }
     else {
