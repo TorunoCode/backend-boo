@@ -40,8 +40,10 @@ app.get("/VNPayAdd/:email/:money", async function (req, res) {
     var tmnCode = process.env.vnp_TmnCode
     var secretKey = process.env.vnp_HashSecret
     var vnpUrl = process.env.vnp_Url
-    var amount = req.params.money
-    var returnUrl = req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccess/" + req.params.email
+    // 30/5/2023: 1 usd = 23480 vnd
+    var amount = Math.round((req.params.money * 23480) * (10 ^ 2)) / (10 ^ 2)
+    var amonutUSD = Math.round((req.params.money) * (10 ^ 2)) / (10 ^ 2)
+    var returnUrl = req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccess/" + req.params.email + "/" + amonutUSD
     var date = new Date();
     var createDate = timeHandle.format_yyyymmddHHmmss(date)
     var orderId = timeHandle.format_HHmmss(date);
@@ -71,7 +73,7 @@ app.get("/VNPayAdd/:email/:money", async function (req, res) {
         + "&vnp_SecureHash=" + signed;
     return res.redirect(vnpUrl)
 });
-app.get("/VNPaySuccess/:email", async function (req, res) {
+app.get("/VNPaySuccess/:email/:money", async function (req, res) {
     var vnp_Params = req.query;
     var secureHash = vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHash'];
@@ -85,9 +87,9 @@ app.get("/VNPaySuccess/:email", async function (req, res) {
         if (vnp_Params['vnp_TransactionStatus'] != "00") {
             return res.redirect(req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccessRes/Failed add money")
         }
-        let amount = moneyHandle.addMoney(vnp_Params['vnp_Amount'] / 100, vnp_Params['vnp_Amount'] / 100 * 5 / 100)
+        let amount = req.params.money
         //VND sang USD 2023-05-07: USD = VND * 0.000043
-        let result = await userFunction.addMoneyToUser(req.params.email, amount * 43 / (10 ** 6))
+        let result = await userFunction.addMoneyToUser(req.params.email, amount)
         if (!result) {
             return res.redirect(req.protocol + "://" + req.get('host') + "/api/userMoney/VNPaySuccessRes/Can't add money")
         }
