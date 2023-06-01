@@ -33,14 +33,7 @@ app.post(
         }
     })
 );
-app.get(
-    "/:id",
-    asyncHandler(async (req, res) => {
-        const data = await revertModal.find({idUser:req.params.id});
-        res.json(data);
-    })
 
-);
 app.post(
     "/checkIn",
     asyncHandler(async (req, res) => {
@@ -112,5 +105,13 @@ app.get(
             throw new Error("Revert not Found");
         }
     })
+);
+app.get(
+    "/:id",
+    asyncHandler(async (req, res) => {
+        const data = await revertModal.find({idUser:req.params.id});
+        res.json(data);
+    })
+
 );
 export default app;
