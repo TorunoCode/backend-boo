@@ -747,7 +747,7 @@ movieRoute.get(
                     idBill: a._id.toString(),
                     movie: movie.name,
                     cinema: cinema.name,
-                    date: convert(showing.startTime),
+                    date: convert(showing.startTime,1),
                     session: showing.time,
                     listItem: list,
                     status:status,
