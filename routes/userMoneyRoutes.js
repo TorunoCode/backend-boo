@@ -236,9 +236,9 @@ app.post('/pay', async function (req, res) {
     if (!sendEmailResult)
         return res.status(400).send({ message: "Can't send confirm email" })
     user = await UserModal.findOneAndUpdate({ email: req.body.email }, { money: userMoney }, { new: true })
-    await billsModel.updateMany({ idCustomer: user.id }, { "$set": { status: "1" } })
-    await showSeatModel.updateMany({ idCustomer: user.id }, { "$set": { status: "1" } })
-    await orderModel.updateMany({ idCustomer: user.id }, { "$set": { status: "1" } })
+    await billsModel.updateMany({ idCustomer: user.id, status: "-1" }, { "$set": { status: "1" } })
+    await showSeatModel.updateMany({ idCustomer: user.id, status: "-1" }, { "$set": { status: "1" } })
+    await orderModel.updateMany({ idCustomer: user.id, status: "-1" }, { "$set": { status: "1" } })
     return res.status(200).send({ message: "Payed orders" })
 })
 /*app.get('/testpaypalpayout/:email/:money', async function (req, res) {
