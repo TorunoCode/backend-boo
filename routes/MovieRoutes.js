@@ -10,6 +10,7 @@ import cinemaSeatModel from '../models/cinemaHallSeatModel.js';
 import showSeatModel from '../models/showSeatModel.js';
 import billModel from '../models/billsModel.js';
 import orderModel from '../models/orderModel.js';
+import revertModal from '../models/revertModel.js';
 import listModel from '../models/listModel.js';
 import UserModal from '../models/userModel.js';
 import feedbackModel from '../models/feedbacksModel.js';
@@ -17,6 +18,7 @@ import recommend from '../routeFunction/recommend.js';
 import mongoose from 'mongoose';
 import moment from 'moment';
 import pkg from 'paypal-rest-sdk';
+import Revert from '../models/revertModel.js';
 const { order } = pkg;
 
 const isAuth = (req, res, next) => {
@@ -723,7 +725,12 @@ movieRoute.get(
                 console.log(showing);
                 const cinema = await CinemaModel.findById(showing.idCinema);
                 console.log(cinema);
-
+                let status = await revertModal.findOne({idOldOrder:b,idUser:req.params.id});
+                if(status)
+                {status=1;}
+                else{
+                    status=0;
+                }
                 const movie = await MovieModel.findById(showing.idMovie);
                 console.log(movie);
 
@@ -735,6 +742,7 @@ movieRoute.get(
                     console.log(seat);
                     list.push({"number":seat.number,"id":seat._id.toString()});
                 }
+
                 var item = {
                     idBill: a._id.toString(),
                     movie: movie.name,
@@ -742,6 +750,7 @@ movieRoute.get(
                     date: convert(showing.startTime),
                     session: showing.time,
                     listItem: list,
+                    status:status,
                     createDate: convert(a.createdAt),
                 }
                 listItem.push(item);
