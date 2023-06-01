@@ -57,7 +57,6 @@ app.post(
                 await UserModal.findOneAndUpdate({ email: user.email }, { $set: { money: userMoney } });
                 const data = await revertModal({ idUser: req.body.idUser, idOldOrder: order._id.toString(), idShowSeat: c, status: 1 ,nameSeat:seat.number}); //status:1 hoàn luôn 90% giá trị vé
                 data.save();
-                res.send({ message: "refund before 2 day" });
             }
             else if (2 > day > 0) {
                 await showSeatModel.findByIdAndUpdate(c, { $set: { isReserved: false } }); //idshowSeat idUser
@@ -67,9 +66,10 @@ app.post(
                 res.send({ message: "refund after 2 day" });
 
             }
-            else {
+            else if(day<=0) {
                 res.send({ message: "refund fail" });
             }
+
         }
     })
 );
