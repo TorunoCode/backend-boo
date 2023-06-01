@@ -41,7 +41,7 @@ app.post(
         const b = moment(req.body.createdAt, 'YYYY-MM-DD');
         const day = b.diff(a, 'days');
         for (let c of req.body.list) {
-            const check =  await revertModal.find({idShowSeat:c});
+            const check =  await revertModal.find({idShowSeat:c,idUser:req.body.idUser});
             if(check) res.send("previously refunded");
             const order = await orderModel.findOne({ idBill: req.body.idBill, idShowSeat: c }, { idShowing: 1 });
             const seat = await showSeatModel.findById(c,{number:1});
