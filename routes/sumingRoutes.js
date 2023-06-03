@@ -16,7 +16,7 @@ import revertModel from '../models/revertModel.js';
 const app = express.Router();
 function GetSortOrder(prop) {
     return function (a, b) {
-        if (a[prop] > b[prop]) {
+        if (a[prop] < b[prop]) {
             return 1;
         } else if (a[prop] > b[prop]) {
             return -1;
@@ -65,7 +65,7 @@ app.get("/top10user", async function (req, res) {
             "totalSpending": totalSpending
         })
     }
-    result.sort(GetSortOrder("totalSpending"))
+    result = result.sort(GetSortOrder("totalSpending"))
     res.status(200).send(result);
 })
 app.get("/top10recent", async function (req, res) {
