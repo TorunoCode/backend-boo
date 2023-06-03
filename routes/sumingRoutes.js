@@ -97,6 +97,18 @@ app.get("/summary/:date", async function (req, res) {
     result["mounth"] = summing.convertValue(Revenue, sumMovie, sumOrders, sumUser);;
 
     Revenue = await billsModel.aggregate([{ $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
+    console.log(Revenue)
+    let revertTotal = await revertModel.aggregate([{ $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }])
+    console.log(revertTotal)
+    try {
+        Revenue = [{ _id: null, Revenue: moneyHandle.subtractionMoney(Revenue[0].Revenue, revertTotal[0].Revenue) }]
+    } catch {
+        try {
+            Revenue = [{ _id: null, Revenue: Revenue[0].Revenue }]
+        } catch {
+            Revenue = [];
+        }
+    }
     sumOrders = await billsModel.aggregate([{ $group: { _id: "$_id" } }, { $group: { _id: 1, count: { $sum: 1 } } }])
 
     result["total"] = summing.convertValue(Revenue, sumMovie, sumOrders, sumUser);;
