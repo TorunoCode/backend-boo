@@ -42,6 +42,20 @@ app.post("/delete_allfeedback", async (request, response) => {
         response.status(500).send(error);
     }
 });
+app.get("/add_feedback_check/:userId/:movieId", async (request, response) => {
+    let movieId = request.params.movieId;
+    let userId = request.params.userId;
+    const Orders = await OrderModel.find({ idCustomer: userId }).select('idShowing').populate({
+        path: "Ordershowing",
+        match: { idMovie: movieId, status: 1 },
+        select: 'idMovie -_id'
+    })
+    //tìm xem coi trong Order có tìm tìm kiếm trên có cái nào có tìm được showing không
+    var picked = Orders.find(o => o.Ordershowing != null);
+    if (!picked)
+        return response.status(400).send({ "enable": 0 })
+    else return response.status(400).send({ "enable": 1 })
+})
 app.post("/add_feedback", async function (request, response) {
     const feedback = new feedbacksModel(request.body);
     const Orders = await OrderModel.find({ idCustomer: feedback.userId }).select('idShowing').populate({

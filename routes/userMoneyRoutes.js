@@ -210,6 +210,20 @@ app.get('/money/:email', async function (req, res) {
     else
         return res.status(400).send({ money: 0 })
 });
+app.get('/checkPay/:email/:moneyToPay', async function (req, res) {
+    let user = await UserModal.findOne({ email: req.params.email })
+    if (!user) {
+        return res.status(400).send({ message: "Can't find email" })
+    }
+    let total = req.params.moneyToPay
+    total = parseFloat(total)
+    let userMoney = parseFloat(user.money)
+    userMoney = moneyHandle.subtractionMoney(userMoney, total)
+    if (userMoney < 0) {
+        return res.status(400).send({ "enable": 0 })
+    }
+    else return res.status(200).send({ "enable": 1 })
+})
 app.post('/pay', async function (req, res) {
     let user = await UserModal.findOne({ email: req.body.email })
     if (!user) {
