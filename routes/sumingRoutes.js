@@ -157,7 +157,7 @@ app.get("/summaryMoneyInThisYearAndLastYear", async function (req, res) {
         // xét trong tháng này năm trước
         firstDayOfMonth.setFullYear(firstDayOfMonth.getFullYear() - 1);
         firstDayOfNextMonth.setFullYear(firstDayOfNextMonth.getFullYear() - 1);
-        sum_money = await billsModel.aggregate([{
+        total = await billsModel.aggregate([{
             $match: {
                 createdAt: {
                     $gte: firstDayOfMonth,
