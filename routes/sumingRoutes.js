@@ -11,6 +11,8 @@ import CinemaHallModel from '../models/cinemaHallModel.js';
 import cinemaModel from '../models/cinemaModel.js';
 import timeHandle from '../commonFunction/timeHandle.js';
 import summing from '../routeFunction/summing.js';
+import moneyHandle from '../commonFunction/moneyHandle.js';
+import revertModel from '../models/revertModel.js';
 const app = express.Router();
 app.get("/top10user", async function (req, res) {
     let result = []
@@ -21,18 +23,39 @@ app.get("/top10user", async function (req, res) {
         }
     }
         , { $sort: { totalSpending: -1 } }, { $limit: 10 }])
-    let user, nameUser;
+    let user, nameUser, revertMoneyTotal, totalSpending;
     for (let i = 0; i < sum_money.length; i++) {
         user = await userModel.findById(sum_money[i]._id)
+        console.log(user)
+        totalSpending = sum_money[i].totalSpending
         if (user == null) {
             nameUser = "Deleted user"
+            revertMoneyTotal = 0
         }
-        else if (typeof user.fullName == 'undefined') nameUser = user.name
-        else nameUser = user.fullName
+        else {
+            console.log(await revertModel.find({ idUser: user._id }))
+            revertMoneyTotal = await revertModel.aggregate([{
+                $match: {
+                    idUser: user._id.toString(),
+                    status: 1
+                }
+            }, {
+                $group: {
+                    _id: null, totalRevert: { $sum: "$totalMoney" }
+                }
+            }])
+            console.log(revertMoneyTotal[0])
+            if (revertMoneyTotal[0] == typeof (undefined))
+                totalSpending = moneyHandle.subtractionMoney(sum_money[i].totalSpending, revertMoneyTotal[0].totalRevert)
+            if (typeof user.fullName == 'undefined') { nameUser = user.name }
+            else {
+                nameUser = user.fullName
+            }
+        }
         result.push({
             "stt": i + 1,
             "username": nameUser, "totalOrders": sum_money[i].totalOrders,
-            "totalSpending": sum_money[i].totalSpending
+            "totalSpending": totalSpending
         })
     }
     res.status(200).send(result);
