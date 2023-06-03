@@ -16,6 +16,7 @@ import timeHandle from '../commonFunction/timeHandle.js';
 import queryString from 'query-string';
 import crypto from 'crypto';
 import user from '../routeFunction/user.js';
+const closeBrowserMessage = "<br>You can now close this window"
 const app = express.Router();
 function sortObject(obj) {
     let sorted = {};
@@ -101,7 +102,7 @@ app.get("/VNPaySuccess/:email", async function (req, res) {
     }
 });
 app.get("/VNPaySuccessRes/:message", async function (req, res) {
-    let subHtml = fileHandle.template4Notification(req.params.message)
+    let subHtml = fileHandle.template4Notification(req.params.message + closeBrowserMessage)
     res.status(400);
     res.write(subHtml);
     res.end();
@@ -111,7 +112,7 @@ app.get("/add/:email/:money", async function (req, res) {
     let user = await UserModal.findOne({ email: req.params.email })
     let subHtml
     if (!user) {
-        subHtml = fileHandle.template4Notification("Can't find email")
+        subHtml = fileHandle.template4Notification("Can't find email" + closeBrowserMessage)
         res.status(400);
         res.write(subHtml);
         res.end();
@@ -137,7 +138,7 @@ app.get("/add/:email/:money", async function (req, res) {
         return;
     }
     catch (error) {
-        let subHtml = fileHandle.template3Notification("Can't create payment")
+        let subHtml = fileHandle.template3Notification("Can't create payment" + closeBrowserMessage)
         res.status(400).write(subHtml)
         res.end()
         return
@@ -149,14 +150,14 @@ app.get('/success/:email', async function (req, res) {
     let payerId, currency_for_execute, total_for_execute, execute_payment_json;
     paypal.payment.get(paymentId, function (error, payment) {
         if (error) {
-            subHtml = fileHandle.template4Notification("Error getting payment")
+            subHtml = fileHandle.template4Notification("Error getting payment" + closeBrowserMessage)
             res.status(400);
             res.write(subHtml);
             res.end();
             return;
         }
         if (payment.state == "approved") {
-            subHtml = fileHandle.template4Notification("Payment doned already")
+            subHtml = fileHandle.template4Notification("Payment doned already" + closeBrowserMessage)
             res.status(400);
             res.write(subHtml);
             res.end();
@@ -177,7 +178,7 @@ app.get('/success/:email', async function (req, res) {
         paypal.payment.execute(paymentId, execute_payment_json, async function (error, payment) {
             //When error occurs when due to non-existent transaction, throw an error else log the transaction details in the console then send a Success string reposponse to the user.
             if (error) {
-                subHtml = fileHandle.template4Notification("Error paying")
+                subHtml = fileHandle.template4Notification("Error paying" + closeBrowserMessage)
                 res.status(400);
                 res.write(subHtml);
                 res.end();
@@ -187,7 +188,7 @@ app.get('/success/:email', async function (req, res) {
             let amount = moneyHandle.addMoney(total_for_execute, total_for_execute * 5 / 100)
             //VND sang USD 2023-05-07: USD = VND * 0.000043
             await userFunction.addMoneyToUser(req.params.email, amount)
-            subHtml = fileHandle.template4Notification("Success add money")
+            subHtml = fileHandle.template4Notification("Success add money" + closeBrowserMessage)
             res.status(200);
             res.write(subHtml);
             res.end();
@@ -197,7 +198,7 @@ app.get('/success/:email', async function (req, res) {
 
 });
 app.get('/cancel', function (req, res) {
-    let subHtml = fileHandle.template4Notification("Cancelled add money")
+    let subHtml = fileHandle.template4Notification("Cancelled add money" + closeBrowserMessage)
     res.status(200);
     res.write(subHtml);
     res.end();
@@ -266,6 +267,13 @@ app.post('/pay', async function (req, res) {
     return res.status(200).send({ message: result.error })
 
 })*/
+app.get('/test/html', async function (req, res) {
+    let subHtml = fileHandle.template4Notification("Success add money" + closeBrowserMessage)
+    res.status(200);
+    res.write(subHtml);
+    res.end();
+    return;
+})
 app.get('/test/addMoney/:money1/:money2', async function (req, res) {
     let addResult = moneyHandle.addMoney(req.params.money1, req.params.money2)
     let subtractResult = moneyHandle.subtractionMoney(req.params.money1, req.params.money2)

@@ -39,12 +39,14 @@ const app = express.Router();
                     "last_name": "Shopper"
                 }
             }*/
+
+const closeBrowserMessage = "<br>You can now close this window"
 app.get('/pay/:id', async function (req, res) {
   let total = 0;
   let itemsToAdd = []
   let bill = await billModel.find({ idCustomer: req.params.id, status: "-1" });
   if (!bill[0]) {
-    let subHtml = fileHandle.template3Notification("No bills to pay")
+    let subHtml = fileHandle.template3Notification("No bills to pay" + closeBrowserMessage)
     res.status(400).write(subHtml)
     res.end()
     return
@@ -65,7 +67,7 @@ app.get('/pay/:id', async function (req, res) {
       Cinema = await cinemaModel.findById(showing.idCinema);
     }
     catch (error) {
-      let subHtml = fileHandle.template3Notification("Your movie booked not exist")
+      let subHtml = fileHandle.template3Notification("Your movie booked not exist" + closeBrowserMessage)
       res.status(400).write(subHtml)
       res.end()
       return
@@ -77,7 +79,7 @@ app.get('/pay/:id', async function (req, res) {
       name = showSeat.number + " movie: " + movie.name + " at " + date + " " + hourMin + "; " + CinemaHall.name + ", " + Cinema.name;
     }
     catch (error) {
-      let subHtml = fileHandle.template3Notification("Your seat booked not exist")
+      let subHtml = fileHandle.template3Notification("Your seat booked not exist" + closeBrowserMessage)
       res.status(400).write(subHtml)
       res.end()
       return
@@ -100,7 +102,7 @@ app.get('/pay/:id', async function (req, res) {
     return;
   }
   catch (error) {
-    let subHtml = fileHandle.template3Notification("Can't create payment")
+    let subHtml = fileHandle.template3Notification("Can't create payment" + closeBrowserMessage)
     res.status(400).write(subHtml)
     res.end()
     return
@@ -111,20 +113,20 @@ app.get('/success/:buyer_id/:bill_id', async function (req, res) {
   const paymentId = req.query.paymentId;
   let bill = await billModel.find({ idCustomer: req.params.buyer_id, status: "-1" });
   if (!bill[0]) {
-    let subHtml = fileHandle.template3Notification("Your bill timeout, you haven't pay for order")
+    let subHtml = fileHandle.template3Notification("Your bill timeout, you haven't pay for order" + closeBrowserMessage)
     res.status(400).write(subHtml)
     res.end()
     return
   }
   paypal.payment.get(paymentId, function (error, payment) {
     if (error) {
-      let subHtml = fileHandle.template3Notification("Can't get bill")
+      let subHtml = fileHandle.template3Notification("Can't get bill" + closeBrowserMessage)
       res.status(400).write(subHtml)
       res.end()
       return
     } else {
       if (payment.state == "approved") {
-        let subHtml = fileHandle.template3Notification("Bill payed before")
+        let subHtml = fileHandle.template3Notification("Bill payed before" + closeBrowserMessage)
         res.status(400).write(subHtml)
         res.end()
         return
@@ -147,7 +149,7 @@ app.get('/success/:buyer_id/:bill_id', async function (req, res) {
         paypal.payment.execute(paymentId, execute_payment_json, async function (error, payment) {
           //When error occurs when due to non-existent transaction, throw an error else log the transaction details in the console then send a Success string reposponse to the user.
           if (error) {
-            let subHtml = fileHandle.template3Notification("Error paypal server")
+            let subHtml = fileHandle.template3Notification("Error paypal server" + closeBrowserMessage)
             res.status(400).write(subHtml)
             res.end()
             return
@@ -160,12 +162,12 @@ app.get('/success/:buyer_id/:bill_id', async function (req, res) {
               await billModel.updateMany({ idCustomer: req.params.buyer_id, status: "-1" }, { "$set": { status: "1" } })
               await showSeatModel.updateMany({ idCustomer: req.params.buyer_id, status: "-1" }, { "$set": { status: "1" } })
               await orderModel.updateMany({ idCustomer: req.params.buyer_id, status: "-1" }, { "$set": { status: "1" } })
-              let subHtml = fileHandle.template3Notification("Done paying and sended invoice to email")
+              let subHtml = fileHandle.template3Notification("Done paying and sended invoice to email" + closeBrowserMessage)
               res.status(200).write(subHtml)
               res.end()
               return
             } catch (error) {
-              let subHtml = fileHandle.template3Notification(error)
+              let subHtml = fileHandle.template3Notification(error + closeBrowserMessage)
               res.status(400).write(subHtml)
               res.end()
               return
@@ -181,7 +183,7 @@ app.get('/cancel/:id', async function (req, res) {
   try {
     const check = await billModel.findOne({ idCustomer: req.params.id, status: "-1" });   //lay bill hien tai 
     if (!check) {
-      let subHtml = fileHandle.template3Notification('Your bill timeout')
+      let subHtml = fileHandle.template3Notification('Your bill timeout' + closeBrowserMessage)
       res.status(400).write(subHtml)
       res.end()
       return
@@ -192,13 +194,13 @@ app.get('/cancel/:id', async function (req, res) {
     }
     await orderModel.deleteMany({ idBill: check._id.toString() });
     await billModel.findByIdAndRemove(check._id.toString());
-    let subHtml = fileHandle.template3Notification('Cancelled')
+    let subHtml = fileHandle.template3Notification('Cancelled' + closeBrowserMessage)
     res.status(400).write(subHtml)
     res.end()
     return
   }
   catch (error) {
-    let subHtml = fileHandle.template3Notification("Something went wrong")
+    let subHtml = fileHandle.template3Notification("Something went wrong" + closeBrowserMessage)
     res.status(400).write(subHtml)
     res.end()
     return
