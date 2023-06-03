@@ -1,4 +1,6 @@
 import billsModel from '../models/billsModel.js';
+import revertModel from '../models/revertModel.js';
+import moneyHandle from '../commonFunction/moneyHandle.js';
 function convertValue(Revenue, Movies, sumOrders, sumUser) {
     let oneResult = {};
     let smallResult = [];
@@ -29,7 +31,8 @@ function convertValue(Revenue, Movies, sumOrders, sumUser) {
     return smallResult;
 }
 async function countRevenue(dayBegin, dayEnd) {
-    let result = await billsModel.aggregate([{
+    let result;
+    let total = await billsModel.aggregate([{
         $match: {
             createdAt: {
                 $gte: dayBegin,
@@ -37,6 +40,23 @@ async function countRevenue(dayBegin, dayEnd) {
             }
         }
     }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }]);
+    let revertTotal = await revertModel.aggregate([{
+        $match: {
+            createdAt: {
+                $gte: dayBegin,
+                $lt: dayEnd
+            }
+        }
+    }, { $group: { _id: null, Revenue: { $sum: "$totalMoney" } } }]);
+    try {
+        result = [{ _id: null, Revenue: moneyHandle.subtractionMoney(total[0].Revenue, revertTotal[0].Revenue) }]
+    } catch {
+        try {
+            result = [{ _id: null, Revenue: total[0].Revenue }]
+        } catch {
+            result = [];
+        }
+    }
     return result;
 }
 async function sumOrders(dayBegin, dayEnd) {

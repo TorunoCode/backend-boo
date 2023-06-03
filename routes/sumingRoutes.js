@@ -26,14 +26,12 @@ app.get("/top10user", async function (req, res) {
     let user, nameUser, revertMoneyTotal, totalSpending;
     for (let i = 0; i < sum_money.length; i++) {
         user = await userModel.findById(sum_money[i]._id)
-        console.log(user)
         totalSpending = sum_money[i].totalSpending
         if (user == null) {
             nameUser = "Deleted user"
             revertMoneyTotal = 0
         }
         else {
-            console.log(await revertModel.find({ idUser: user._id }))
             revertMoneyTotal = await revertModel.aggregate([{
                 $match: {
                     idUser: user._id.toString(),
@@ -45,8 +43,10 @@ app.get("/top10user", async function (req, res) {
                 }
             }])
             console.log(revertMoneyTotal[0])
-            if (revertMoneyTotal[0] == typeof (undefined))
+            console.log(sum_money[i].totalSpending)
+            if (revertMoneyTotal[0])
                 totalSpending = moneyHandle.subtractionMoney(sum_money[i].totalSpending, revertMoneyTotal[0].totalRevert)
+            console.log(totalSpending)
             if (typeof user.fullName == 'undefined') { nameUser = user.name }
             else {
                 nameUser = user.fullName
@@ -122,7 +122,8 @@ app.get("/summaryMoneyInThisYearAndLastYear", async function (req, res) {
     for (let month of months) {
         let firstDayOfMonth = new Date(year, month - 1, 1)
         let firstDayOfNextMonth = timeHandle.getFirstDayOfNextMonth(firstDayOfMonth)
-        let sum_money = await billsModel.aggregate([{
+        let sum_money
+        let total = await billsModel.aggregate([{
             $match: {
                 createdAt: {
                     $gte: firstDayOfMonth,
@@ -130,6 +131,23 @@ app.get("/summaryMoneyInThisYearAndLastYear", async function (req, res) {
                 }
             }
         }, { $group: { _id: null, sum_money: { $sum: "$totalMoney" } } }])
+        let revertTotal = await revertModel.aggregate([{
+            $match: {
+                createdAt: {
+                    $gte: firstDayOfMonth,
+                    $lt: firstDayOfNextMonth
+                }
+            }
+        }, { $group: { _id: null, sum_money: { $sum: "$totalMoney" } } }])
+        try {
+            sum_money = [{ _id: null, sum_money: moneyHandle.subtractionMoney(total[0].sum_money, revertTotal[0].sum_money) }]
+        } catch {
+            try {
+                sum_money = [{ _id: null, sum_money: total[0].sum_money }]
+            } catch {
+                sum_money = [];
+            }
+        }
         try {
             currentYear.push(sum_money[0]['sum_money']);
         }
@@ -147,6 +165,23 @@ app.get("/summaryMoneyInThisYearAndLastYear", async function (req, res) {
                 }
             }
         }, { $group: { _id: null, sum_money: { $sum: "$totalMoney" } } }])
+        revertTotal = await revertModel.aggregate([{
+            $match: {
+                createdAt: {
+                    $gte: firstDayOfMonth,
+                    $lt: firstDayOfNextMonth
+                }
+            }
+        }, { $group: { _id: null, sum_money: { $sum: "$totalMoney" } } }])
+        try {
+            sum_money = [{ _id: null, sum_money: moneyHandle.subtractionMoney(total[0].sum_money, revertTotal[0].sum_money) }]
+        } catch {
+            try {
+                sum_money = [{ _id: null, sum_money: total[0].sum_money }]
+            } catch {
+                sum_money = [];
+            }
+        }
         try {
             lastYear.push(sum_money[0]['sum_money']);
         }
