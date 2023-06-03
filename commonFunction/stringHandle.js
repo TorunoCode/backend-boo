@@ -1,4 +1,26 @@
 import bcrypt from 'bcryptjs';
+function GetSortOrder(prop) {
+    return function (a, b) {
+        if (a[prop] < b[prop]) {
+            return 1;
+        } else if (a[prop] > b[prop]) {
+            return -1;
+        }
+        return 0;
+    }
+}
+function GetSortOrderDecrese(prop) {
+    return function (a, b) {
+        let aTest = Number(a[prop].substring(1))
+        let bTest = Number(b[prop].substring(1))
+        if (aTest > bTest) {
+            return 1;
+        } else if (aTest < bTest) {
+            return -1;
+        }
+        return 0;
+    }
+}
 function randomString() {
     let rand = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -19,4 +41,4 @@ function compareBcrypt(bcrypte, bcrypteCompared) {
         });
     });
 }
-export default { randomString, compareBcrypt };
+export default { randomString, compareBcrypt, GetSortOrder, GetSortOrderDecrese };
