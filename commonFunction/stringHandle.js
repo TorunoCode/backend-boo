@@ -11,8 +11,9 @@ function GetSortOrder(prop) {
 }
 function GetSortOrderDecrese(prop) {
     return function (a, b) {
-        let aTest = Number(a[prop].substring(1))
-        let bTest = Number(b[prop].substring(1))
+        // /[a-z]/gi: xóa toàn bộ các ký tự từ a-z không phân biệt hoa thường
+        let aTest = Number(a[prop].replace(/[a-z]/gi, ''))
+        let bTest = Number(b[prop].replace(/[a-z]/gi, ''))
         if (aTest > bTest) {
             return 1;
         } else if (aTest < bTest) {
