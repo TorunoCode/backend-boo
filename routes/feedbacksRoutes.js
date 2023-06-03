@@ -109,8 +109,8 @@ app.get("/feedbacks/:movieId/:page", async (request, response) => {
         let createdAtTimeElapsedModded = timeHandle.timeElapsedDayRemand(element.createdAt) + 'day(s) ' + timeHandle.timeElapsedHourRemand(element.createdAt) + 'h ' + timeHandle.timeElapsedMinuteRemand(element.createdAt) + 'm ' + timeHandle.timeElapsedSecondRemand(element.createdAt) + 's';
         let userName, userFullName, userAvartar;
         if (!nameUser) {
-            userName = 'Not found user, id:' + element['userId']
-            userFullName = 'Not found user, id:' + element['userId']
+            userName = 'Deleted user, id: ' + element['userId']
+            userFullName = 'Deleted user, id: ' + element['userId']
             userAvartar = null
         }
         else {
