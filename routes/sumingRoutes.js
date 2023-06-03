@@ -14,6 +14,16 @@ import summing from '../routeFunction/summing.js';
 import moneyHandle from '../commonFunction/moneyHandle.js';
 import revertModel from '../models/revertModel.js';
 const app = express.Router();
+function GetSortOrder(prop) {
+    return function (a, b) {
+        if (a[prop] > b[prop]) {
+            return 1;
+        } else if (a[prop] > b[prop]) {
+            return -1;
+        }
+        return 0;
+    }
+}
 app.get("/top10user", async function (req, res) {
     let result = []
     const sum_money = await billsModel.aggregate([{
@@ -42,11 +52,8 @@ app.get("/top10user", async function (req, res) {
                     _id: null, totalRevert: { $sum: "$totalMoney" }
                 }
             }])
-            console.log(revertMoneyTotal[0])
-            console.log(sum_money[i].totalSpending)
             if (revertMoneyTotal[0])
                 totalSpending = moneyHandle.subtractionMoney(sum_money[i].totalSpending, revertMoneyTotal[0].totalRevert)
-            console.log(totalSpending)
             if (typeof user.fullName == 'undefined') { nameUser = user.name }
             else {
                 nameUser = user.fullName
@@ -58,6 +65,7 @@ app.get("/top10user", async function (req, res) {
             "totalSpending": totalSpending
         })
     }
+    result.sort(GetSortOrder("totalSpending"))
     res.status(200).send(result);
 })
 app.get("/top10recent", async function (req, res) {
