@@ -54,7 +54,7 @@ app.get("/add_feedback_check/:userId/:movieId", async (request, response) => {
     var picked = Orders.find(o => o.Ordershowing != null);
     if (!picked)
         return response.status(400).send({ "enable": 0 })
-    else return response.status(400).send({ "enable": 1 })
+    else return response.status(200).send({ "enable": 1 })
 })
 app.post("/add_feedback", async function (request, response) {
     const feedback = new feedbacksModel(request.body);
