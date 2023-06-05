@@ -727,23 +727,23 @@ movieRoute.get(
                 console.log(showing);
                 const cinema = await CinemaModel.findById(showing.idCinema);
                 console.log(cinema);
-                let status = await revertModal.findOne({ idOldOrder: b, idUser: req.params.id });
-                if (status) { status = 1; }
-                else {
-                    status = 0;
-                }
                 const movie = await MovieModel.findById(showing.idMovie);
                 console.log(movie);
 
                 let list = [];
                 const ticketOfMovie = await orderModel.find({ idBill: a._id.toString(), idShowing: b });
-                console.log(ticketOfMovie);
+                let idOrder="";
                 for (let c of ticketOfMovie) {
                     const seat = await showSeatModel.findById(c.idShowSeat);
                     console.log(seat);
                     list.push({ "number": seat.number, "id": seat._id.toString() });
+                    idOrder = c._id.toString();
+                }                
+                var status = await revertModal.findOne({ idOldOrder: idOrder, idUser: req.params.id });
+                if (status) { status = 1; }
+                else {
+                    status = 0;
                 }
-
                 var item = {
                     idBill: a._id.toString(),
                     movie: movie.name,
