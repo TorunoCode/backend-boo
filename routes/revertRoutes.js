@@ -66,7 +66,7 @@ app.post(
             else if (2 > day && day > 0) {
 
                 // await orderModel.findOneAndUpdate({idShowSeat:req.body.idShowSeat,status:1},{ $set: { status: 3 }}); //idshowSeat idUser
-                const data = await revertModal({ idUser: req.body.idUser, idOldOrder: order._id.toString(), idShowSeat: c, status: 2, nameSeat: seat.number });
+                const data = await revertModal({ idUser: req.body.idUser, idOldOrder: order._id.toString(), idShowSeat: c, status: 0, nameSeat: seat.number });
                 data.save();
                 noti= "refund after 2 day";
             }
