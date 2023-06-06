@@ -24,7 +24,7 @@ app.get('/billToday/:id', async function (req, res) {
     let result = []
     for (let i = 0; i < billsOfUser.length; i++) {
         let checkRevert = await revertModel.find({ idOldOrder: billsOfUser[i]._id, status: 1 })
-        if (checkRevert) {
+        if (checkRevert[0]) {
             continue
         }
         let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
