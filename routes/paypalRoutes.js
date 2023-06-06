@@ -159,7 +159,7 @@ app.get('/success/:buyer_id/:bill_id', async function (req, res) {
               let sendEmailResult = await paymentFunction.sendEmailInvoice(req.params.bill_id, req.params.buyer_id, total_for_execute, dateOrder)
               if (!sendEmailResult)
                 return res.status(400).send({ message: "Can't send confirm email" })
-              await billModel.updateMany({ idCustomer: req.params.buyer_id, status: "-1" }, { "$set": { status: "1" } })
+              await billModel.updateMany({ idCustomer: req.params.buyer_id, status: "-1" }, { "$set": { status: "1", paymentMethod: "PayPal" } })
               await showSeatModel.updateMany({ idCustomer: req.params.buyer_id, status: "-1" }, { "$set": { status: "1" } })
               await orderModel.updateMany({ idCustomer: req.params.buyer_id, status: "-1" }, { "$set": { status: "1" } })
               let subHtml = fileHandle.template3Notification("Done paying and sended invoice to email" + closeBrowserMessage)
