@@ -48,7 +48,7 @@ app.get("/VNPayAdd/:email/:money", async function (req, res) {
     var date = new Date();
     var createDate = timeHandle.format_yyyymmddHHmmss(date)
     var orderId = timeHandle.format_HHmmss(date);
-    var orderInfo = "Nap " + amonutUSD + " vao tai khoan" + req.params.email
+    var orderInfo = "Nap " + amonutUSD + " vao tai khoan " + req.params.email
     var locale = 'vn'
     var currCode = 'VND';
     var vnp_Params = {
