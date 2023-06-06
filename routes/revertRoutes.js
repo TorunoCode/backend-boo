@@ -96,7 +96,7 @@ app.get(
                     await UserModal.findOneAndUpdate({ email: user.email }, { $set: { money: userMoney } });
                     await revertModal.findByIdAndUpdate(a._id.toString(), {
                         $set: {
-                            status: 1, idNewOrder: data._id.toString(), status: 2
+                             idNewOrder: data._id.toString(), status: 2
                             , totalMoney: (parseFloat(showing.price) * 90) / 100
                         }
                     });
