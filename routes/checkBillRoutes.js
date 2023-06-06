@@ -20,6 +20,7 @@ app.get('/billToday/:id', async function (req, res) {
     if (billsOfUser[0] == null) {
         return res.status(400).send([])
     }
+    let bill = await billsModel.findById(req.params.id)
     let day_finding = new Date()
     let result = []
     for (let i = 0; i < billsOfUser.length; i++) {
@@ -35,6 +36,7 @@ app.get('/billToday/:id', async function (req, res) {
         let compareDate = timeHandle.checkDateIsTodayOrNotYetOrPassedTime
             (day_finding, timeHandle.getTodayAt0(showing.startTime), timeHandle.getTomorrorAt0(showing.startTime));
         result.push({
+            "paymentMethod": bill.paymentMethod,
             "check": compareDate,
             "movie": movie.name,
             "seat": showSeat.number,

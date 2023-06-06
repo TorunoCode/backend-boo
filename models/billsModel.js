@@ -1,24 +1,28 @@
 import mongoose from 'mongoose';
 
-const billsSchema =  new mongoose.Schema({
-    totalMoney:{
-        type:Number,
-        require:true
+const billsSchema = new mongoose.Schema({
+    totalMoney: {
+        type: Number,
+        require: true
     },
-    idCustomer:{
-        type:String,
-        require:true
+    idCustomer: {
+        type: String,
+        require: true
     },
-    pin:{
-        type:String,
-        require:true
+    pin: {
+        type: String,
+        require: true
     },
-    status:{
-        type:String,
-        require:false
+    status: {
+        type: String,
+        require: false
+    },
+    paymentMethod: {
+        type: String,
+        require: false
     }
-},{
-    timestamps:true
+}, {
+    timestamps: true
 });
-const bills =  mongoose.model('bills',billsSchema);
+const bills = mongoose.model('bills', billsSchema);
 export default bills;
