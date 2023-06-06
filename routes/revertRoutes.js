@@ -37,15 +37,17 @@ app.post(
 app.post(
     "/checkIn",
     asyncHandler(async (req, res) => {
-        const a = moment(new Date(), 'YYYY-MM-DD');
+        const a = moment(convert( new Date(),1), 'YYYY-MM-DD');
         const b = moment(req.body.createdAt, 'YYYY-MM-DD');
         const day = b.diff(a, 'days');
-        console.log(day);
+        let noti = "fail refund";
+        if (day <= 0) {
+            res.send({ message: "refund fail" });return 0;
+        }
         for (let c of req.body.list) {
             const check = await revertModal.findOne({ idShowSeat: c, idUser: req.body.idUser });
-            if (check) res.send("previously refunded");
-            const order = await orderModel.findOne({ idBill: req.body.idBill, idShowSeat: c }, { idShowing: 1 });
-            console.log(order);
+            if (check) {res.send("previously refunded"); return 0;}
+            const order = await orderModel.findOne({ idBill: req.body.idBill, idShowSeat: c });
             const seat = await showSeatModel.findById(c, { number: 1 });
             if (day >= 2) {
                 const showing = await ShowingModel.findById(order.idShowing);
@@ -56,26 +58,22 @@ app.post(
                 else userMoney = parseFloat(user.money);
                 userMoney = moneyHandle.addMoney(userMoney, (parseFloat(showing.price) * 90) / 100);
                 userMoney = userMoney.toString();
-                console.log(userMoney);
                 await UserModal.findOneAndUpdate({ email: user.email }, { $set: { money: userMoney } });
                 const data = await revertModal({ idUser: req.body.idUser, idOldOrder: order._id.toString(), idShowSeat: c, status: 1, nameSeat: seat.number, totalMoney: (parseFloat(showing.price) * 90) / 100 }); //status:1 hoàn luôn 90% giá trị vé
                 data.save();
+                noti = "refund before 3 day";
             }
-            else if (2 > day > 0) {
-                await showSeatModel.findByIdAndUpdate(c, { $set: { isReserved: false } }); //idshowSeat idUser
+            else if (2 > day && day > 0) {
+
                 // await orderModel.findOneAndUpdate({idShowSeat:req.body.idShowSeat,status:1},{ $set: { status: 3 }}); //idshowSeat idUser
-                const data = await revertModal({ idUser: req.body.idUser, idOldOrder: order._id.toString(), idShowSeat: c, status: 0, nameSeat: seat.number });
+                const data = await revertModal({ idUser: req.body.idUser, idOldOrder: order._id.toString(), idShowSeat: c, status: 2, nameSeat: seat.number });
                 data.save();
-                res.send({ message: "refund after 2 day" });
-
+                noti= "refund after 2 day";
             }
-            else if (day <= 0) {
-                res.send({ message: "refund fail" });
-            }
-
+             await showSeatModel.findByIdAndUpdate(c, { $set: { isReserved: false } }); //idshowSeat idUser
         }
-        res.send({ message: "refund done" });
-        return
+        res.send({ message: noti });
+        return 0;
     })
 );
 app.get(
@@ -115,12 +113,12 @@ app.get(
         }
     })
 );
-app.get(
-    "/:id",
-    asyncHandler(async (req, res) => {
-        const data = await revertModal.find({ idUser: req.params.id });
-        res.json(data);
-    })
+// app.get(
+//     "/:id",
+//     asyncHandler(async (req, res) => {
+//         const data = await revertModal.find({ idUser: req.params.id });
+//         res.json(data);
+//     })
 
-);
+// );
 export default app;
