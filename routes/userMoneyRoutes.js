@@ -251,7 +251,7 @@ app.post('/pay', async function (req, res) {
     if (!sendEmailResult)
         return res.status(400).send({ message: "Can't send confirm email" })
     user = await UserModal.findOneAndUpdate({ email: req.body.email }, { money: userMoney }, { new: true })
-    await billsModel.updateMany({ idCustomer: user.id, status: "-1" }, { "$set": { status: "1", paymentMethod: "VNPay" } })
+    await billsModel.updateMany({ idCustomer: user.id, status: "-1" }, { "$set": { status: "1", paymentMethod: "User Account" } })
     await showSeatModel.updateMany({ idCustomer: user.id, status: "-1" }, { "$set": { status: "1" } })
     await orderModel.updateMany({ idCustomer: user.id, status: "-1" }, { "$set": { status: "1" } })
     return res.status(200).send({ message: "Payed orders" })
@@ -277,6 +277,7 @@ app.get('/test/html', async function (req, res) {
 app.get('/test/addMoney/:money1/:money2', async function (req, res) {
     let addResult = moneyHandle.addMoney(req.params.money1, req.params.money2)
     let subtractResult = moneyHandle.subtractionMoney(req.params.money1, req.params.money2)
+    // let bill = await billsModel.updateMany({}, { "$set": { paymentMethod: "PayPal" } })
     let compareReuslt;
     if (subtractResult < 0)
         compareReuslt = req.params.money1 + " < " + req.params.money2
