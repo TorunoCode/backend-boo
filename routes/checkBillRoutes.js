@@ -12,6 +12,7 @@ import showingModel from '../models/showingModel.js';
 import movieModel from '../models/movieModel.js';
 import cinemaHallModel from '../models/cinemaHallModel.js';
 import cinemaModel from '../models/cinemaModel.js';
+import revertModel from '../models/revertModel.js';
 const app = express.Router();
 app.get('/billToday/:id', async function (req, res) {
     let billId = req.params.id;
@@ -22,6 +23,10 @@ app.get('/billToday/:id', async function (req, res) {
     let day_finding = new Date()
     let result = []
     for (let i = 0; i < billsOfUser.length; i++) {
+        let checkRevert = await revertModel.find({ idOldOrder: billsOfUser[i]._id, status: 1 })
+        if (checkRevert) {
+            continue
+        }
         let showSeat = await showSeatModel.findById(billsOfUser[i].idShowSeat);
         let showing = await showingModel.findById(showSeat.idShowing);
         let movie = await movieModel.findById(showing.idMovie);
