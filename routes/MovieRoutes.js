@@ -1175,10 +1175,15 @@ movieRoute.get(
     })
 );
 movieRoute.get(
-    "/idrom",
+    "/idrom/:idCinema/:startTime",
     asyncHandler(async (req, res) => {
-        res.json(["6:00", "7:30", "9:00", "10:00", "12:00", "13:30", "15:00", "16:00", "18:00", "19:30", "21:00", "22:00", "24:00"]);
 
+        let list = ["6:00", "7:30", "9:00", "10:00", "12:00", "13:30", "15:00", "16:00", "18:00", "19:30", "21:00", "22:00", "24:00"];
+        let check = await ShowingModel.distinct('time',{idCinema:req.params.idCinema,startTime:req.params.startTime});
+        console.log(check);
+        let listMerge = [...list,...check];
+        listMerge= listMerge.filter((c,index)=> listMerge.indexOf(c)==listMerge.lastIndexOf(c));
+        res.json(listMerge);
     })
 );
 movieRoute.get(
