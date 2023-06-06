@@ -113,12 +113,12 @@ app.get(
         }
     })
 );
-// app.get(
-//     "/:id",
-//     asyncHandler(async (req, res) => {
-//         const data = await revertModal.find({ idUser: req.params.id });
-//         res.json(data);
-//     })
+app.get(
+    "/:id",
+    asyncHandler(async (req, res) => {
+        const data = await revertModal.find({ idUser: req.params.id });
+        res.json(data);
+    })
 
-// );
+);
 export default app;
