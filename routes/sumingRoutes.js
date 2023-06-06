@@ -72,6 +72,7 @@ app.get("/top10recent", async function (req, res) {
         else if (typeof user.fullName == 'undefined') nameUser = user.name
         else nameUser = user.fullName
         result.push({
+            "paymentMethod": sum_money[i].paymentMethod,
             "stt": i + 1,
             "idorder": sum_money[i]._id, "username": nameUser,
             "totalSPrice": sum_money[i].totalMoney, "date": timeHandle.formatDate_YearMonthDay(sum_money[i].createdAt),
